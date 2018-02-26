@@ -1,0 +1,131 @@
+package com.gmail.ZiomuuSs.Commands;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import com.gmail.ZiomuuSs.Main;
+import com.gmail.ZiomuuSs.Utils.Msg;
+
+public class AdminToolsCommand implements CommandExecutor {
+  Main plugin;
+  
+  public AdminToolsCommand(Main instance) {
+    plugin = instance;
+  }
+  
+  public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+    if (cmd.getName().equalsIgnoreCase("AdminTools") || cmd.getName().equalsIgnoreCase("at") || cmd.getName().equalsIgnoreCase("admin")) {
+      if (args.length > 0) {
+        if (args[0].equalsIgnoreCase("help")) {
+          if (sender.hasPermission("AdminTools.help") || sender.hasPermission("AdminTools.*")) {
+            sender.sendMessage(Msg.get("help", false));
+            sender.sendMessage(Msg.get("help_1", false));
+            sender.sendMessage(Msg.get("help_2", false));
+            sender.sendMessage(Msg.get("help_3", false));
+            sender.sendMessage(Msg.get("help_4", false));
+            return true;
+          } else {
+            sender.sendMessage(Msg.get("error_permission", true));
+            return true;
+          }
+        } else if (args[0].equalsIgnoreCase("mining")) {
+          if (sender.hasPermission("AdminTools.mining") || sender.hasPermission("AdminTools.*")) {
+            String players = "";
+            for (Player player : Bukkit.getOnlinePlayers()) {
+              if (player.getLocation().getY() <= 20) {
+                players += player.getDisplayName()+", ";
+              }
+            }
+            sender.sendMessage(Msg.get("player_mining", true, !(players.equals("")) ? players.substring(0, players.length() - 2) : Msg.get("none", false)));
+            return true;
+          } else {
+            sender.sendMessage(Msg.get("error_permission", true));
+            return true;
+          }
+        } else if (args[0].equalsIgnoreCase("cc") || args[0].equalsIgnoreCase("clearchat")) {
+          if (sender.hasPermission("AdminTools.ClearChat") || sender.hasPermission("AdminTools.*")) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+              for (int i = 100; i >= 0; --i)
+                player.sendMessage("");
+            }
+            Bukkit.broadcastMessage(Msg.get("chat_cleared", false, (sender instanceof Player ? sender.getName() : "Konsole")));
+            return true;
+          } else {
+            sender.sendMessage(Msg.get("error_permission", true));
+            return true;
+          }
+        } else if (args[0].equalsIgnoreCase("permissions")) {
+          if (sender.hasPermission("AdminTools.permissions") || sender.hasPermission("AdminTools.*")) {
+            sender.sendMessage(Msg.get("help_permissions", false));
+            sender.sendMessage(Msg.get("help_permissions_1", false));
+            sender.sendMessage(Msg.get("help_permissions_2", false));
+            sender.sendMessage(Msg.get("help_permissions_3", false));
+            sender.sendMessage(Msg.get("help_permissions_4", false));
+            sender.sendMessage(Msg.get("help_permissions_5", false));
+            return true;
+          } else {
+            sender.sendMessage(Msg.get("error_permission", true));
+            return true;
+          }
+        } else if (args[0].equalsIgnoreCase("setwarp")) {
+          if (sender instanceof Player) {
+            if (sender.hasPermission("AdminTools.setwarp") || sender.hasPermission("AdminTools.*")) {
+              if (args.length>1) {
+                if (!plugin.getData().isConfigurationSection(args[1])) {
+                  Location l = ((Player) sender).getLocation();
+                  plugin.getData().set("warp."+args[1]+".x", l.getX());
+                  plugin.getData().set("warp."+args[1]+".y", l.getY());
+                  plugin.getData().set("warp."+args[1]+".z", l.getZ());
+                  plugin.getData().set("warp."+args[1]+".yaw", l.getYaw());
+                  plugin.getData().set("warp."+args[1]+".pitch", l.getPitch());
+                  plugin.getData().set("warp."+args[1]+".world", l.getWorld().getName());
+                  sender.sendMessage(Msg.get("warp_set", true, args[1]));
+                  return true;
+                } else {
+                  sender.sendMessage(Msg.get("error_warp_exist", true, args[1]));
+                  return true;
+                }
+              } else {
+                sender.sendMessage(Msg.get("error_name_needed", true));
+                return true;
+              }
+            } else {
+              sender.sendMessage(Msg.get("error_permission", true));
+              return true;
+            }
+          } else {
+            sender.sendMessage(Msg.get("error_player_needed", true));
+            return true;
+          }
+        } else if (args[0].equalsIgnoreCase("warp")) {
+          if (sender instanceof Player) {
+            if (sender.hasPermission("AdminTools.warp") || sender.hasPermission("AdminTools.*")) {
+              if (args.length>1) {
+                //todo
+              } else {
+                //todo
+              }
+            } else {
+              sender.sendMessage(Msg.get("error_permission", true));
+              return true;
+            }
+          } else {
+            sender.sendMessage(Msg.get("error_player_needed", true));
+            return true;
+          }
+        } else {
+          sender.sendMessage(Msg.get("error_no_argument", true));
+          return true;
+        }
+      } else {
+        sender.sendMessage(Msg.get("error_player_needed", true));
+        return true;
+      }
+    }
+    return true;
+  }
+}

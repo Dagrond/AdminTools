@@ -1,0 +1,44 @@
+#colors...
+#If you don't want to use it, just leave: ""
+prefix: "&5[&6Admin&2Tools&5] "
+message_color: "&r&a"
+message_variable_color: "&2&l"
+error_color: "&r&c"
+error_variable_color: "&4&l"
+
+#messages...
+#DO NOT TOUCH: %1, %2, %3 etc. - this is space for variables :)
+#Use %s to set color of message to color that is reserved for variables (see colors section), use %n to return color back to normal.
+#Variables are colored automatically (colors section above to change colors of it or completely remove  
+#You can also use standard minecraft colors (&1, &2, &c, etc.), but it's better to use colors section (so you don't have to edit all messages when you want to change colors)
+
+player_mining: "Gracze, ktorzy prawdopodobnie kopia surowce: %1"
+chat_cleared: "Chat zostal wyczyszczony przez %1!"
+warp_set: "Pomyslnie ustawiono warp %1!"
+
+#error messages
+error_permission: "Nie posiadasz odpowiednich uprawnien aby uzyc tej komendy!"
+error_no_argument: "Wpisz %s/at help %naby uzyskac pomoc."
+error_name_needed: "Wprowadz nazwe warpu!"
+error_warp_exist: "Warp %1 juz istnieje!"
+error_player_needed: "Ta komende moze uzyc tylko gracz!"
+
+#help pages
+help: "Pomoc pluginu %sAdminTools%n:"
+help_1: "%s/at mining %n- Wyswietla graczy, ktorzy sa ponizej 20 poziomu Y."
+help_2: "%s/cc %n- Czysci chat."
+help_3: "%s/at permissions %n- Wyswietla uprawnienia pluginu."
+help_4: "%s/at help %n- Wyswietla pomoc pluginu."
+
+#help permissions pages
+help_permissions: "Uprawnienia pluginu %sAdminTools%n:"
+help_permissions_1: "%s/at mining %n- AdminTools.Mining"
+help_permissions_2: "%s/cc %n- AdminTools.ClearChat"
+help_permissions_3: "%s/at help %n- AdminTools.help"
+help_permissions_4: "%s/at permissions %n- AdminTools.permissions"
+help_permissions_5: "Uzyj %sAdminTools.* %naby nadac wszystkie uprawnienia."
+
+#Simple messages
+#(Messages that are used instead of variables in some situations)
+#I strongly reccomend not to use color codes here (But still you can if you want to)
+none: "Brak"

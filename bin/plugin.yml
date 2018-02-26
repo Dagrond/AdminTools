@@ -1,0 +1,12 @@
+name: AdminTools
+main: com.gmail.ZiomuuSs.Main
+version: 0.1
+commands:
+   AdminTools:
+      aliases: [at, admin]
+      description: Glowna komenda.
+      usage: /at
+   ClearChat:
+      aliases: [cc]
+      description: Czysci chat.
+      usage: /cc
