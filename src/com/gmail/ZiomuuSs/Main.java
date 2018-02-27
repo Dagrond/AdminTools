@@ -1,13 +1,11 @@
 package com.gmail.ZiomuuSs;
 
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.gmail.ZiomuuSs.Commands.AdminToolsCommand;
 import com.gmail.ZiomuuSs.Commands.ClearChatCommand;
 import com.gmail.ZiomuuSs.Utils.ConfigAccessor;
 import com.gmail.ZiomuuSs.Utils.Data;
-import com.gmail.ZiomuuSs.Utils.Msg;
 
 public final class Main extends JavaPlugin {
   ConfigAccessor warpAccessor;
