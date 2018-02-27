@@ -8,13 +8,16 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.gmail.ZiomuuSs.Main;
+import com.gmail.ZiomuuSs.Utils.Data;
 import com.gmail.ZiomuuSs.Utils.Msg;
 
 public class AdminToolsCommand implements CommandExecutor {
   Main plugin;
+  Data data;
   
   public AdminToolsCommand(Main instance) {
     plugin = instance;
+    data = plugin.getData();
   }
   
   public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -75,20 +78,11 @@ public class AdminToolsCommand implements CommandExecutor {
           if (sender instanceof Player) {
             if (sender.hasPermission("AdminTools.setwarp") || sender.hasPermission("AdminTools.*")) {
               if (args.length>1) {
-                if (!plugin.getData().isConfigurationSection(args[1])) {
-                  Location l = ((Player) sender).getLocation();
-                  plugin.getData().set("warp."+args[1]+".x", l.getX());
-                  plugin.getData().set("warp."+args[1]+".y", l.getY());
-                  plugin.getData().set("warp."+args[1]+".z", l.getZ());
-                  plugin.getData().set("warp."+args[1]+".yaw", l.getYaw());
-                  plugin.getData().set("warp."+args[1]+".pitch", l.getPitch());
-                  plugin.getData().set("warp."+args[1]+".world", l.getWorld().getName());
+                if (data.setWarp(args[1], ((Player) sender).getLocation()))
+                  sender.sendMessage(Msg.get("warp_add", true, args[1]));
+                else
                   sender.sendMessage(Msg.get("warp_set", true, args[1]));
-                  return true;
-                } else {
-                  sender.sendMessage(Msg.get("error_warp_exist", true, args[1]));
-                  return true;
-                }
+                return true;
               } else {
                 sender.sendMessage(Msg.get("error_name_needed", true));
                 return true;

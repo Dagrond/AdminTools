@@ -14,7 +14,8 @@ error_variable_color: "&4&l"
 
 player_mining: "Gracze, ktorzy prawdopodobnie kopia surowce: %1"
 chat_cleared: "Chat zostal wyczyszczony przez %1!"
-warp_set: "Pomyslnie ustawiono warp %1!"
+warp_set: "Pomyslnie zedytowano warp %1!"
+warp_add: "Pomyslnie dodano warp %1!"
 
 #error messages
 error_permission: "Nie posiadasz odpowiednich uprawnien aby uzyc tej komendy!"

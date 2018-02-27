@@ -6,15 +6,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.gmail.ZiomuuSs.Commands.AdminToolsCommand;
 import com.gmail.ZiomuuSs.Commands.ClearChatCommand;
 import com.gmail.ZiomuuSs.Utils.ConfigAccessor;
+import com.gmail.ZiomuuSs.Utils.Data;
 import com.gmail.ZiomuuSs.Utils.Msg;
 
 public final class Main extends JavaPlugin {
   ConfigAccessor warpAccessor;
+  protected Data data;
+  
   public void onEnable() {
-    ConfigAccessor msgAccessor = new ConfigAccessor(this, "Messages.yml");
-    warpAccessor = new ConfigAccessor(this, "Data.yml");
-    msgAccessor.saveDefaultConfig();
-    Msg.set(msgAccessor.getConfig());
+    data = new Data(this);
     getCommand("AdminTools").setExecutor(new AdminToolsCommand(this));
     getCommand("ClearChat").setExecutor(new ClearChatCommand(this));
     //?
@@ -24,7 +24,7 @@ public final class Main extends JavaPlugin {
     //?
   }
   
-  public ConfigurationSection getData() {
-    return warpAccessor.getConfig();
+  public Data getData() {
+    return data;
   }
 }
