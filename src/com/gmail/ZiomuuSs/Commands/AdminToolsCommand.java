@@ -29,6 +29,9 @@ public class AdminToolsCommand implements CommandExecutor {
             sender.sendMessage(Msg.get("help_2", false));
             sender.sendMessage(Msg.get("help_3", false));
             sender.sendMessage(Msg.get("help_4", false));
+            sender.sendMessage(Msg.get("help_5", false));
+            sender.sendMessage(Msg.get("help_6", false));
+            sender.sendMessage(Msg.get("help_7", false));
             return true;
           } else {
             sender.sendMessage(Msg.get("error_permission", true));
@@ -68,6 +71,9 @@ public class AdminToolsCommand implements CommandExecutor {
             sender.sendMessage(Msg.get("help_permissions_3", false));
             sender.sendMessage(Msg.get("help_permissions_4", false));
             sender.sendMessage(Msg.get("help_permissions_5", false));
+            sender.sendMessage(Msg.get("help_permissions_6", false));
+            sender.sendMessage(Msg.get("help_permissions_7", false));
+            sender.sendMessage(Msg.get("help_permissions_8", false));
             return true;
           } else {
             sender.sendMessage(Msg.get("error_permission", true));
@@ -115,6 +121,25 @@ public class AdminToolsCommand implements CommandExecutor {
             }
           } else {
             sender.sendMessage(Msg.get("error_player_needed", true));
+            return true;
+          }
+        } else if (args[0].equalsIgnoreCase("delwarp")) {
+          if (sender.hasPermission("AdminTools.delwarp") || sender.hasPermission("AdminTools.*")) {
+            if (args.length>1) {
+              if (data.getWarp(args[1]) != null) {
+                data.delWarp(args[1]);
+                sender.sendMessage(Msg.get("warp_del", true, args[1]));
+                return true;
+              } else {
+                sender.sendMessage(Msg.get("error_warp_not_exist", true, args[1]));
+                return true;
+              }
+            } else {
+              sender.sendMessage(Msg.get("error_warp_needed", true));
+              return true;
+            }
+          } else {
+            sender.sendMessage(Msg.get("error_permission", true));
             return true;
           }
         } else {

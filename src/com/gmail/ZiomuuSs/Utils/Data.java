@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 import com.gmail.ZiomuuSs.Main;
 
@@ -13,6 +14,7 @@ public class Data {
   protected ConfigAccessor msgAccessor;
   protected ConfigAccessor warpAccessor;
   protected HashMap<String, Location> warps = new HashMap<>();
+  protected HashMap<Player, SavedPlayer> savedPlayers = new HashMap<>();
   
   public Data(Main plugin) {
     this.plugin = plugin;
@@ -52,19 +54,26 @@ public class Data {
   public boolean setWarp(String name, Location loc) {
     if (warps.containsKey(name)) {
       warps.put(name, loc);
+      save();
       return false;
     } else {
       warps.put(name, loc);
+      save();
       return true;
     }
   }
   
+  public void delWarp(String warp) {
+    warps.remove(warp);
+    warpAccessor.getConfig().set("warp."+warp, null);
+    save();
+  }
   public String getPrettyWarpList() {
     String list = "";
     for (String s : warps.keySet()) {
       list += s+", ";
     }
-    if (list.equalsIgnoreCase(""))
+    if (!list.equalsIgnoreCase(""))
       return list.substring(0, list.length() - 2);
     else
       return Msg.get("none", false);

@@ -18,6 +18,7 @@ warp_set: "Pomyslnie zedytowano warp %1!"
 warp_add: "Pomyslnie dodano warp %1!"
 warp_list: "Lista warpow: %1"
 warp_tp: "Zostales teleportowany do wapru %1!"
+warp_del: "Pomyslnie usunieto warp o nazwie %1!"
 
 #error messages
 error_permission: "Nie posiadasz odpowiednich uprawnien aby uzyc tej komendy!"
@@ -25,6 +26,7 @@ error_no_argument: "Wpisz %s/at help %naby uzyskac pomoc."
 error_name_needed: "Wprowadz nazwe warpu!"
 error_warp_not_exist: "Warp %1 nie istnieje! Wpisz %s/at warp%n aby wyswietlic liste warpow."
 error_player_needed: "Ta komende moze uzyc tylko gracz!"
+error_warp_needed: "Musisz podac nazwe warpu, ktory chcesz usunac."
 
 #help pages
 help: "Pomoc pluginu %sAdminTools%n:"
@@ -32,6 +34,10 @@ help_1: "%s/at mining %n- Wyswietla graczy, ktorzy sa ponizej 20 poziomu Y."
 help_2: "%s/cc %n- Czysci chat."
 help_3: "%s/at permissions %n- Wyswietla uprawnienia pluginu."
 help_4: "%s/at help %n- Wyswietla pomoc pluginu."
+help_5: "%s/at warp %n- Wyswietla liste warpow."
+help_6: "%s/at warp <warp>%n- Teleportuje na dany warp."
+help_7: "%s/at setwarp <warp>%n- Ustawia/zmienia lokacje warpu."
+help_8: "%s/at delwarp <warp>%n- Usuwa dany warp."
 
 #help permissions pages
 help_permissions: "Uprawnienia pluginu %sAdminTools%n:"
@@ -39,7 +45,10 @@ help_permissions_1: "%s/at mining %n- AdminTools.Mining"
 help_permissions_2: "%s/cc %n- AdminTools.ClearChat"
 help_permissions_3: "%s/at help %n- AdminTools.help"
 help_permissions_4: "%s/at permissions %n- AdminTools.permissions"
-help_permissions_5: "Uzyj %sAdminTools.* %naby nadac wszystkie uprawnienia."
+help_permissions_5: "%s/at warp %n- AdminTools.warp"
+help_permissions_6: "%s/at setwarp %n- AdminTools.setwarp"
+help_permissions_7: "%s/at delwarp %n- AdminTools.delwarp"
+help_permissions_8: "Uzyj %sAdminTools.* %naby nadac wszystkie uprawnienia."
 
 #Simple messages
 #(Messages that are used instead of variables in some situations)
