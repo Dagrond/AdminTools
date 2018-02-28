@@ -142,6 +142,103 @@ public class AdminToolsCommand implements CommandExecutor {
             sender.sendMessage(Msg.get("error_permission", true));
             return true;
           }
+        } else if(args[0].equalsIgnoreCase("pattern") || args[0].equalsIgnoreCase("p")) {
+          if (sender.hasPermission("AdminTools.pattern") || sender.hasPermission("AdminTools.*")) {
+            if (args.length>2) {
+              if (args[1].equalsIgnoreCase("create")) {
+                if (!data.isTeam(args[2])) {
+                  data.addTeam(args[2]);
+                  sender.sendMessage(Msg.get("team_created", true, args[2]));
+                  return true;
+                } else {
+                  sender.sendMessage(Msg.get("error_team_exist", true, args[2]));
+                  return true;
+                }
+              } else if (args[1].equalsIgnoreCase("inventory")) {
+                if (sender instanceof Player) {
+                  if (data.isTeam(args[2])) {
+                    data.getTeam(args[2]).setInventory(((Player) sender).getInventory());
+                    sender.sendMessage(Msg.get("team_inventory_set", true, args[2]));
+                    return true;
+                  } else {
+                    sender.sendMessage(Msg.get("error_team_not_exist", true, args[2]));
+                    return true;
+                  }
+                } else {
+                  sender.sendMessage(Msg.get("error_player_needed", true));
+                  return true;
+                }
+              } else if (args[1].equalsIgnoreCase("location")) {
+                if (sender instanceof Player) {
+                  if (data.isTeam(args[2])) {
+                    data.getTeam(args[2]).setLocation(((Player) sender).getLocation());
+                    sender.sendMessage(Msg.get("team_location_set", true, args[2]));
+                    return true;
+                  } else {
+                    sender.sendMessage(Msg.get("error_team_not_exist", true, args[2]));
+                    return true;
+                  }
+                } else {
+                  sender.sendMessage(Msg.get("error_player_needed", true));
+                  return true;
+                }
+              } else {
+                sender.sendMessage(Msg.get("error_usage", true, "/at pattern create/inventory/location (team)"));
+                return true;
+              }
+            } else {
+              sender.sendMessage(Msg.get("error_usage", true, "/at pattern create/inventory/location (team)"));
+              return true;
+            }
+          } else {
+            sender.sendMessage(Msg.get("error_permission", true));
+            return true;
+          }
+        } else if(args[0].equalsIgnoreCase("add")) {
+          if (sender.hasPermission("AdminTools.add") || sender.hasPermission("AdminTools.*")) {
+            if (args.length>2) {
+              if (data.isTeam(args[1])) {
+                if (Bukkit.getPlayer(args[2]) != null) {
+                  data.getTeam(args[1]).addPlayer(Bukkit.getPlayer(args[2]));
+                  sender.sendMessage(Msg.get("team_added", true, args[1], args[2]));
+                  return true;
+                } else {
+                  sender.sendMessage(Msg.get("error_player_not_exist", true, args[2]));
+                  return true;
+                }
+              } else {
+                sender.sendMessage(Msg.get("error_team_not_exist", true, args[1]));
+                return true;
+              }
+            } else {
+              sender.sendMessage(Msg.get("error_usage", true, "/at add (team) (player)"));
+              return true;
+            }
+          } else {
+            sender.sendMessage(Msg.get("error_permission", true));
+            return true;
+          }
+        } else if(args[0].equalsIgnoreCase("del")) {
+          if (sender.hasPermission("AdminTools.delete") || sender.hasPermission("AdminTools.*")) {
+            if (args.length>2) {
+              if (Bukkit.getPlayer(args[2]) != null) {
+                if (data.isSaved(Bukkit.getPlayer(args[2]))) {
+                  data.getTeam(args[1]).delPlayer(Bukkit.getPlayer(args[2]));
+                  sender.sendMessage(Msg.get("team_deleted", true, args[1], args[2]));
+                  return true;
+                }
+              } else {
+                sender.sendMessage(Msg.get("error_player_not_exist", true, args[2]));
+                return true;
+              }
+            } else {
+              sender.sendMessage(Msg.get("error_usage", true, "/at add (team) (player)"));
+              return true;
+            }
+          } else {
+            sender.sendMessage(Msg.get("error_permission", true));
+            return true;
+          }
         } else {
           sender.sendMessage(Msg.get("error_no_argument", true));
           return true;

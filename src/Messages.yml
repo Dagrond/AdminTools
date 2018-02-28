@@ -19,6 +19,11 @@ warp_add: "Pomyslnie dodano warp %1!"
 warp_list: "Lista warpow: %1"
 warp_tp: "Zostales teleportowany do wapru %1!"
 warp_del: "Pomyslnie usunieto warp o nazwie %1!"
+team_created: "Pomyslnie utworzono druzyne o nazwie %1!"
+team_inventory_set: "Pomyslnie ustawiles ekwipunek startowy druzyny %1!"
+team_location_set: "Pomyslnie ustawiles lokacje startowa druzyny %1!"
+team_added: "Pomyslnie dodano gracza %2 do druzyny %1!"
+team_deleted: "Pomyslnie usunieto gracza %2 z druzyny %1!"
 
 #error messages
 error_permission: "Nie posiadasz odpowiednich uprawnien aby uzyc tej komendy!"
@@ -27,6 +32,10 @@ error_name_needed: "Wprowadz nazwe warpu!"
 error_warp_not_exist: "Warp %1 nie istnieje! Wpisz %s/at warp%n aby wyswietlic liste warpow."
 error_player_needed: "Ta komende moze uzyc tylko gracz!"
 error_warp_needed: "Musisz podac nazwe warpu, ktory chcesz usunac."
+error_usage: "Poprawne uzycie: %1"
+error_team_exist: "Druzyna %1 juz istnieje!"
+error_team_not_exist: "Druzyna o nazwie %1 nie istnieje!"
+error_player_not_exist: "Gracz o nicku %1 nie istnieje!"
 
 #help pages
 help: "Pomoc pluginu %sAdminTools%n:"

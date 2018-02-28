@@ -11,7 +11,6 @@ public class SavedPlayer {
   protected Inventory inv;
   protected Location loc;
   
-  
   public SavedPlayer(Player player, Location eloc, Inventory einv) {
     this.player = player;
     inv = player.getInventory();

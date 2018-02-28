@@ -8,17 +8,34 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import com.gmail.ZiomuuSs.Main;
+import com.gmail.ZiomuuSs.Team;
 
 public class Data {
   protected Main plugin;
   protected ConfigAccessor msgAccessor;
   protected ConfigAccessor warpAccessor;
   protected HashMap<String, Location> warps = new HashMap<>();
-  protected HashMap<Player, SavedPlayer> savedPlayers = new HashMap<>();
+  protected HashMap<String, Team> savedTeams = new HashMap<>();
   
   public Data(Main plugin) {
     this.plugin = plugin;
     load();
+  }
+  
+  public boolean isSaved(Player player) {
+    for (Team t : savedTeams.values()) {
+      if (t.isSaved(player))
+        return true;
+    }
+    return false;
+  }
+  
+  public SavedPlayer getSavedAnywhere(Player player) {
+    for (Team t : savedTeams.values()) {
+      if (t.isSaved(player))
+        return t.getPlayer(player);
+    }
+    return null;
   }
   
   protected void load() {
@@ -34,6 +51,21 @@ public class Data {
         warps.put(warp, new Location(Bukkit.getWorld(w.getString("warp."+warp+".world")), w.getDouble("warp."+warp+".x"), w.getDouble("warp."+warp+".y"), w.getDouble("warp."+warp+".z"), (float) w.getDouble("warp."+warp+".yaw"), (float) w.getDouble("warp."+warp+".pitch")));
       }
     }
+  }
+  
+  public boolean isTeam(String name) {
+    if (savedTeams.containsKey(name))
+      return true;
+    else
+      return false;
+  }
+  
+  public void addTeam(String name) {
+    savedTeams.put(name, new Team(name));
+  }
+  
+  public Team getTeam(String name) {
+    return savedTeams.get(name);
   }
   
   public void save() {
