@@ -21,6 +21,7 @@ public class AdminToolsCommand implements CommandExecutor {
     data = plugin.getData();
   }
   
+  @Override
   public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
     if (cmd.getName().equalsIgnoreCase("AdminTools") || cmd.getName().equalsIgnoreCase("at") || cmd.getName().equalsIgnoreCase("admin")) {
       if (args.length > 0) {
@@ -43,7 +44,7 @@ public class AdminToolsCommand implements CommandExecutor {
           if (sender.hasPermission("AdminTools.mining") || sender.hasPermission("AdminTools.*")) {
             String players = "";
             for (Player player : Bukkit.getOnlinePlayers()) {
-              if (player.getLocation().getY() <= 20) {
+              if (player.getLocation().getY() <= 20 && !player.hasPermission("AdminTools.bypass") && player.getWorld() == Bukkit.getWorld("world")) {
                 players += player.getDisplayName()+", ";
               }
             }
@@ -184,6 +185,19 @@ public class AdminToolsCommand implements CommandExecutor {
                   sender.sendMessage(Msg.get("error_player_needed", true));
                   return true;
                 }
+              } else if (args[1].equalsIgnoreCase("list")) {
+                if (args.length>2) {
+                  if (data.isTeam(args[2])) {
+                    sender.sendMessage(Msg.get("list_players", true, args[2], data.getTeam(args[2]).getPrettyPlayerList()));
+                    return true;
+                  } else {
+                    sender.sendMessage(Msg.get("error_team_not_exist", true, args[2]));
+                    return true;
+                  }
+                } else {
+                  sender.sendMessage(Msg.get("list_patterns", true, data.getPrettyTeamList()));
+                  return true;
+                }
               } else {
                 sender.sendMessage(Msg.get("error_usage", true, "/at pattern create/inventory/location (team)"));
                 return true;
@@ -201,9 +215,14 @@ public class AdminToolsCommand implements CommandExecutor {
             if (args.length>2) {
               if (data.isTeam(args[1])) {
                 if (Bukkit.getPlayer(args[2]) != null) {
-                  data.getTeam(args[1]).addPlayer(Bukkit.getPlayer(args[2]));
-                  sender.sendMessage(Msg.get("team_added", true, args[1], args[2]));
-                  return true;
+                  if (!data.isSaved(Bukkit.getPlayer(args[2]).getUniqueId())) {
+                    data.getTeam(args[1]).addPlayer(Bukkit.getPlayer(args[2]));
+                    sender.sendMessage(Msg.get("team_added", true, args[1], args[2]));
+                    return true;
+                  } else {
+                    sender.sendMessage(Msg.get("error_player_already_added", true, args[2], data.getTeamByPlayer(Bukkit.getPlayer(args[2])).toString()));
+                    return true;
+                  }
                 } else {
                   sender.sendMessage(Msg.get("error_player_not_exist", true, args[2]));
                   return true;
@@ -223,15 +242,18 @@ public class AdminToolsCommand implements CommandExecutor {
         } else if(args[0].equalsIgnoreCase("del")) {
           if (sender.hasPermission("AdminTools.delete") || sender.hasPermission("AdminTools.*")) {
             if (args.length>1) {
-              if (Bukkit.getPlayer(args[2]) != null) {
+              if (Bukkit.getPlayer(args[1]) != null) {
                 Player player = Bukkit.getPlayer(args[1]);
                 if (data.isSaved(player.getUniqueId())) {
                   data.getTeamByPlayer(player).delPlayer(player);
                   sender.sendMessage(Msg.get("player_deleted", true, args[1]));
                   return true;
+                } else {
+                  sender.sendMessage(Msg.get("error_player_not_saved", true, args[1]));
+                  return true;
                 }
               } else {
-                sender.sendMessage(Msg.get("error_player_not_exist", true, args[2]));
+                sender.sendMessage(Msg.get("error_player_not_exist", true, args[1]));
                 return true;
               }
             } else {

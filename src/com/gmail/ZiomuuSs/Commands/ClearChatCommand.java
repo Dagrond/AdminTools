@@ -16,6 +16,7 @@ public class ClearChatCommand implements CommandExecutor {
     plugin = instance;
   }
   
+  @Override
   public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
     if (cmd.getName().equalsIgnoreCase("ClearChat") || cmd.getName().equalsIgnoreCase("cc")) {
       if (sender.hasPermission("AdminTools.ClearChat") || sender.hasPermission("AdminTools.*")) {

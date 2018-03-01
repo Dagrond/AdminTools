@@ -1,6 +1,5 @@
 package com.gmail.ZiomuuSs.Events;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -16,8 +15,13 @@ public class RespawnEvent implements Listener {
   
   @EventHandler
   public void onRespawn(PlayerRespawnEvent e) {
-    if (e.getPlayer().getKiller() != null && e.getPlayer().getKiller() instanceof Player && plugin.getData().isSaved(e.getPlayer().getUniqueId())) {
-      plugin.getData().getTeamByPlayer(e.getPlayer()).delPlayer(e.getPlayer());
+    if (plugin.getData().isSaved(e.getPlayer().getUniqueId())) {   
+      plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+        @Override
+        public void run() {
+          plugin.getData().getTeamByPlayer(e.getPlayer()).delPlayer(e.getPlayer());
+        }
+      }, 10);
     }
   }
   
