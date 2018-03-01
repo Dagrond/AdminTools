@@ -1,6 +1,7 @@
 package com.gmail.ZiomuuSs;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -12,7 +13,7 @@ public class Team {
   protected String name;
   protected Inventory inv;
   protected Location loc;
-  protected HashMap<Player, SavedPlayer> savedPlayers = new HashMap<>();
+  protected HashMap<UUID, SavedPlayer> savedPlayers = new HashMap<>();
   
   public Team (String name) {
     this.name = name;
@@ -26,24 +27,24 @@ public class Team {
     this.loc = loc;
   }
   
-  public boolean isSaved(Player player) {
-    if (savedPlayers.containsKey(player))
+  public boolean isSaved(UUID uuid) {
+    if (savedPlayers.containsKey(uuid))
       return true;
     else
       return false;
   }
   
   public SavedPlayer getPlayer(Player player) {
-    return savedPlayers.get(player);
+    return savedPlayers.get(player.getUniqueId());
   }
   
   public void addPlayer(Player player) {
-    savedPlayers.put(player, new SavedPlayer(player, loc, inv));
+    savedPlayers.put(player.getUniqueId(), new SavedPlayer(player, loc, inv));
   }
   
   public void delPlayer(Player player) {
-    savedPlayers.get(player).restore();
-    savedPlayers.remove(player);
+    savedPlayers.get(player.getUniqueId()).restore();
+    savedPlayers.remove(player.getUniqueId());
   }
   
 }

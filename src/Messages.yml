@@ -24,6 +24,10 @@ team_inventory_set: "Pomyslnie ustawiles ekwipunek startowy druzyny %1!"
 team_location_set: "Pomyslnie ustawiles lokacje startowa druzyny %1!"
 team_added: "Pomyslnie dodano gracza %2 do druzyny %1!"
 team_deleted: "Pomyslnie usunieto gracza %2 z druzyny %1!"
+team_deleted: "Pomyslnie usunieto gracza %1 z jakiejstam druzyny XD!"
+count_left: "&b[&9&lEvent&b] %1"
+count_done: "&b[&9&lEvent&b] &3Start!"
+count_start: "&b[&9&lEvent&b] &3Arena otwiera sie za:"
 
 #error messages
 error_permission: "Nie posiadasz odpowiednich uprawnien aby uzyc tej komendy!"
@@ -36,6 +40,7 @@ error_usage: "Poprawne uzycie: %1"
 error_team_exist: "Druzyna %1 juz istnieje!"
 error_team_not_exist: "Druzyna o nazwie %1 nie istnieje!"
 error_player_not_exist: "Gracz o nicku %1 nie istnieje!"
+error_must_be_integer: "%1 musi byc liczba calkowita!"
 
 #help pages
 help: "Pomoc pluginu %sAdminTools%n:"

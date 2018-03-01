@@ -1,6 +1,7 @@
 package com.gmail.ZiomuuSs.Utils;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -22,17 +23,25 @@ public class Data {
     load();
   }
   
-  public boolean isSaved(Player player) {
+  public boolean isSaved(UUID uuid) {
     for (Team t : savedTeams.values()) {
-      if (t.isSaved(player))
+      if (t.isSaved(uuid))
         return true;
     }
     return false;
   }
   
+  public Team getTeamByPlayer(Player player) {
+    for (Team t : savedTeams.values()) {
+      if (t.isSaved(player.getUniqueId()))
+        return t;
+    }
+    return null;
+  }
+  
   public SavedPlayer getSavedAnywhere(Player player) {
     for (Team t : savedTeams.values()) {
-      if (t.isSaved(player))
+      if (t.isSaved(player.getUniqueId()))
         return t.getPlayer(player);
     }
     return null;

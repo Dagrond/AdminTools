@@ -1,12 +1,14 @@
 package com.gmail.ZiomuuSs.Commands;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.gmail.ZiomuuSs.Main;
+import com.gmail.ZiomuuSs.Utils.CountdownTimer;
 import com.gmail.ZiomuuSs.Utils.Data;
 import com.gmail.ZiomuuSs.Utils.Msg;
 
@@ -220,11 +222,12 @@ public class AdminToolsCommand implements CommandExecutor {
           }
         } else if(args[0].equalsIgnoreCase("del")) {
           if (sender.hasPermission("AdminTools.delete") || sender.hasPermission("AdminTools.*")) {
-            if (args.length>2) {
+            if (args.length>1) {
               if (Bukkit.getPlayer(args[2]) != null) {
-                if (data.isSaved(Bukkit.getPlayer(args[2]))) {
-                  data.getTeam(args[1]).delPlayer(Bukkit.getPlayer(args[2]));
-                  sender.sendMessage(Msg.get("team_deleted", true, args[1], args[2]));
+                Player player = Bukkit.getPlayer(args[1]);
+                if (data.isSaved(player.getUniqueId())) {
+                  data.getTeamByPlayer(player).delPlayer(player);
+                  sender.sendMessage(Msg.get("player_deleted", true, args[1]));
                   return true;
                 }
               } else {
@@ -232,7 +235,25 @@ public class AdminToolsCommand implements CommandExecutor {
                 return true;
               }
             } else {
-              sender.sendMessage(Msg.get("error_usage", true, "/at add (team) (player)"));
+              sender.sendMessage(Msg.get("error_usage", true, "/at del (player)"));
+              return true;
+            }
+          } else {
+            sender.sendMessage(Msg.get("error_permission", true));
+            return true;
+          }
+        } else if(args[0].equalsIgnoreCase("count")) {
+          if (sender.hasPermission("AdminTools.count") || sender.hasPermission("AdminTools.*")) {
+            if (args.length>1) {
+              if (args[1].matches("-?\\d+")) {
+                CountdownTimer timer = new CountdownTimer(plugin, Integer.valueOf(args[1]), () -> Bukkit.broadcastMessage(Msg.get("count_start", false)), () -> Bukkit.broadcastMessage(Msg.get("count_done", false)), (t) -> Bukkit.broadcastMessage(Msg.get("count_left", false, ChatColor.DARK_AQUA+Integer.toString(t.getSecondsLeft()))));
+                timer.scheduleTimer();
+              } else {
+                sender.sendMessage(Msg.get("error_must_be_integer", true, "count"));
+                return true;
+              }
+            } else {
+              sender.sendMessage(Msg.get("error_usage", true, "/at count (seconds)"));
               return true;
             }
           } else {
