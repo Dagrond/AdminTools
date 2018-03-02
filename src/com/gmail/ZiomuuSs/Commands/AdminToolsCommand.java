@@ -151,6 +151,7 @@ public class AdminToolsCommand implements CommandExecutor {
               if (args[1].equalsIgnoreCase("create")) {
                 if (!data.isTeam(args[2])) {
                   data.addTeam(args[2]);
+                  data.saveTeams();
                   sender.sendMessage(Msg.get("team_created", true, args[2]));
                   return true;
                 } else {
@@ -161,6 +162,7 @@ public class AdminToolsCommand implements CommandExecutor {
                 if (sender instanceof Player) {
                   if (data.isTeam(args[2])) {
                     data.getTeam(args[2]).setInventory(((Player) sender).getInventory());
+                    data.saveTeams();
                     sender.sendMessage(Msg.get("team_inventory_set", true, args[2]));
                     return true;
                   } else {
@@ -175,6 +177,7 @@ public class AdminToolsCommand implements CommandExecutor {
                 if (sender instanceof Player) {
                   if (data.isTeam(args[2])) {
                     data.getTeam(args[2]).setLocation(((Player) sender).getLocation());
+                    data.saveTeams();
                     sender.sendMessage(Msg.get("team_location_set", true, args[2]));
                     return true;
                   } else {

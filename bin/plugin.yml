@@ -10,3 +10,7 @@ commands:
       aliases: [cc]
       description: Czysci chat.
       usage: /cc
+   ChujeWypusccieMnie:
+      aliases: [wyjdz]
+      description: Wypuszcza z eventu.
+      usage: /wyjdz

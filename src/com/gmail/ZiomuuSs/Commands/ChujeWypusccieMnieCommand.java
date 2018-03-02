@@ -17,7 +17,7 @@ public class ChujeWypusccieMnieCommand implements CommandExecutor {
   
   @Override
   public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-    if (cmd.getName().equalsIgnoreCase("ChujeWypusccieMnie")) {
+    if (cmd.getName().equalsIgnoreCase("ChujeWypusccieMnie") || cmd.getName().equalsIgnoreCase("wyjdz")) {
       if (sender instanceof Player) {
         Player player = (Player) sender;
         if (plugin.getData().isSaved(player.getUniqueId())) {
