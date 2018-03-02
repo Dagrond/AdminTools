@@ -188,19 +188,6 @@ public class AdminToolsCommand implements CommandExecutor {
                   sender.sendMessage(Msg.get("error_player_needed", true));
                   return true;
                 }
-              } else if (args[1].equalsIgnoreCase("list")) {
-                if (args.length>2) {
-                  if (data.isTeam(args[2])) {
-                    sender.sendMessage(Msg.get("list_players", true, args[2], data.getTeam(args[2]).getPrettyPlayerList()));
-                    return true;
-                  } else {
-                    sender.sendMessage(Msg.get("error_team_not_exist", true, args[2]));
-                    return true;
-                  }
-                } else {
-                  sender.sendMessage(Msg.get("list_patterns", true, data.getPrettyTeamList()));
-                  return true;
-                }
               } else {
                 sender.sendMessage(Msg.get("error_usage", true, "/at pattern create/inventory/location (team)"));
                 return true;
@@ -213,7 +200,20 @@ public class AdminToolsCommand implements CommandExecutor {
             sender.sendMessage(Msg.get("error_permission", true));
             return true;
           }
-        } else if(args[0].equalsIgnoreCase("add")) {
+        } else if (args[0].equalsIgnoreCase("list")) {
+          if (args.length>1) {
+            if (data.isTeam(args[1])) {
+              sender.sendMessage(Msg.get("list_players", true, args[1], data.getTeam(args[1]).getPrettyPlayerList()));
+              return true;
+            } else {
+              sender.sendMessage(Msg.get("error_team_not_exist", true, args[1]));
+              return true;
+            }
+          } else {
+            sender.sendMessage(Msg.get("list_patterns", true, data.getPrettyTeamList()));
+            return true;
+          }
+        } else if (args[0].equalsIgnoreCase("add")) {
           if (sender.hasPermission("AdminTools.add") || sender.hasPermission("AdminTools.*")) {
             if (args.length>2) {
               if (data.isTeam(args[1])) {

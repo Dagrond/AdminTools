@@ -107,13 +107,17 @@ public class Data {
   public void saveTeams() {
     ConfigurationSection w = teamAccessor.getConfig();
     for (String team : savedTeams.keySet()) {
-      w.set("teams."+team+".location.x", savedTeams.get(team).getLocation().getX());
-      w.set("teams."+team+".location.y", savedTeams.get(team).getLocation().getY());
-      w.set("teams."+team+".location.z", savedTeams.get(team).getLocation().getZ());
-      w.set("teams."+team+".location.yaw", savedTeams.get(team).getLocation().getYaw());
-      w.set("teams."+team+".location.pitch", savedTeams.get(team).getLocation().getPitch());
-      w.set("teams."+team+".location.world", savedTeams.get(team).getLocation().getWorld().getName());
-      w.set("teams."+team+".inventory", Arrays.asList(savedTeams.get(team).getInventory()));
+      w.createSection("teams."+team);
+      if (savedTeams.get(team).getLocation() != null) {
+        w.set("teams."+team+".location.x", savedTeams.get(team).getLocation().getX());
+        w.set("teams."+team+".location.y", savedTeams.get(team).getLocation().getY());
+        w.set("teams."+team+".location.z", savedTeams.get(team).getLocation().getZ());
+        w.set("teams."+team+".location.yaw", savedTeams.get(team).getLocation().getYaw());
+        w.set("teams."+team+".location.pitch", savedTeams.get(team).getLocation().getPitch());
+        w.set("teams."+team+".location.world", savedTeams.get(team).getLocation().getWorld().getName());
+      }
+      if (savedTeams.get(team).getInventory() != null)
+        w.set("teams."+team+".inventory", Arrays.asList(savedTeams.get(team).getInventory()));
     }
     teamAccessor.saveConfig();
   }
