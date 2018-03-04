@@ -2,6 +2,7 @@ package com.gmail.ZiomuuSs.Utils;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,20 +20,34 @@ public class Data {
   protected ConfigAccessor msgAccessor;
   protected ConfigAccessor warpAccessor;
   protected ConfigAccessor teamAccessor;
-  protected HashMap<String, Location> warps = new HashMap<>();
-  protected HashMap<String, Team> savedTeams = new HashMap<>();
+  protected HashMap<String, Location> warps = new HashMap<>(); //saved warps
+  protected HashMap<String, Team> savedTeams = new HashMap<>(); //all saved teams
+  protected HashSet<UUID> savedPlayers = new HashSet<>(); //all saved players, for performance
+  protected Team openTeam; //team that is open to players to join into
   
   public Data(Main plugin) {
     this.plugin = plugin;
     load();
   }
   
+  public Team getOpen() {
+    return openTeam;
+  }
+  
+  public void setOpen(Team team) {
+    openTeam = team;
+  }
+  
   public boolean isSaved(UUID uuid) {
-    for (Team t : savedTeams.values()) {
-      if (t.isSaved(uuid))
-        return true;
-    }
-    return false;
+    return savedPlayers.contains(uuid);
+  }
+  
+  public void addSavedPlayer(UUID uuid) {
+    savedPlayers.add(uuid);
+  }
+  
+  public void removeSavedPlayer(UUID uuid) {
+    savedPlayers.remove(uuid);
   }
   
   public Team getTeamByPlayer(Player player) {
@@ -71,7 +86,7 @@ public class Data {
     w = teamAccessor.getConfig();
     if (w.isConfigurationSection("teams")) {
       for (String team : w.getConfigurationSection("teams").getKeys(false)) {
-        savedTeams.put(team, new Team(team, ((List<ItemStack>) w.getList("teams."+team+".inventory")).toArray(new ItemStack[0]), new Location(Bukkit.getWorld(w.getString("teams."+team+".location.world")), w.getDouble("teams."+team+".location.x"), w.getDouble("teams."+team+".location.y"), w.getDouble("teams."+team+".location.z"), (float) w.getDouble("teams."+team+".location.yaw"), (float) w.getDouble("teams."+team+".location.pitch"))));
+        savedTeams.put(team, new Team(team, ((List<ItemStack>) w.getList("teams."+team+".inventory")).toArray(new ItemStack[0]), new Location(Bukkit.getWorld(w.getString("teams."+team+".location.world")), w.getDouble("teams."+team+".location.x"), w.getDouble("teams."+team+".location.y"), w.getDouble("teams."+team+".location.z"), (float) w.getDouble("teams."+team+".location.yaw"), (float) w.getDouble("teams."+team+".location.pitch")), this));
       }
     }
   }
@@ -83,8 +98,12 @@ public class Data {
       return false;
   }
   
+  public int getEventNumber() {
+    return savedTeams.size();
+  }
+  
   public void addTeam(String name) {
-    savedTeams.put(name, new Team(name));
+    savedTeams.put(name, new Team(name, this));
   }
   
   public Team getTeam(String name) {
@@ -107,13 +126,17 @@ public class Data {
   public void saveTeams() {
     ConfigurationSection w = teamAccessor.getConfig();
     for (String team : savedTeams.keySet()) {
-      w.set("teams."+team+".location.x", savedTeams.get(team).getLocation().getX());
-      w.set("teams."+team+".location.y", savedTeams.get(team).getLocation().getY());
-      w.set("teams."+team+".location.z", savedTeams.get(team).getLocation().getZ());
-      w.set("teams."+team+".location.yaw", savedTeams.get(team).getLocation().getYaw());
-      w.set("teams."+team+".location.pitch", savedTeams.get(team).getLocation().getPitch());
-      w.set("teams."+team+".location.world", savedTeams.get(team).getLocation().getWorld().getName());
-      w.set("teams."+team+".inventory", Arrays.asList(savedTeams.get(team).getInventory()));
+      w.createSection("teams."+team);
+      if (savedTeams.get(team).getLocation() != null) {
+        w.set("teams."+team+".location.x", savedTeams.get(team).getLocation().getX());
+        w.set("teams."+team+".location.y", savedTeams.get(team).getLocation().getY());
+        w.set("teams."+team+".location.z", savedTeams.get(team).getLocation().getZ());
+        w.set("teams."+team+".location.yaw", savedTeams.get(team).getLocation().getYaw());
+        w.set("teams."+team+".location.pitch", savedTeams.get(team).getLocation().getPitch());
+        w.set("teams."+team+".location.world", savedTeams.get(team).getLocation().getWorld().getName());
+      }
+      if (savedTeams.get(team).getInventory() != null)
+        w.set("teams."+team+".inventory", Arrays.asList(savedTeams.get(team).getInventory()));
     }
     teamAccessor.saveConfig();
   }

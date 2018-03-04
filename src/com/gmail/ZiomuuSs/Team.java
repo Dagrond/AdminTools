@@ -9,23 +9,27 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import com.gmail.ZiomuuSs.Utils.Data;
 import com.gmail.ZiomuuSs.Utils.Msg;
 import com.gmail.ZiomuuSs.Utils.SavedPlayer;
 
 public class Team {
+  protected Data data;
   protected String name;
   protected ItemStack[] inv;
   protected Location loc;
   protected HashMap<UUID, SavedPlayer> savedPlayers = new HashMap<>();
   
-  public Team (String name) {
+  public Team (String name, Data data) {
     this.name = name;
+    this.data = data;
   }
   
-  public Team (String name, ItemStack[] inv, Location loc) {
+  public Team (String name, ItemStack[] inv, Location loc, Data data) {
     this.name = name;
     this.inv = inv;
     this.loc = loc;
+    this.data = data;
   }
   
   public void setInventory(Inventory inv) {
@@ -57,11 +61,17 @@ public class Team {
   
   public void addPlayer(Player player) {
     savedPlayers.put(player.getUniqueId(), new SavedPlayer(player, loc, inv));
+    data.addSavedPlayer(player.getUniqueId());
+  }
+  
+  public int getPlayerNumber() {
+    return savedPlayers.size();
   }
   
   public void delPlayer(Player player) {
     savedPlayers.get(player.getUniqueId()).restore();
     savedPlayers.remove(player.getUniqueId());
+    data.removeSavedPlayer(player.getUniqueId());
   }
   
   public String getPrettyPlayerList() {

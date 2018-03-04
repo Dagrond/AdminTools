@@ -15,6 +15,7 @@ public class SavedPlayer {
   protected ItemStack[] inv;
   protected Location loc;
   
+  @SuppressWarnings("deprecation")
   public SavedPlayer(Player player, Location eloc, ItemStack[] it) {
     uuid = player.getUniqueId();
     inv = player.getInventory().getContents();
@@ -24,6 +25,8 @@ public class SavedPlayer {
     
     player.setLevel(0);
     player.setExp(0);
+    player.getActivePotionEffects().clear();
+    player.setHealth(player.getMaxHealth());
     player.getInventory().setContents(it);
     player.updateInventory();
     player.teleport(eloc);

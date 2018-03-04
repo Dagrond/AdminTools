@@ -10,3 +10,7 @@ commands:
       aliases: [cc]
       description: Czysci chat.
       usage: /cc
+   Event:
+      aliases: [e]
+      description: Komenda gracza do eventu.
+      usage: /e
