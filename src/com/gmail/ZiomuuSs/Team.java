@@ -6,7 +6,6 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.gmail.ZiomuuSs.Utils.Data;
@@ -26,13 +25,6 @@ public class Team {
     this.data = data;
   }
   
-  public Team (String name, ItemStack[] inv, Location loc, Data data) {
-    this.name = name;
-    this.inv = inv;
-    this.loc = loc;
-    this.data = data;
-  }
-  
   //returns false if ff was switched to false
   //return true if ff was switched to true
   public boolean switchFriendlyFire() {
@@ -49,8 +41,8 @@ public class Team {
     return friendlyFire;
   }
   
-  public void setInventory(Inventory inv) {
-    this.inv = inv.getContents();
+  public void setInventory(ItemStack[] inv) {
+    this.inv = inv;
   }
   
   public void setLocation(Location loc) {
@@ -78,7 +70,7 @@ public class Team {
   
   public void addPlayer(Player player) {
     savedPlayers.put(player.getUniqueId(), new SavedPlayer(player, loc, inv));
-    data.addSavedPlayer(player.getUniqueId());
+    data.addSavedPlayer(player);
   }
   
   public int getPlayerNumber() {

@@ -145,7 +145,7 @@ public class AdminToolsCommand implements CommandExecutor {
             sender.sendMessage(Msg.get("error_permission", true));
             return true;
           }
-        } else if(args[0].equalsIgnoreCase("pattern") || args[0].equalsIgnoreCase("p")) {
+        } else if(args[0].equalsIgnoreCase("event") || args[0].equalsIgnoreCase("e")) {
           if (sender.hasPermission("AdminTools.pattern") || sender.hasPermission("AdminTools.*")) {
             if (args.length>2) {
               if (args[1].equalsIgnoreCase("create")) {
@@ -161,7 +161,7 @@ public class AdminToolsCommand implements CommandExecutor {
               } else if (args[1].equalsIgnoreCase("inventory")) {
                 if (sender instanceof Player) {
                   if (data.isTeam(args[2])) {
-                    data.getTeam(args[2]).setInventory(((Player) sender).getInventory());
+                    data.getTeam(args[2]).setInventory(((Player) sender).getInventory().getContents());
                     data.saveTeams();
                     sender.sendMessage(Msg.get("team_inventory_set", true, args[2]));
                     return true;
@@ -191,9 +191,9 @@ public class AdminToolsCommand implements CommandExecutor {
               } else if (args[1].equalsIgnoreCase("frendlyfire") || args[1].equalsIgnoreCase("ff")) {
                 if (data.isTeam(args[2])) {
                   if (data.getTeam(args[2]).switchFriendlyFire())
-                    sender.sendMessage(Msg.get("event_ff_on", true));
+                    sender.sendMessage(Msg.get("event_ff_on", true, args[2]));
                   else
-                    sender.sendMessage(Msg.get("event_ff_off", true));
+                    sender.sendMessage(Msg.get("event_ff_off", true, args[2]));
                   return true;
                 }
               } else {
@@ -227,9 +227,9 @@ public class AdminToolsCommand implements CommandExecutor {
               String msg = "";
               args[0] = "";
               for (String s : args) {
-                msg += s;
+                msg += s+" ";
               }
-              Bukkit.broadcastMessage(Msg.get("event_broadcast", false, msg));
+              Bukkit.broadcastMessage(Msg.get("event_broadcast", true, msg));
               return true;
             } else {
               sender.sendMessage(Msg.get("error_usage", true, "/at bc (msg)"));
@@ -250,7 +250,7 @@ public class AdminToolsCommand implements CommandExecutor {
                 } else if (data.getOpen() == null) {
                   data.setOpen(data.getTeam(args[1]));
                   sender.sendMessage(Msg.get("event_on", true, args[1]));
-                  Bukkit.broadcastMessage(Msg.get("event_opened", false, args[1]));
+                  Bukkit.broadcastMessage(Msg.get("event_opened", true, args[1]));
                   return true;
                 } else {
                   sender.sendMessage(Msg.get("error_already_open", true, data.getOpen().toString()));

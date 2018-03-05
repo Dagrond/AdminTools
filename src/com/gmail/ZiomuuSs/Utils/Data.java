@@ -1,14 +1,16 @@
 package com.gmail.ZiomuuSs.Utils;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -22,7 +24,7 @@ public class Data {
   protected ConfigAccessor teamAccessor;
   protected HashMap<String, Location> warps = new HashMap<>(); //saved warps
   protected HashMap<String, Team> savedTeams = new HashMap<>(); //all saved teams
-  protected HashSet<UUID> savedPlayers = new HashSet<>(); //all saved players, for performance
+  protected HashMap<UUID, ConfigAccessor> savedPlayers = new HashMap<>(); //all saved players, for performance
   protected Team openTeam; //team that is open to players to join into
   
   public Data(Main plugin) {
@@ -39,11 +41,16 @@ public class Data {
   }
   
   public boolean isSaved(UUID uuid) {
-    return savedPlayers.contains(uuid);
+    return savedPlayers.containsKey(uuid);
   }
   
-  public void addSavedPlayer(UUID uuid) {
-    savedPlayers.add(uuid);
+  public void addSavedPlayer(Player player) {
+    savedPlayers.put(player.getUniqueId(), new ConfigAccessor(plugin, player.getUniqueId()+".yml", "Players"));
+    savePlayer(player.getUniqueId());
+  }
+  
+  private void savePlayer(UUID uuid) {
+    //todo
   }
   
   public void removeSavedPlayer(UUID uuid) {
@@ -67,13 +74,11 @@ public class Data {
   }
   
   @SuppressWarnings("unchecked")
-  protected void load() {
+  private void load() {
     msgAccessor = new ConfigAccessor(plugin, "Messages.yml");
     warpAccessor = new ConfigAccessor(plugin, "Warps.yml");
-    teamAccessor = new ConfigAccessor(plugin, "Teams.yml");
     msgAccessor.saveDefaultConfig();
     warpAccessor.saveDefaultConfig();
-    teamAccessor.saveDefaultConfig();
     Msg.set(msgAccessor.getConfig());
     //loading warps
     ConfigurationSection w = warpAccessor.getConfig();
@@ -83,13 +88,19 @@ public class Data {
       }
     }
     //loading teams
-    w = teamAccessor.getConfig();
-    if (w.isConfigurationSection("teams")) {
-      for (String team : w.getConfigurationSection("teams").getKeys(false)) {
-        savedTeams.put(team, new Team(team, ((List<ItemStack>) w.getList("teams."+team+".inventory")).toArray(new ItemStack[0]), new Location(Bukkit.getServer().getWorld(w.getString("teams."+team+".location.world")), w.getDouble("teams."+team+".location.x"), w.getDouble("teams."+team+".location.y"), w.getDouble("teams."+team+".location.z"), (float) w.getDouble("teams."+team+".location.yaw"), (float) w.getDouble("teams."+team+".location.pitch")), this));
-        if (!w.getBoolean("teams."+team+".friendlyfire")) {
-          savedTeams.get(team).switchFriendlyFire();
-        }
+    if (new File(plugin.getDataFolder().getAbsolutePath() + File.separatorChar + "Teams").exists()) {
+      for (File file : new File(plugin.getDataFolder().getAbsolutePath() + File.separatorChar + "Teams").listFiles()) {
+        FileConfiguration fc = YamlConfiguration.loadConfiguration(file);
+        String team = file.getName();
+        team = team.substring(0, team.length() - 4); //remove the .yml
+        Team st = new Team(team, this);
+        if (fc.isList(team+".inventory"))
+          st.setInventory(((List<ItemStack>) fc.getList(team+".inventory")).toArray(new ItemStack[0]));
+        if (fc.isConfigurationSection(team+".location") && Bukkit.getServer().getWorld(fc.getString(team+".location.world")) != null)
+          st.setLocation(new Location(Bukkit.getServer().getWorld(fc.getString(team+".location.world")), fc.getDouble(team+".location.x"), fc.getDouble(team+".location.y"), fc.getDouble(team+".location.z"), (float) fc.getDouble(team+".location.yaw"), (float) fc.getDouble(team+".location.pitch")));
+        if (fc.isBoolean(team+".friendlyfire") && !fc.getBoolean(team+".friendlyfire"))
+          st.switchFriendlyFire();
+        savedTeams.put(team, st);
       }
     }
   }
@@ -113,7 +124,7 @@ public class Data {
     return savedTeams.get(name);
   }
   
-  public void saveWarps() {
+  private void saveWarps() {
     ConfigurationSection w = warpAccessor.getConfig();
     for (String warp : warps.keySet()) {
       w.set("warp."+warp+".x", warps.get(warp).getX());
@@ -127,27 +138,23 @@ public class Data {
   }
   
   public void saveTeams() {
-    ConfigurationSection w = teamAccessor.getConfig();
     for (String team : savedTeams.keySet()) {
-      w.createSection("teams."+team);
+      ConfigAccessor ca = new ConfigAccessor(plugin, team+".yml", "Teams");
+      ConfigurationSection cs = ca.getConfig();
+      if (!savedTeams.get(team).getFriendFire())
+        cs.set(team+".friendlyfire", false);
       if (savedTeams.get(team).getLocation() != null) {
-        w.set("teams."+team+".friendlyfire", savedTeams.get(team).getFriendFire());
-        w.set("teams."+team+".location.x", savedTeams.get(team).getLocation().getX());
-        w.set("teams."+team+".location.y", savedTeams.get(team).getLocation().getY());
-        w.set("teams."+team+".location.z", savedTeams.get(team).getLocation().getZ());
-        w.set("teams."+team+".location.yaw", savedTeams.get(team).getLocation().getYaw());
-        w.set("teams."+team+".location.pitch", savedTeams.get(team).getLocation().getPitch());
-        w.set("teams."+team+".location.world", savedTeams.get(team).getLocation().getWorld().getName());
+        cs.set(team+".location.x", savedTeams.get(team).getLocation().getX());
+        cs.set(team+".location.y", savedTeams.get(team).getLocation().getY());
+        cs.set(team+".location.z", savedTeams.get(team).getLocation().getZ());
+        cs.set(team+".location.yaw", savedTeams.get(team).getLocation().getYaw());
+        cs.set(team+".location.pitch", savedTeams.get(team).getLocation().getPitch());
+        cs.set(team+".location.world", savedTeams.get(team).getLocation().getWorld().getName());
       }
       if (savedTeams.get(team).getInventory() != null)
-        w.set("teams."+team+".inventory", Arrays.asList(savedTeams.get(team).getInventory()));
+          cs.set(team+".inventory", Arrays.asList(savedTeams.get(team).getInventory()));
+      ca.saveConfig();
     }
-    teamAccessor.saveConfig();
-  }
-  
-  public void save() {
-    saveWarps();
-    saveTeams();
   }
   
   //return true if warp was added, return false if warp was edited

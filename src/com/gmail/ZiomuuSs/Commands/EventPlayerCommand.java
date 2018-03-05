@@ -24,10 +24,10 @@ public class EventPlayerCommand implements CommandExecutor {
             Player player = (Player) sender;
             if (plugin.getData().isSaved(player.getUniqueId())) {
               plugin.getData().getTeamByPlayer(player).delPlayer(player);
-              sender.sendMessage(Msg.get("event_quit", false));
+              sender.sendMessage(Msg.get("event_quit", true));
               return true;
             } else {
-              sender.sendMessage(Msg.get("event_error_not_in_event", false));
+              sender.sendMessage(Msg.get("event_error_not_in_event", true));
               return true;
             }
           } else {
@@ -39,7 +39,7 @@ public class EventPlayerCommand implements CommandExecutor {
             if (sender instanceof Player) {
               if (!plugin.getData().isSaved(((Player) sender).getUniqueId())) {
                 plugin.getData().getOpen().addPlayer((Player) sender);
-                sender.sendMessage(Msg.get("event_added", false, plugin.getData().getOpen().toString()));
+                sender.sendMessage(Msg.get("event_added", true, plugin.getData().getOpen().toString()));
                 return true;
               } else {
                 sender.sendMessage(Msg.get("event_error_already_saved", false));
@@ -50,15 +50,15 @@ public class EventPlayerCommand implements CommandExecutor {
               return true;
             }
           } else {
-            sender.sendMessage(Msg.get("event_error_no_open", false));
+            sender.sendMessage(Msg.get("event_error_no_open", true));
             return true;
           }
         } else {
-          sender.sendMessage(Msg.get("error_usage", false, "/e dolacz/wyjdz"));
+          sender.sendMessage(Msg.get("event_error_usage", true, "/e dolacz/wyjdz"));
           return true;
         }
       } else {
-        sender.sendMessage(Msg.get("error_usage", false, "/e dolacz/wyjdz"));
+        sender.sendMessage(Msg.get("event_error_usage", true, "/e dolacz/wyjdz"));
         return true;
       }
     }

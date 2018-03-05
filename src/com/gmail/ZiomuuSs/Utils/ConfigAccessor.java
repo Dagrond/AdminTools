@@ -29,7 +29,7 @@ public class ConfigAccessor {
       if (dest != null) {
         String path = "";
         for (String folder : dest) {
-          path += File.pathSeparator+folder;
+          path += File.separatorChar+folder;
         }
         path = plugin.getDataFolder()+path;
         this.configFile = new File(path, fileName);

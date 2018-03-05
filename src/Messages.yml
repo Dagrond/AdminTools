@@ -43,8 +43,8 @@ event_off: "Pomyslnie zamknales event %1!"
 event_on: "Pomyslnie otworzyles event %1!"
 event_added: "Dolaczyles do eventu %1!"
 event_opened: "Zapisy na event %1 zostaly otwarte! Dolacz do eventu komenda %s/e dolacz%n!"
-event_ff_on: ""
-event_ff_off:
+event_ff_on: "Pomyslnie wlaczono Friendly Fire dla druzyny %1!"
+event_ff_off: "Pomyslnie wylaczono Friendly Fire dla druzyny %!!"
 
 #error messages
 error_permission: "Nie posiadasz odpowiednich uprawnien aby uzyc tej komendy!"
@@ -65,6 +65,7 @@ error_already_open: "Aktualnie jest juz otwarty jeden event! (%1)"
 event_error_no_open: "Aktualnie nie trwaja zapisy na event!"
 event_error_already_saved: "Jestes juz w evencie! Aby wyjsc uzyj %s/e wyjdz%n!"
 event_error_not_in_event: "Nie jestes w evencie!"
+event_error_usage: "Poprawne uzycie: %1"
 
 #help pages
 help: "Pomoc pluginu %sAdminTools%n:"
