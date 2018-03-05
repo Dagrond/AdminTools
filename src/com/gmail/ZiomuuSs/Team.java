@@ -18,6 +18,7 @@ public class Team {
   protected String name;
   protected ItemStack[] inv;
   protected Location loc;
+  protected boolean friendlyFire = true; //true - ff is on, false - ff is off
   protected HashMap<UUID, SavedPlayer> savedPlayers = new HashMap<>();
   
   public Team (String name, Data data) {
@@ -30,6 +31,22 @@ public class Team {
     this.inv = inv;
     this.loc = loc;
     this.data = data;
+  }
+  
+  //returns false if ff was switched to false
+  //return true if ff was switched to true
+  public boolean switchFriendlyFire() {
+    if (friendlyFire) {
+      friendlyFire = false;
+      return false;
+    } else {
+      friendlyFire = true;
+      return true;
+    }
+  }
+  
+  public boolean getFriendFire() {
+    return friendlyFire;
   }
   
   public void setInventory(Inventory inv) {

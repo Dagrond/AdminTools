@@ -188,6 +188,14 @@ public class AdminToolsCommand implements CommandExecutor {
                   sender.sendMessage(Msg.get("error_player_needed", true));
                   return true;
                 }
+              } else if (args[1].equalsIgnoreCase("frendlyfire") || args[1].equalsIgnoreCase("ff")) {
+                if (data.isTeam(args[2])) {
+                  if (data.getTeam(args[2]).switchFriendlyFire())
+                    sender.sendMessage(Msg.get("event_ff_on", true));
+                  else
+                    sender.sendMessage(Msg.get("event_ff_off", true));
+                  return true;
+                }
               } else {
                 sender.sendMessage(Msg.get("error_usage", true, "/at pattern create/inventory/location (team)"));
                 return true;

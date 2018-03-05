@@ -24,10 +24,10 @@ public class EventPlayerCommand implements CommandExecutor {
             Player player = (Player) sender;
             if (plugin.getData().isSaved(player.getUniqueId())) {
               plugin.getData().getTeamByPlayer(player).delPlayer(player);
-              sender.sendMessage(Msg.get("you_have_been_freed", false));
+              sender.sendMessage(Msg.get("event_quit", false));
               return true;
             } else {
-              sender.sendMessage(Msg.get("you_are_not_in_team", false));
+              sender.sendMessage(Msg.get("event_error_not_in_event", false));
               return true;
             }
           } else {
@@ -42,7 +42,7 @@ public class EventPlayerCommand implements CommandExecutor {
                 sender.sendMessage(Msg.get("event_added", false, plugin.getData().getOpen().toString()));
                 return true;
               } else {
-                sender.sendMessage(Msg.get("error_event_already_saved", false));
+                sender.sendMessage(Msg.get("event_error_already_saved", false));
                 return true;
               }
             } else {
@@ -50,7 +50,7 @@ public class EventPlayerCommand implements CommandExecutor {
               return true;
             }
           } else {
-            sender.sendMessage(Msg.get("error_no_open", false));
+            sender.sendMessage(Msg.get("event_error_no_open", false));
             return true;
           }
         } else {

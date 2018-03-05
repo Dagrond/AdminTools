@@ -86,7 +86,10 @@ public class Data {
     w = teamAccessor.getConfig();
     if (w.isConfigurationSection("teams")) {
       for (String team : w.getConfigurationSection("teams").getKeys(false)) {
-        savedTeams.put(team, new Team(team, ((List<ItemStack>) w.getList("teams."+team+".inventory")).toArray(new ItemStack[0]), new Location(Bukkit.getWorld(w.getString("teams."+team+".location.world")), w.getDouble("teams."+team+".location.x"), w.getDouble("teams."+team+".location.y"), w.getDouble("teams."+team+".location.z"), (float) w.getDouble("teams."+team+".location.yaw"), (float) w.getDouble("teams."+team+".location.pitch")), this));
+        savedTeams.put(team, new Team(team, ((List<ItemStack>) w.getList("teams."+team+".inventory")).toArray(new ItemStack[0]), new Location(Bukkit.getServer().getWorld(w.getString("teams."+team+".location.world")), w.getDouble("teams."+team+".location.x"), w.getDouble("teams."+team+".location.y"), w.getDouble("teams."+team+".location.z"), (float) w.getDouble("teams."+team+".location.yaw"), (float) w.getDouble("teams."+team+".location.pitch")), this));
+        if (!w.getBoolean("teams."+team+".friendlyfire")) {
+          savedTeams.get(team).switchFriendlyFire();
+        }
       }
     }
   }
@@ -128,6 +131,7 @@ public class Data {
     for (String team : savedTeams.keySet()) {
       w.createSection("teams."+team);
       if (savedTeams.get(team).getLocation() != null) {
+        w.set("teams."+team+".friendlyfire", savedTeams.get(team).getFriendFire());
         w.set("teams."+team+".location.x", savedTeams.get(team).getLocation().getX());
         w.set("teams."+team+".location.y", savedTeams.get(team).getLocation().getY());
         w.set("teams."+team+".location.z", savedTeams.get(team).getLocation().getZ());
