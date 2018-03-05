@@ -10,14 +10,7 @@ commands:
       aliases: [cc]
       description: Czysci chat.
       usage: /cc
-<<<<<<< HEAD
    Event:
       aliases: [e]
       description: Komenda gracza do eventu.
       usage: /e
-=======
-   ChujeWypusccieMnie:
-      aliases: [wyjdz]
-      description: Wypuszcza z eventu.
-      usage: /wyjdz
->>>>>>> ef2e2deb55996766091ee5fe3febb1fa02268fbf

@@ -200,22 +200,14 @@ public class AdminToolsCommand implements CommandExecutor {
             sender.sendMessage(Msg.get("error_permission", true));
             return true;
           }
-<<<<<<< HEAD
       } else if (args[0].equalsIgnoreCase("list")) {
           if (args.length>1) {
             if (data.isTeam(args[1])) {
               sender.sendMessage(Msg.get("list_players", true, args[1], data.getTeam(args[1]).getPrettyPlayerList(), Integer.toString(data.getTeam(args[1]).getPlayerNumber())));
-=======
-        } else if (args[0].equalsIgnoreCase("list")) {
-          if (args.length>1) {
-            if (data.isTeam(args[1])) {
-              sender.sendMessage(Msg.get("list_players", true, args[1], data.getTeam(args[1]).getPrettyPlayerList()));
->>>>>>> ef2e2deb55996766091ee5fe3febb1fa02268fbf
               return true;
             } else {
               sender.sendMessage(Msg.get("error_team_not_exist", true, args[1]));
               return true;
-<<<<<<< HEAD
               }
           } else {
             sender.sendMessage(Msg.get("list_patterns", true, data.getPrettyTeamList(), Integer.toString(data.getEventNumber())));
@@ -269,14 +261,6 @@ public class AdminToolsCommand implements CommandExecutor {
           return true;
         }
         } else if(args[0].equalsIgnoreCase("add")) {
-=======
-            }
-          } else {
-            sender.sendMessage(Msg.get("list_patterns", true, data.getPrettyTeamList()));
-            return true;
-          }
-        } else if (args[0].equalsIgnoreCase("add")) {
->>>>>>> ef2e2deb55996766091ee5fe3febb1fa02268fbf
           if (sender.hasPermission("AdminTools.add") || sender.hasPermission("AdminTools.*")) {
             if (args.length>2) {
               if (data.isTeam(args[1])) {
