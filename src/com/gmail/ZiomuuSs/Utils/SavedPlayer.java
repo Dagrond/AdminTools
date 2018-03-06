@@ -38,6 +38,8 @@ public class SavedPlayer {
     player.updateInventory();
     player.setLevel(lvl);
     player.setExp(xp);
+    //teleport 2 times so essentials's /back is not working
+    player.teleport(loc);
     player.teleport(loc);
   }
   

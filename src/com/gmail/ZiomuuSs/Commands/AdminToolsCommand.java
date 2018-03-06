@@ -1,14 +1,13 @@
 package com.gmail.ZiomuuSs.Commands;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.gmail.ZiomuuSs.Main;
-import com.gmail.ZiomuuSs.Utils.CountdownTimer;
+import com.gmail.ZiomuuSs.Team;
 import com.gmail.ZiomuuSs.Utils.Data;
 import com.gmail.ZiomuuSs.Utils.Msg;
 
@@ -146,68 +145,146 @@ public class AdminToolsCommand implements CommandExecutor {
             return true;
           }
         } else if(args[0].equalsIgnoreCase("event") || args[0].equalsIgnoreCase("e")) {
-          if (sender.hasPermission("AdminTools.pattern") || sender.hasPermission("AdminTools.*")) {
+          if (sender.hasPermission("AdminTools.event") || sender.hasPermission("AdminTools.*")) {
             if (args.length>2) {
-              if (args[1].equalsIgnoreCase("create")) {
-                if (!data.isTeam(args[2])) {
-                  data.addTeam(args[2]);
-                  data.saveTeams();
-                  sender.sendMessage(Msg.get("team_created", true, args[2]));
-                  return true;
-                } else {
-                  sender.sendMessage(Msg.get("error_team_exist", true, args[2]));
-                  return true;
-                }
-              } else if (args[1].equalsIgnoreCase("inventory")) {
-                if (sender instanceof Player) {
-                  if (data.isTeam(args[2])) {
-                    data.getTeam(args[2]).setInventory(((Player) sender).getInventory().getContents());
-                    data.saveTeams();
-                    sender.sendMessage(Msg.get("team_inventory_set", true, args[2]));
-                    return true;
+              if (data.getTeam(args[1]) != null) {
+                Team team = data.getTeam(args[1]);
+                if (args[2].equalsIgnoreCase("lobby")) {
+                  if (sender instanceof Player) {
+                    if (team.setLobby(((Player) sender).getLocation()))
+                      sender.sendMessage(Msg.get("team_lobby_set", true, args[1]));
+                    else
+                      sender.sendMessage(Msg.get("team_lobby_edited", true, args[1]));
                   } else {
-                    sender.sendMessage(Msg.get("error_team_not_exist", true, args[2]));
+                    sender.sendMessage(Msg.get("error_player_needed", true));
+                    return true;
+                  }
+                } else if (args[2].equalsIgnoreCase("inventory")) {
+                  if (sender instanceof Player) {
+                    if (team.setInventory(((Player) sender).getInventory().getContents()))
+                      sender.sendMessage(Msg.get("team_inventory_set", true, args[1]));
+                    else
+                      sender.sendMessage(Msg.get("team_inventory_edited", true, args[1]));
+                  } else {
+                    sender.sendMessage(Msg.get("error_player_needed", true));
+                    return true;
+                  }
+                } else if (args[2].equalsIgnoreCase("startpoint")) {
+                  if (sender instanceof Player) {
+                    if (args.length>3) {
+                      if (args[3].matches("-?\\d+")) {
+                        int index = Integer.valueOf(args[3]);
+                        if (index>0) {
+                          if (team.setStartPoints(((Player) sender).getLocation(), index))
+                            sender.sendMessage(Msg.get("team_startpoint_set", true, args[1]));
+                          else
+                            sender.sendMessage(Msg.get("team_startpoint_edited", true, args[1]));
+                        } else {
+                          sender.sendMessage(Msg.get("error_must_be_integer", true, "index"));
+                          return true;
+                        }
+                      } else {
+                        sender.sendMessage(Msg.get("error_must_be_integer", true, "index"));
+                        return true;
+                      }
+                    } else {
+                      sender.sendMessage(Msg.get("error_usage", true, "/at e (event) startpoint (index)"));
+                      return true;
+                    }
+                  } else {
+                    sender.sendMessage(Msg.get("error_player_needed", true));
+                    return true;
+                  }
+                } else if (args[2].equalsIgnoreCase("friendlyfire")) {
+                    if (team.switchFriendlyFire())
+                      sender.sendMessage(Msg.get("team_ff_on", true, args[2]));
+                    else
+                      sender.sendMessage(Msg.get("team_ff_off", true, args[2]));
+                } else if (args[2].equalsIgnoreCase("info")) {
+                  sender.sendMessage(Msg.get("team_info", true, args[1]));
+                  sender.sendMessage(Msg.get("team_info_ff", true, team.getFriendlyFire() ? Msg.get("yes_", false) : Msg.get("no_", false)));
+                  sender.sendMessage(Msg.get("team_info_maxplayers", true, team.getMaxPlayers()==0 ? Msg.get("unlimited", false) : Integer.toString(team.getMaxPlayers())));
+                  sender.sendMessage(Msg.get("team_info_startpoints", true, team.getStartPoints().isEmpty() ? Msg.get("not_set", false) : Integer.toString(team.getStartPoints().size())));
+                  sender.sendMessage(Msg.get("team_info_lobby", true, team.getLobby() != null ? Msg.get("set", false) : Msg.get("not_set", false)));
+                  sender.sendMessage(Msg.get("team_info_inventory", true, team.getInventory() != null ? Msg.get("set", false) : Msg.get("not_set", false)));
+                  sender.sendMessage(Msg.get("team_info_playersin", true, Integer.toString(team.getPlayerNumber())));
+                  //returns true because it's only showing informations, not setting anything
+                  return true;
+                } else if (args[2].equalsIgnoreCase("maxplayers")) {
+                  if (args.length>3) {
+                    if (args[3].matches("-?\\d+")) {
+                      if (team.setMaxPlayers(Integer.valueOf(args[3])))
+                        sender.sendMessage(Msg.get("team_maxplayers_set", true, args[1], args[3]));
+                      else
+                        sender.sendMessage(Msg.get("team_maxplayers_edited", true, args[1], args[3]));
+                    } else {
+                      sender.sendMessage(Msg.get("error_must_be_integer", true, "maxPlayers"));
+                      return true;
+                    }
+                  } else {
+                    sender.sendMessage(Msg.get("error_usage", true, "/at e (event) maxplayers (integer)"));
                     return true;
                   }
                 } else {
-                  sender.sendMessage(Msg.get("error_player_needed", true));
+                  sender.sendMessage(Msg.get("error_usage", true, "/at e (event) create/inventory/lobby/startpoint/maxplayers/info"));
                   return true;
                 }
-              } else if (args[1].equalsIgnoreCase("location")) {
-                if (sender instanceof Player) {
-                  if (data.isTeam(args[2])) {
-                    data.getTeam(args[2]).setLocation(((Player) sender).getLocation());
-                    data.saveTeams();
-                    sender.sendMessage(Msg.get("team_location_set", true, args[2]));
-                    return true;
-                  } else {
-                    sender.sendMessage(Msg.get("error_team_not_exist", true, args[2]));
-                    return true;
-                  }
-                } else {
-                  sender.sendMessage(Msg.get("error_player_needed", true));
-                  return true;
-                }
-              } else if (args[1].equalsIgnoreCase("frendlyfire") || args[1].equalsIgnoreCase("ff")) {
-                if (data.isTeam(args[2])) {
-                  if (data.getTeam(args[2]).switchFriendlyFire())
-                    sender.sendMessage(Msg.get("event_ff_on", true, args[2]));
-                  else
-                    sender.sendMessage(Msg.get("event_ff_off", true, args[2]));
-                  return true;
-                }
+                data.saveTeam(team.toString());
+                return true;
+              } else if (args[2].equalsIgnoreCase("create")) {
+                data.addTeam(args[1]);
+                sender.sendMessage(Msg.get("team_created", true, args[1]));
+                return true;
               } else {
-                sender.sendMessage(Msg.get("error_usage", true, "/at pattern create/inventory/location (team)"));
+                sender.sendMessage(Msg.get("error_team_not_exist", true, args[1]));
                 return true;
               }
             } else {
-              sender.sendMessage(Msg.get("error_usage", true, "/at pattern create/inventory/location (team)"));
+              sender.sendMessage(Msg.get("error_usage", true, "/at e (event) create/inventory/lobby/startpoints/maxplayers"));
               return true;
             }
           } else {
             sender.sendMessage(Msg.get("error_permission", true));
             return true;
           }
+      } else if (args[0].equalsIgnoreCase("start")) {
+        //todo
+        if (args.length>2) {
+          if (args[1].matches("-?\\d+")) {
+            int delay = Integer.valueOf(args[1]);
+            if (delay>0) {
+              if (data.isTeam(args[2])) {
+                if (args.length == 3) {
+                  //for 1 team
+                  //todo
+                } else if (args.length == 4) {
+                  //for 2 teams
+                  if (data.isTeam(args[3])) {
+                    //todo
+                  } else {
+                    sender.sendMessage(Msg.get("error_team_not_exist", true, args[2]));
+                    return true;
+                  }
+                } else {
+                  sender.sendMessage(Msg.get("error_usage", true, "/e start (delay) (team1) <team2>"));
+                  return true;
+                }
+              } else {
+                sender.sendMessage(Msg.get("error_team_not_exist", true, args[2]));
+                return true;
+              }
+            } else {
+              sender.sendMessage(Msg.get("error_must_be_integer", true, "delay"));
+              return true;
+            }
+          } else {
+            sender.sendMessage(Msg.get("error_must_be_integer", true, "delay"));
+            return true;
+          }
+        } else {
+          sender.sendMessage(Msg.get("error_usage", true, "/e start (delay) (team1) <team2>"));
+          return true;
+        }
       } else if (args[0].equalsIgnoreCase("list")) {
           if (args.length>1) {
             if (data.isTeam(args[1])) {
@@ -221,45 +298,45 @@ public class AdminToolsCommand implements CommandExecutor {
             sender.sendMessage(Msg.get("list_patterns", true, data.getPrettyTeamList(), Integer.toString(data.getEventNumber())));
             return true;
           }
-        } else if (args[0].equalsIgnoreCase("bc") || args[0].equalsIgnoreCase("broadcast")) {
-          if (sender.hasPermission("AdminTools.broadcast") || sender.hasPermission("AdminTools.*")) {
-            if (args.length>1) {
-              String msg = "";
-              args[0] = "";
-              for (String s : args) {
-                msg += s+" ";
-              }
-              Bukkit.broadcastMessage(Msg.get("event_broadcast", true, msg));
-              return true;
-            } else {
-              sender.sendMessage(Msg.get("error_usage", true, "/at bc (msg)"));
-              return true;
+      } else if (args[0].equalsIgnoreCase("bc") || args[0].equalsIgnoreCase("broadcast")) {
+        if (sender.hasPermission("AdminTools.broadcast") || sender.hasPermission("AdminTools.*")) {
+          if (args.length>1) {
+            String msg = "";
+            args[0] = "";
+            for (String s : args) {
+              msg += s+" ";
             }
+            Bukkit.broadcastMessage(Msg.get("event_broadcast", true, msg));
+            return true;
           } else {
-            sender.sendMessage(Msg.get("error_permission", true));
+            sender.sendMessage(Msg.get("error_usage", true, "/at bc (msg)"));
             return true;
           }
-        } else if (args[0].equalsIgnoreCase("toggle")) {
-          if (sender.hasPermission("AdminTools.toggle") || sender.hasPermission("AdminTools.*")) {
-            if (args.length>1) {
-              if (data.isTeam(args[1])) {
-                if (data.getOpen() == data.getTeam(args[1])) {
-                  data.setOpen(null);
-                  sender.sendMessage(Msg.get("event_off", true, args[1]));
-                  return true;
-                } else if (data.getOpen() == null) {
-                  data.setOpen(data.getTeam(args[1]));
-                  sender.sendMessage(Msg.get("event_on", true, args[1]));
-                  Bukkit.broadcastMessage(Msg.get("event_opened", true, args[1]));
-                  return true;
-                } else {
-                  sender.sendMessage(Msg.get("error_already_open", true, data.getOpen().toString()));
-                  return true;
-                }
+        } else {
+          sender.sendMessage(Msg.get("error_permission", true));
+          return true;
+        }
+      } else if (args[0].equalsIgnoreCase("toggle")) {
+        if (sender.hasPermission("AdminTools.toggle") || sender.hasPermission("AdminTools.*")) {
+          if (args.length>1) {
+            if (data.isTeam(args[1])) {
+              if (data.getOpen() == data.getTeam(args[1])) {
+                data.setOpen(null);
+                sender.sendMessage(Msg.get("event_off", true, args[1]));
+                return true;
+              } else if (data.getOpen() == null) {
+                data.setOpen(data.getTeam(args[1]));
+                sender.sendMessage(Msg.get("event_on", true, args[1]));
+                Bukkit.broadcastMessage(Msg.get("event_opened", true, args[1]));
+                return true;
               } else {
-                sender.sendMessage(Msg.get("error_team_not_exist", true, args[1]));
+                sender.sendMessage(Msg.get("error_already_open", true, data.getOpen().toString()));
                 return true;
               }
+            } else {
+              sender.sendMessage(Msg.get("error_team_not_exist", true, args[1]));
+              return true;
+            }
           } else {
             sender.sendMessage(Msg.get("error_usage", true, "/at toggle (team)"));
             return true;
@@ -268,87 +345,48 @@ public class AdminToolsCommand implements CommandExecutor {
           sender.sendMessage(Msg.get("error_permission", true));
           return true;
         }
-        } else if(args[0].equalsIgnoreCase("add")) {
-          if (sender.hasPermission("AdminTools.add") || sender.hasPermission("AdminTools.*")) {
-            if (args.length>2) {
-              if (data.isTeam(args[1])) {
-                for (int i = 2; i < args.length; ++i) {
-                  if (Bukkit.getPlayer(args[i]) != null) {
-                    if (!data.isSaved(Bukkit.getPlayer(args[i]).getUniqueId())) {
-                      data.getTeam(args[1]).addPlayer(Bukkit.getPlayer(args[i]));
-                      sender.sendMessage(Msg.get("team_added", true, args[1], args[i]));
-                    } else {
-                      sender.sendMessage(Msg.get("error_player_already_added", true, args[i], data.getTeamByPlayer(Bukkit.getPlayer(args[i])).toString()));
-                    }
-                  } else {
-                    sender.sendMessage(Msg.get("error_player_not_exist", true, args[i]));
-                  }
-                }
+      } else if (args[0].equalsIgnoreCase("del")) {
+        if (sender.hasPermission("AdminTools.delete") || sender.hasPermission("AdminTools.*")) {
+          if (args.length>1) {
+            if (Bukkit.getPlayer(args[1]) != null) {
+              Player player = Bukkit.getPlayer(args[1]);
+              if (data.isSaved(player.getUniqueId())) {
+                data.getTeamByPlayer(player).delPlayer(player);
+                sender.sendMessage(Msg.get("player_deleted", true, args[1]));
                 return true;
               } else {
-                sender.sendMessage(Msg.get("error_team_not_exist", true, args[1]));
+                sender.sendMessage(Msg.get("error_player_not_saved", true, args[1]));
                 return true;
               }
             } else {
-              sender.sendMessage(Msg.get("error_usage", true, "/at add (team) (player)"));
+              sender.sendMessage(Msg.get("error_player_not_exist", true, args[1]));
               return true;
             }
           } else {
-            sender.sendMessage(Msg.get("error_permission", true));
-            return true;
-          }
-        } else if(args[0].equalsIgnoreCase("del")) {
-          if (sender.hasPermission("AdminTools.delete") || sender.hasPermission("AdminTools.*")) {
-            if (args.length>1) {
-              if (Bukkit.getPlayer(args[1]) != null) {
-                Player player = Bukkit.getPlayer(args[1]);
-                if (data.isSaved(player.getUniqueId())) {
-                  data.getTeamByPlayer(player).delPlayer(player);
-                  sender.sendMessage(Msg.get("player_deleted", true, args[1]));
-                  return true;
-                } else {
-                  sender.sendMessage(Msg.get("error_player_not_saved", true, args[1]));
-                  return true;
-                }
-              } else {
-                sender.sendMessage(Msg.get("error_player_not_exist", true, args[1]));
-                return true;
-              }
-            } else {
-              sender.sendMessage(Msg.get("error_usage", true, "/at del (player)"));
-              return true;
-            }
-          } else {
-            sender.sendMessage(Msg.get("error_permission", true));
-            return true;
-          }
-        } else if(args[0].equalsIgnoreCase("count")) {
-          if (sender.hasPermission("AdminTools.count") || sender.hasPermission("AdminTools.*")) {
-            if (args.length>1) {
-              if (args[1].matches("-?\\d+")) {
-                CountdownTimer timer = new CountdownTimer(plugin, Integer.valueOf(args[1]), () -> Bukkit.broadcastMessage(Msg.get("count_start", false)), () -> Bukkit.broadcastMessage(Msg.get("count_done", false)), (t) -> Bukkit.broadcastMessage(Msg.get("count_left", false, ChatColor.DARK_AQUA+Integer.toString(t.getSecondsLeft()))));
-                timer.scheduleTimer();
-              } else {
-                sender.sendMessage(Msg.get("error_must_be_integer", true, "count"));
-                return true;
-              }
-            } else {
-              sender.sendMessage(Msg.get("error_usage", true, "/at count (seconds)"));
-              return true;
-            }
-          } else {
-            sender.sendMessage(Msg.get("error_permission", true));
+            sender.sendMessage(Msg.get("error_usage", true, "/at del (player)"));
             return true;
           }
         } else {
-          sender.sendMessage(Msg.get("error_no_argument", true));
+          sender.sendMessage(Msg.get("error_permission", true));
+          return true;
+        }
+      } else if(args[0].equalsIgnoreCase("reload")) {
+        if (sender.hasPermission("AdminTools.reload") || sender.hasPermission("AdminTools.*")) {
+          plugin.reload(sender);
+          return true;
+        } else {
+          sender.sendMessage(Msg.get("error_permission", true));
           return true;
         }
       } else {
-        sender.sendMessage(Msg.get("error_player_needed", true));
+        sender.sendMessage(Msg.get("error_no_argument", true));
         return true;
       }
+    } else {
+      sender.sendMessage(Msg.get("error_player_needed", true));
+      return true;
     }
-    return true;
+  }
+  return true;
   }
 }

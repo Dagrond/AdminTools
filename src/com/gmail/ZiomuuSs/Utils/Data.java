@@ -94,12 +94,18 @@ public class Data {
         String team = file.getName();
         team = team.substring(0, team.length() - 4); //remove the .yml
         Team st = new Team(team, this);
-        if (fc.isList(team+".inventory"))
-          st.setInventory(((List<ItemStack>) fc.getList(team+".inventory")).toArray(new ItemStack[0]));
-        if (fc.isConfigurationSection(team+".location") && Bukkit.getServer().getWorld(fc.getString(team+".location.world")) != null)
-          st.setLocation(new Location(Bukkit.getServer().getWorld(fc.getString(team+".location.world")), fc.getDouble(team+".location.x"), fc.getDouble(team+".location.y"), fc.getDouble(team+".location.z"), (float) fc.getDouble(team+".location.yaw"), (float) fc.getDouble(team+".location.pitch")));
-        if (fc.isBoolean(team+".friendlyfire") && !fc.getBoolean(team+".friendlyfire"))
+        if (fc.isList("inventory"))
+          st.setInventory(((List<ItemStack>) fc.getList("inventory")).toArray(new ItemStack[0]));
+        if (fc.isConfigurationSection("lobby"))
+          st.setLobby(new Location(Bukkit.getServer().getWorld(fc.getString("lobby.world")), fc.getDouble("lobby.x"), fc.getDouble("lobby.y"), fc.getDouble("lobby.z"), (float) fc.getDouble("lobby.yaw"), (float) fc.getDouble("lobby.pitch")));
+        if (fc.isBoolean("friendlyfire") && !fc.getBoolean("friendlyfire"))
           st.switchFriendlyFire();
+        st.setMaxPlayers(fc.getInt("maxplayers"));
+        if (fc.isConfigurationSection("startpoints")) {
+          for (String index : fc.getConfigurationSection("startpoints").getKeys(false)) {
+            st.setStartPoints(new Location(Bukkit.getServer().getWorld(fc.getString("startpoints."+index+".world")), fc.getDouble("startpoints."+index+".x"), fc.getDouble("startpoints."+index+"y"), fc.getDouble("startpoints."+index+".z"), (float) fc.getDouble("startpoints."+index+".yaw"), (float) fc.getDouble("startpoints."+index+".pitch")), Integer.valueOf(index)+1);
+          }
+        }
         savedTeams.put(team, st);
       }
     }
@@ -118,6 +124,7 @@ public class Data {
   
   public void addTeam(String name) {
     savedTeams.put(name, new Team(name, this));
+    saveTeam(name);
   }
   
   public Team getTeam(String name) {
@@ -137,24 +144,40 @@ public class Data {
     warpAccessor.saveConfig();
   }
   
-  public void saveTeams() {
-    for (String team : savedTeams.keySet()) {
-      ConfigAccessor ca = new ConfigAccessor(plugin, team+".yml", "Teams");
-      ConfigurationSection cs = ca.getConfig();
-      if (!savedTeams.get(team).getFriendFire())
-        cs.set(team+".friendlyfire", false);
-      if (savedTeams.get(team).getLocation() != null) {
-        cs.set(team+".location.x", savedTeams.get(team).getLocation().getX());
-        cs.set(team+".location.y", savedTeams.get(team).getLocation().getY());
-        cs.set(team+".location.z", savedTeams.get(team).getLocation().getZ());
-        cs.set(team+".location.yaw", savedTeams.get(team).getLocation().getYaw());
-        cs.set(team+".location.pitch", savedTeams.get(team).getLocation().getPitch());
-        cs.set(team+".location.world", savedTeams.get(team).getLocation().getWorld().getName());
-      }
-      if (savedTeams.get(team).getInventory() != null)
-          cs.set(team+".inventory", Arrays.asList(savedTeams.get(team).getInventory()));
-      ca.saveConfig();
+  public void saveTeam(String team) {
+    if (savedTeams.get(team) == null)
+      return;
+    Team tm = savedTeams.get(team);
+    ConfigAccessor ca = new ConfigAccessor(plugin, team+".yml", "Teams");
+    ConfigurationSection cs = ca.getConfig();
+    if (!savedTeams.get(team).getFriendlyFire())
+      cs.set("friendlyfire", false);
+    if (savedTeams.get(team).getLobby() != null) {
+      cs.set("lobby.x", tm.getLobby().getX());
+      cs.set("lobby.y", tm.getLobby().getY());
+      cs.set("lobby.z", tm.getLobby().getZ());
+      cs.set("lobby.yaw", tm.getLobby().getYaw());
+      cs.set("lobby.pitch", tm.getLobby().getPitch());
+      cs.set("lobby.world", tm.getLobby().getWorld().getName());
     }
+    cs.set("maxplayers", tm.getMaxPlayers());
+    //you can delete an startpoint, so its safer to delete all (potentially) saved startpoints first
+    cs.set("startpoints", null);
+    if (!tm.getStartPoints().isEmpty()) {
+      int count = 0;
+      for (Location loc : tm.getStartPoints()) {
+        cs.set("startpoints."+Integer.toString(count)+".x", loc.getX());
+        cs.set("startpoints."+Integer.toString(count)+".y", loc.getY());
+        cs.set("startpoints."+Integer.toString(count)+".z", loc.getZ());
+        cs.set("startpoints."+Integer.toString(count)+".yaw", loc.getYaw());
+        cs.set("startpoints."+Integer.toString(count)+".pitch", loc.getPitch());
+        cs.set("startpoints."+Integer.toString(count)+".world", loc.getWorld().getName());
+        ++count;
+      }
+    }
+    if (tm.getInventory() != null)
+        cs.set("inventory", Arrays.asList(tm.getInventory()));
+    ca.saveConfig();
   }
   
   //return true if warp was added, return false if warp was edited

@@ -1,5 +1,6 @@
 package com.gmail.ZiomuuSs;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -13,12 +14,15 @@ import com.gmail.ZiomuuSs.Utils.Msg;
 import com.gmail.ZiomuuSs.Utils.SavedPlayer;
 
 public class Team {
-  protected Data data;
-  protected String name;
-  protected ItemStack[] inv;
-  protected Location loc;
-  protected boolean friendlyFire = true; //true - ff is on, false - ff is off
-  protected HashMap<UUID, SavedPlayer> savedPlayers = new HashMap<>();
+  private Data data;
+  private String name;
+  private ItemStack[] inv;
+  private Location lobby; //lobby of an event
+  private ArrayList<Location> startPoints = new ArrayList<>(); //list of start point of event
+  private int maxPlayers = 0; //0 - unlimited
+  private int delay = 10; //time (in seconds), after players from lobby are teleported into event startpoints (its counting every second)
+  private boolean friendlyFire = true; //true - ff is on, false - ff is off
+  private HashMap<UUID, SavedPlayer> savedPlayers = new HashMap<>();
   
   public Team (String name, Data data) {
     this.name = name;
@@ -37,50 +41,21 @@ public class Team {
     }
   }
   
-  public boolean getFriendFire() {
-    return friendlyFire;
-  }
-  
-  public void setInventory(ItemStack[] inv) {
-    this.inv = inv;
-  }
-  
-  public void setLocation(Location loc) {
-    this.loc = loc;
-  }
-  
-  public ItemStack[] getInventory() {
-    return inv;
-  }
-  
-  public Location getLocation() {
-    return loc;
-  }
-  
-  public boolean isSaved(UUID uuid) {
-    if (savedPlayers.containsKey(uuid))
-      return true;
-    else
-      return false;
-  }
-  
-  public SavedPlayer getPlayer(Player player) {
-    return savedPlayers.get(player.getUniqueId());
-  }
-  
   public void addPlayer(Player player) {
-    savedPlayers.put(player.getUniqueId(), new SavedPlayer(player, loc, inv));
+    savedPlayers.put(player.getUniqueId(), new SavedPlayer(player, lobby, inv));
     data.addSavedPlayer(player);
-  }
-  
-  public int getPlayerNumber() {
-    return savedPlayers.size();
   }
   
   public void delPlayer(Player player) {
     savedPlayers.get(player.getUniqueId()).restore();
     savedPlayers.remove(player.getUniqueId());
     data.removeSavedPlayer(player.getUniqueId());
+  }
+  
+  //getters
+  @Override
+  public String toString() {
+    return name;
   }
   
   public String getPrettyPlayerList() {
@@ -94,9 +69,96 @@ public class Team {
       return Msg.get("none", false);
   }
   
-  @Override
-  public String toString() {
-    return name;
+  public int getPlayerNumber() {
+    return savedPlayers.size();
+  }
+  
+  public boolean getFriendlyFire() {
+    return friendlyFire;
+  }
+  
+  public ItemStack[] getInventory() {
+    return inv;
+  }
+  
+  public Location getLobby() {
+    return lobby;
+  }
+  
+  public int getMaxPlayers() {
+    return maxPlayers;
+  }
+  
+  public ArrayList<Location> getStartPoints() {
+    return startPoints;
+  }
+  
+  public SavedPlayer getPlayer(Player player) {
+    return savedPlayers.get(player.getUniqueId());
+  }
+  
+  //checkers
+  public boolean isReady() {
+    if (lobby != null && startPoints != null && inv != null)
+      return true;
+    else
+      return false;
+  }
+  
+  public boolean isSaved(UUID uuid) {
+    if (savedPlayers.containsKey(uuid))
+      return true;
+    else
+      return false;
+  }
+  
+  //setters
+  //returns true if value was set
+  //or false if value was changed
+  public boolean setMaxPlayers(int mp) {
+    if (maxPlayers>0) {
+      maxPlayers = mp;
+      return false;
+    } else {
+      maxPlayers = mp;
+      return true;
+    }
+  }
+  
+  public boolean setInventory(ItemStack[] inv) {
+    if (this.inv != null) {
+      this.inv = inv;
+      return false;
+    } else {
+      this.inv = inv;
+      return true;
+    }
+  }
+  
+  public boolean setLobby(Location lobby) {
+    if (this.lobby != null) {
+      this.lobby = lobby;
+      return false;
+    } else {
+      this.lobby = lobby;
+      return true;
+    }
+  }
+  
+  public boolean setStartPoints(Location loc, int index) {
+    if (index > 0) {
+      --index; //(most) humans counts from 1, Java from 0
+      if (startPoints.size()>= index+1) {
+        startPoints.set(index, loc);
+        return true;
+      } else {
+        startPoints.add(loc);
+        return false;
+      }
+    } else {
+      startPoints.add(loc);
+      return false;
+    }
   }
   
 }

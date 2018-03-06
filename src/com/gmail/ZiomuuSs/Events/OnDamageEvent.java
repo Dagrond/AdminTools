@@ -20,7 +20,7 @@ public class OnDamageEvent implements Listener {
       Player victim = (Player) e.getEntity();
       Player attacker = (Player) e.getDamager();
       if (data.isSaved(victim.getUniqueId()) && data.isSaved(attacker.getUniqueId())) {
-        if (data.getTeamByPlayer(victim).equals(data.getTeamByPlayer(attacker)) && data.getTeamByPlayer(victim).getFriendFire()) {
+        if (data.getTeamByPlayer(victim).equals(data.getTeamByPlayer(attacker)) && data.getTeamByPlayer(victim).getFriendlyFire()) {
           e.setCancelled(true);
         }
       }
