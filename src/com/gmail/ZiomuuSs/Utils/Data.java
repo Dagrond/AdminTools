@@ -18,26 +18,16 @@ import com.gmail.ZiomuuSs.Main;
 import com.gmail.ZiomuuSs.Team;
 
 public class Data {
-  protected Main plugin;
-  protected ConfigAccessor msgAccessor;
-  protected ConfigAccessor warpAccessor;
-  protected ConfigAccessor teamAccessor;
-  protected HashMap<String, Location> warps = new HashMap<>(); //saved warps
-  protected HashMap<String, Team> savedTeams = new HashMap<>(); //all saved teams
-  protected HashMap<UUID, ConfigAccessor> savedPlayers = new HashMap<>(); //all saved players, for performance
-  protected Team openTeam; //team that is open to players to join into
+  private Main plugin;
+  private ConfigAccessor msgAccessor;
+  private ConfigAccessor warpAccessor;
+  private HashMap<String, Location> warps = new HashMap<>(); //saved warps
+  private HashMap<String, Team> savedTeams = new HashMap<>(); //all saved teams
+  private HashMap<UUID, ConfigAccessor> savedPlayers = new HashMap<>(); //all saved players, for performance
   
   public Data(Main plugin) {
     this.plugin = plugin;
     load();
-  }
-  
-  public Team getOpen() {
-    return openTeam;
-  }
-  
-  public void setOpen(Team team) {
-    openTeam = team;
   }
   
   public boolean isSaved(UUID uuid) {

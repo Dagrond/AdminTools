@@ -66,7 +66,7 @@ error_player_not_exist: "Gracz o nicku %1 nie istnieje!"
 error_must_be_integer: "%1 musi byc calkowita liczba wieksza od 0!"
 error_player_already_added: "Gracz %1 jest juz dodany do druzyny %2!"
 error_player_not_saved: "Gracz %1 nie jest zapisany do zadnej druzyny!"
-error_already_open: "Aktualnie jest juz otwarty jeden event! (%1)"
+error_already_starting: "Trwa juz odliczanie do rozpoczecia eventu!"
 
 #event messages
 event_quit: "Pomyslnie opusciles event!"
@@ -96,17 +96,6 @@ help_5: "%s/at warp %n- Wyswietla liste warpow."
 help_6: "%s/at warp <warp>%n- Teleportuje na dany warp."
 help_7: "%s/at setwarp <warp>%n- Ustawia/zmienia lokacje warpu."
 help_8: "%s/at delwarp <warp>%n- Usuwa dany warp."
-
-#help permissions pages
-help_permissions: "Uprawnienia pluginu %sAdminTools%n:"
-help_permissions_1: "%s/at mining %n- AdminTools.Mining"
-help_permissions_2: "%s/cc %n- AdminTools.ClearChat"
-help_permissions_3: "%s/at help %n- AdminTools.help"
-help_permissions_4: "%s/at permissions %n- AdminTools.permissions"
-help_permissions_5: "%s/at warp %n- AdminTools.warp"
-help_permissions_6: "%s/at setwarp %n- AdminTools.setwarp"
-help_permissions_7: "%s/at delwarp %n- AdminTools.delwarp"
-help_permissions_8: "Uzyj %sAdminTools.* %naby nadac wszystkie uprawnienia."
 
 #Simple messages
 #(Messages that are used instead of variables in some situations)

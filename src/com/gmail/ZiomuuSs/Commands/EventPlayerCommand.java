@@ -35,24 +35,7 @@ public class EventPlayerCommand implements CommandExecutor {
             return true;
           }
         } else if (args[0].equalsIgnoreCase("dolacz")) {
-          if (plugin.getData().getOpen() != null) {
-            if (sender instanceof Player) {
-              if (!plugin.getData().isSaved(((Player) sender).getUniqueId())) {
-                plugin.getData().getOpen().addPlayer((Player) sender);
-                sender.sendMessage(Msg.get("event_added", true, plugin.getData().getOpen().toString()));
-                return true;
-              } else {
-                sender.sendMessage(Msg.get("event_error_already_saved", false));
-                return true;
-              }
-            } else {
-              sender.sendMessage(Msg.get("error_player_needed", true));
-              return true;
-            }
-          } else {
-            sender.sendMessage(Msg.get("event_error_no_open", true));
-            return true;
-          }
+          //todo
         } else {
           sender.sendMessage(Msg.get("event_error_usage", true, "/e dolacz/wyjdz"));
           return true;

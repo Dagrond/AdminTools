@@ -65,22 +65,6 @@ public class AdminToolsCommand implements CommandExecutor {
             sender.sendMessage(Msg.get("error_permission", true));
             return true;
           }
-        } else if (args[0].equalsIgnoreCase("permissions")) {
-          if (sender.hasPermission("AdminTools.permissions") || sender.hasPermission("AdminTools.*")) {
-            sender.sendMessage(Msg.get("help_permissions", false));
-            sender.sendMessage(Msg.get("help_permissions_1", false));
-            sender.sendMessage(Msg.get("help_permissions_2", false));
-            sender.sendMessage(Msg.get("help_permissions_3", false));
-            sender.sendMessage(Msg.get("help_permissions_4", false));
-            sender.sendMessage(Msg.get("help_permissions_5", false));
-            sender.sendMessage(Msg.get("help_permissions_6", false));
-            sender.sendMessage(Msg.get("help_permissions_7", false));
-            sender.sendMessage(Msg.get("help_permissions_8", false));
-            return true;
-          } else {
-            sender.sendMessage(Msg.get("error_permission", true));
-            return true;
-          }
         } else if (args[0].equalsIgnoreCase("setwarp")) {
           if (sender instanceof Player) {
             if (sender.hasPermission("AdminTools.setwarp") || sender.hasPermission("AdminTools.*")) {
@@ -240,7 +224,7 @@ public class AdminToolsCommand implements CommandExecutor {
                 return true;
               }
             } else {
-              sender.sendMessage(Msg.get("error_usage", true, "/at e (event) create/inventory/lobby/startpoints/maxplayers"));
+              sender.sendMessage(Msg.get("error_usage", true, "/at e (event) create/inventory/lobby/startpoints/maxplayers/info"));
               return true;
             }
           } else {
@@ -257,6 +241,12 @@ public class AdminToolsCommand implements CommandExecutor {
                 if (args.length == 3) {
                   //for 1 team
                   //todo
+                  if (!data.isStarting()) {
+                    
+                  } else {
+                    sender.sendMessage(Msg.get("error_already_starting", true));
+                    return true;
+                  }
                 } else if (args.length == 4) {
                   //for 2 teams
                   if (data.isTeam(args[3])) {
@@ -310,35 +300,6 @@ public class AdminToolsCommand implements CommandExecutor {
             return true;
           } else {
             sender.sendMessage(Msg.get("error_usage", true, "/at bc (msg)"));
-            return true;
-          }
-        } else {
-          sender.sendMessage(Msg.get("error_permission", true));
-          return true;
-        }
-      } else if (args[0].equalsIgnoreCase("toggle")) {
-        if (sender.hasPermission("AdminTools.toggle") || sender.hasPermission("AdminTools.*")) {
-          if (args.length>1) {
-            if (data.isTeam(args[1])) {
-              if (data.getOpen() == data.getTeam(args[1])) {
-                data.setOpen(null);
-                sender.sendMessage(Msg.get("event_off", true, args[1]));
-                return true;
-              } else if (data.getOpen() == null) {
-                data.setOpen(data.getTeam(args[1]));
-                sender.sendMessage(Msg.get("event_on", true, args[1]));
-                Bukkit.broadcastMessage(Msg.get("event_opened", true, args[1]));
-                return true;
-              } else {
-                sender.sendMessage(Msg.get("error_already_open", true, data.getOpen().toString()));
-                return true;
-              }
-            } else {
-              sender.sendMessage(Msg.get("error_team_not_exist", true, args[1]));
-              return true;
-            }
-          } else {
-            sender.sendMessage(Msg.get("error_usage", true, "/at toggle (team)"));
             return true;
           }
         } else {
