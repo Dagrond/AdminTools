@@ -67,16 +67,20 @@ error_must_be_integer: "%1 musi byc calkowita liczba wieksza od 0!"
 error_player_already_added: "Gracz %1 jest juz dodany do druzyny %2!"
 error_player_not_saved: "Gracz %1 nie jest zapisany do zadnej druzyny!"
 error_already_starting: "Trwa juz odliczanie do rozpoczecia eventu!"
+error_team_not_ready: "Druzyna %1 nie jest gotowa na start!"
 
 #event messages
 event_quit: "Pomyslnie opusciles event!"
 event_killer: "%1 zostal zabity przez %2!"
+event_start: "Event %1 rozpocznie sie za %2! Wpisz %s/e dolacz%n aby dolaczyc do eventu!"
+event_nojoin: "Event %1 zakonczyl zapisy!"
 event_spleef_fall: "%1 spadl i sobie glupi ryj rozwalil! (Pozostalo: %2 graczy)"
 event_broadcast: "%1"
-event_off: "Pomyslnie zamknales event %1!"
-event_on: "Pomyslnie otworzyles event %1!"
 event_added: "Dolaczyles do eventu %1!"
+event_queued: "Zostales zapisany do kolejki! Zostaniesz automatycznie dodany gdy tylko znajdzie sie odpowiednia ilosc osob w evencie."
 event_opened: "Zapisy na event %1 zostaly otwarte! Dolacz do eventu komenda %s/e dolacz%n!"
+event_start_broadcast: "Event %1 startuje za %2 sekund! Przygotujcie sie!"
+event_before_teleport: "Start eventu %1 za: %2"
 
 #event error messages
 
@@ -85,6 +89,9 @@ event_error_already_saved: "Jestes juz w evencie! Aby wyjsc uzyj %s/e wyjdz%n!"
 event_error_not_in_event: "Nie jestes w evencie!"
 event_error_usage: "Poprawne uzycie: %1"
 event_error_command: "Nie mozesz uzyc tej komendy podczas eventu! Aby wyjsc z eventu, wpisz %s/e wyjdz%n!"
+event_error_player_needed: "Ta komende moze uzyc tylko gracz!"
+event_error_already_queued: "Jestes juz w kolejce oczekiwania do dodania do eventu!"
+event_error_maxplayers: "Nie mozesz dolaczyc do eventu poniewaz osiagnal on juz maksymalna ilosc graczy."
 
 #help pages
 help: "Pomoc pluginu %sAdminTools%n:"

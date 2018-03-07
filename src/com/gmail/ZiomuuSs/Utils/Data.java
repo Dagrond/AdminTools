@@ -3,6 +3,7 @@ package com.gmail.ZiomuuSs.Utils;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,6 +22,8 @@ public class Data {
   private Main plugin;
   private ConfigAccessor msgAccessor;
   private ConfigAccessor warpAccessor;
+  private HashSet<Team> currentTeams = new HashSet<>(); //teams that are cur
+  private HashSet<UUID> waitingPlayers = new HashSet<>();
   private HashMap<String, Location> warps = new HashMap<>(); //saved warps
   private HashMap<String, Team> savedTeams = new HashMap<>(); //all saved teams
   private HashMap<UUID, ConfigAccessor> savedPlayers = new HashMap<>(); //all saved players, for performance
@@ -30,21 +33,83 @@ public class Data {
     load();
   }
   
+  public Main getPlugin() {
+    return plugin;
+  }
+  
+  //checks maxplayers of current teams
+  //and decides, if another player can join
+  public boolean CanJoin() {
+    for (Team team : currentTeams) {
+      if (team.getMaxPlayers() > 0 && !(team.getMaxPlayers() > team.getPlayerNumber()))
+        return false;
+    }
+    return true;
+  }
+  
+  public boolean isStarting() {
+    return !currentTeams.isEmpty();
+  }
+  
+  public void setStarting(int delay, String displayName, Team...toStart) {
+    for (Team team : toStart) {
+      currentTeams.add(team);
+    }
+    
+    CountdownTimer timer = new CountdownTimer(plugin, delay, () -> Bukkit.broadcastMessage(Msg.get("event_start", true, displayName,
+        Integer.toString(delay))), () -> {
+          Bukkit.broadcastMessage(Msg.get("event_nojoin", true, displayName));
+          for (Team team : currentTeams) {
+            team.start(displayName);
+          }
+          currentTeams.clear();
+          },
+        null);
+    timer.scheduleTimer();
+  }
+  
   public boolean isSaved(UUID uuid) {
     return savedPlayers.containsKey(uuid);
   }
   
-  public void addSavedPlayer(Player player) {
-    savedPlayers.put(player.getUniqueId(), new ConfigAccessor(plugin, player.getUniqueId()+".yml", "Players"));
-    savePlayer(player.getUniqueId());
+  public boolean isQueued(UUID uuid) {
+    return waitingPlayers.contains(uuid);
+  }
+  
+  //return true if player was added to event
+  //or false if player was queued to event
+  public boolean addPlayer(Player player) {
+    if (currentTeams.size() == 1) {
+      //for 1 team
+      for (Team team : currentTeams)
+        team.addPlayer(player);
+      savedPlayers.put(player.getUniqueId(), new ConfigAccessor(plugin, player.getUniqueId()+".yml", "Players"));
+      savePlayer(player.getUniqueId());
+      return true;
+    } else {
+      //for more teams
+      for (UUID uuid : waitingPlayers) {
+        if (Bukkit.getPlayer(uuid) == null)
+          waitingPlayers.remove(uuid);
+      }
+      waitingPlayers.add(player.getUniqueId());
+      if (currentTeams.size() == waitingPlayers.size()) {
+        for (Team team : currentTeams) {
+          team.addPlayer(Bukkit.getPlayer((UUID) waitingPlayers.toArray()[0]));
+          waitingPlayers.remove(waitingPlayers.toArray()[0]);
+        }
+      }
+      return false;
+    }
   }
   
   private void savePlayer(UUID uuid) {
     //todo
   }
   
-  public void removeSavedPlayer(UUID uuid) {
-    savedPlayers.remove(uuid);
+  public void removePlayer(Player player) {
+    getTeamByPlayer(player).delPlayer(player);
+    savedPlayers.remove(player.getUniqueId());
   }
   
   public Team getTeamByPlayer(Player player) {
@@ -87,13 +152,13 @@ public class Data {
         if (fc.isList("inventory"))
           st.setInventory(((List<ItemStack>) fc.getList("inventory")).toArray(new ItemStack[0]));
         if (fc.isConfigurationSection("lobby"))
-          st.setLobby(new Location(Bukkit.getServer().getWorld(fc.getString("lobby.world")), fc.getDouble("lobby.x"), fc.getDouble("lobby.y"), fc.getDouble("lobby.z"), (float) fc.getDouble("lobby.yaw"), (float) fc.getDouble("lobby.pitch")));
+          st.setLobby(new Location(Bukkit.getWorld(fc.getString("lobby.world")), fc.getDouble("lobby.x"), fc.getDouble("lobby.y"), fc.getDouble("lobby.z"), (float) fc.getDouble("lobby.yaw"), (float) fc.getDouble("lobby.pitch")));
         if (fc.isBoolean("friendlyfire") && !fc.getBoolean("friendlyfire"))
           st.switchFriendlyFire();
         st.setMaxPlayers(fc.getInt("maxplayers"));
         if (fc.isConfigurationSection("startpoints")) {
           for (String index : fc.getConfigurationSection("startpoints").getKeys(false)) {
-            st.setStartPoints(new Location(Bukkit.getServer().getWorld(fc.getString("startpoints."+index+".world")), fc.getDouble("startpoints."+index+".x"), fc.getDouble("startpoints."+index+"y"), fc.getDouble("startpoints."+index+".z"), (float) fc.getDouble("startpoints."+index+".yaw"), (float) fc.getDouble("startpoints."+index+".pitch")), Integer.valueOf(index)+1);
+            st.setStartPoints(new Location(Bukkit.getWorld(fc.getString("startpoints."+index+".world")), fc.getDouble("startpoints."+index+".x"), fc.getDouble("startpoints."+index+"y"), fc.getDouble("startpoints."+index+".z"), (float) fc.getDouble("startpoints."+index+".yaw"), (float) fc.getDouble("startpoints."+index+".pitch")), Integer.valueOf(index)+1);
           }
         }
         savedTeams.put(team, st);

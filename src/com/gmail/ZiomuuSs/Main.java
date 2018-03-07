@@ -21,7 +21,7 @@ public final class Main extends JavaPlugin {
     data = new Data(this);
     getCommand("AdminTools").setExecutor(new AdminToolsCommand(this));
     getCommand("ClearChat").setExecutor(new ClearChatCommand(this));
-    getCommand("Event").setExecutor(new EventPlayerCommand(this));
+    getCommand("Event").setExecutor(new EventPlayerCommand(data));
     getServer().getPluginManager().registerEvents(new RespawnEvent(this), this);
     getServer().getPluginManager().registerEvents(new OnDeathEvent(this), this);
     getServer().getPluginManager().registerEvents(new OnCommandEvent(this), this);
@@ -37,7 +37,7 @@ public final class Main extends JavaPlugin {
     data = new Data(this);
     getCommand("AdminTools").setExecutor(new AdminToolsCommand(this));
     getCommand("ClearChat").setExecutor(new ClearChatCommand(this));
-    getCommand("Event").setExecutor(new EventPlayerCommand(this));
+    getCommand("Event").setExecutor(new EventPlayerCommand(data));
     getServer().getPluginManager().registerEvents(new RespawnEvent(this), this);
     getServer().getPluginManager().registerEvents(new OnDeathEvent(this), this);
     getServer().getPluginManager().registerEvents(new OnCommandEvent(this), this);

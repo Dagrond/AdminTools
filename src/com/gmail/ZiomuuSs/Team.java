@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import com.gmail.ZiomuuSs.Utils.CountdownTimer;
 import com.gmail.ZiomuuSs.Utils.Data;
 import com.gmail.ZiomuuSs.Utils.Msg;
 import com.gmail.ZiomuuSs.Utils.SavedPlayer;
@@ -29,6 +30,30 @@ public class Team {
     this.data = data;
   }
   
+  public void start(String displayName) {
+    CountdownTimer timer = new CountdownTimer(data.getPlugin(), delay,
+        () -> Bukkit.broadcastMessage(Msg.get("event_start_broadcast", true, name, displayName, Integer.toString(delay))), () -> {
+          Bukkit.broadcastMessage(Msg.get("event_nojoin", true, displayName));
+          int index = 0;
+          for (UUID uuid : savedPlayers.keySet()) {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player != null) {
+              player.teleport(startPoints.get(index));
+              if (index >= startPoints.size())
+                index = 0;
+              else
+                ++index;
+            }
+          }
+        },
+        (t) -> {
+          if (t.getSecondsLeft() <= 3)
+            Bukkit.broadcastMessage(Msg.get("event_before_teleport", true, displayName, Integer.toString(t.getSecondsLeft())));
+        }
+        );
+    timer.scheduleTimer();
+  }
+  
   //returns false if ff was switched to false
   //return true if ff was switched to true
   public boolean switchFriendlyFire() {
@@ -43,13 +68,11 @@ public class Team {
   
   public void addPlayer(Player player) {
     savedPlayers.put(player.getUniqueId(), new SavedPlayer(player, lobby, inv));
-    data.addSavedPlayer(player);
   }
   
   public void delPlayer(Player player) {
     savedPlayers.get(player.getUniqueId()).restore();
     savedPlayers.remove(player.getUniqueId());
-    data.removeSavedPlayer(player.getUniqueId());
   }
   
   //getters

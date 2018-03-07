@@ -1,5 +1,7 @@
 package com.gmail.ZiomuuSs.Commands;
 
+import java.util.HashSet;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -159,10 +161,10 @@ public class AdminToolsCommand implements CommandExecutor {
                       if (args[3].matches("-?\\d+")) {
                         int index = Integer.valueOf(args[3]);
                         if (index>0) {
-                          if (team.setStartPoints(((Player) sender).getLocation(), index))
-                            sender.sendMessage(Msg.get("team_startpoint_set", true, args[1]));
+                          if (!team.setStartPoints(((Player) sender).getLocation(), index))
+                            sender.sendMessage(Msg.get("team_startpoint_set", true, args[3], args[1]));
                           else
-                            sender.sendMessage(Msg.get("team_startpoint_edited", true, args[1]));
+                            sender.sendMessage(Msg.get("team_startpoint_edited", true, args[3], args[1]));
                         } else {
                           sender.sendMessage(Msg.get("error_must_be_integer", true, "index"));
                           return true;
@@ -232,37 +234,58 @@ public class AdminToolsCommand implements CommandExecutor {
             return true;
           }
       } else if (args[0].equalsIgnoreCase("start")) {
-        //todo
-        if (args.length>2) {
+        if (args.length>3) {
           if (args[1].matches("-?\\d+")) {
             int delay = Integer.valueOf(args[1]);
             if (delay>0) {
-              if (data.isTeam(args[2])) {
-                if (args.length == 3) {
+              HashSet<Team> teams= new HashSet<>();
+              for (int i = 3; i <= args.length; ++i) {
+                if (data.isTeam(args[i])) {
+                  Team team = data.getTeam(args[i]);
+                  if (team.isReady()) {
+                    teams.add(team);
+                  } else {
+                    sender.sendMessage(Msg.get("error_team_not_ready", true, args[i]));
+                    return true;
+                  }
+                } else {
+                  sender.sendMessage(Msg.get("error_team_not_exist", true, args[i]));
+                  return true;
+                }
+              }
+              data.setStarting(delay, args[2], (Team[]) teams.toArray());
+              /*if (data.isTeam(args[3]) && data.getTeam(args[3]).isReady()) {
+                if (args.length == 4) {
                   //for 1 team
-                  //todo
                   if (!data.isStarting()) {
-                    
+                    data.setStarting(delay, args[2], data.getTeam(args[3]));
+                    return true;
                   } else {
                     sender.sendMessage(Msg.get("error_already_starting", true));
                     return true;
                   }
-                } else if (args.length == 4) {
-                  //for 2 teams
+                } else if (args.length == 5) {
+                  //for more teams
                   if (data.isTeam(args[3])) {
-                    //todo
+                    if (!data.isStarting()) {
+                      data.setStarting(delay, args[2], data.getTeam(args[3]), data.getTeam(args[4]));
+                      return true;
+                    } else {
+                      sender.sendMessage(Msg.get("error_already_starting", true));
+                      return true;
+                    }
                   } else {
                     sender.sendMessage(Msg.get("error_team_not_exist", true, args[2]));
                     return true;
                   }
                 } else {
-                  sender.sendMessage(Msg.get("error_usage", true, "/e start (delay) (team1) <team2>"));
+                  sender.sendMessage(Msg.get("error_usage", true, "/e start (delay) (event name) (team1) <team2>"));
                   return true;
                 }
               } else {
                 sender.sendMessage(Msg.get("error_team_not_exist", true, args[2]));
                 return true;
-              }
+              }*/
             } else {
               sender.sendMessage(Msg.get("error_must_be_integer", true, "delay"));
               return true;
