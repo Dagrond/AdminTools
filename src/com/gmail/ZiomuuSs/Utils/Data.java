@@ -22,11 +22,12 @@ public class Data {
   private Main plugin;
   private ConfigAccessor msgAccessor;
   private ConfigAccessor warpAccessor;
-  private HashSet<Team> currentTeams = new HashSet<>(); //teams that are cur
-  private HashSet<UUID> waitingPlayers = new HashSet<>();
+  private HashSet<Team> currentTeams = new HashSet<>(); //teams that are currently starting in event
+  private HashSet<UUID> waitingPlayers = new HashSet<>(); //players queued to join event
   private HashMap<String, Location> warps = new HashMap<>(); //saved warps
   private HashMap<String, Team> savedTeams = new HashMap<>(); //all saved teams
-  private HashMap<UUID, ConfigAccessor> savedPlayers = new HashMap<>(); //all saved players, for performance
+  private HashMap<UUID, ConfigAccessor> savedPlayers = new HashMap<>(); //all saved players, for performance or smth I am not even sure anymore
+  private HashMap<UUID, SavedPlayer> toRestore = new HashMap<>(); //players that are out of event, but waiting for respawn.
   
   public Data(Main plugin) {
     this.plugin = plugin;
@@ -35,6 +36,28 @@ public class Data {
   
   public Main getPlugin() {
     return plugin;
+  }
+  
+  public void broadcastToPlayers(String msg) {
+    for (UUID uuid : savedPlayers.keySet()) {
+      Bukkit.getPlayer(uuid).sendMessage(msg);
+    }
+  }
+  
+  public int getSavedPlayersCount() {
+    return savedPlayers.size();
+  }
+  public boolean isToRestore(UUID uuid) {
+    return toRestore.containsKey(uuid);
+  }
+  
+  public void addPlayerToRestore(UUID uuid, SavedPlayer player) {
+    toRestore.put(uuid, player);
+  }
+  
+  public void restorePlayer(UUID uuid) {
+    toRestore.get(uuid).restore();
+    toRestore.remove(uuid);
   }
   
   //checks maxplayers of current teams
@@ -56,15 +79,24 @@ public class Data {
       currentTeams.add(team);
     }
     
-    CountdownTimer timer = new CountdownTimer(plugin, delay, () -> Bukkit.broadcastMessage(Msg.get("event_start", true, displayName,
-        Integer.toString(delay))), () -> {
+    CountdownTimer timer = new CountdownTimer(plugin, delay, () -> Bukkit.broadcastMessage(Msg.get("event_start", true, displayName, 
+        Integer.toString(delay))),
+         () -> {
           Bukkit.broadcastMessage(Msg.get("event_nojoin", true, displayName));
           for (Team team : currentTeams) {
             team.start(displayName);
           }
           currentTeams.clear();
+          for (UUID uuid : waitingPlayers) {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player != null)
+              player.sendMessage(Msg.get("event_error_kicked_queue", true));
+          }
+          waitingPlayers.clear();
           },
-        null);
+        (t) -> {
+          //there will be check if counting was stopped or smth
+        });
     timer.scheduleTimer();
   }
   
@@ -84,7 +116,6 @@ public class Data {
       for (Team team : currentTeams)
         team.addPlayer(player);
       savedPlayers.put(player.getUniqueId(), new ConfigAccessor(plugin, player.getUniqueId()+".yml", "Players"));
-      savePlayer(player.getUniqueId());
       return true;
     } else {
       //for more teams
@@ -95,16 +126,14 @@ public class Data {
       waitingPlayers.add(player.getUniqueId());
       if (currentTeams.size() == waitingPlayers.size()) {
         for (Team team : currentTeams) {
-          team.addPlayer(Bukkit.getPlayer((UUID) waitingPlayers.toArray()[0]));
-          waitingPlayers.remove(waitingPlayers.toArray()[0]);
+          Player pl = Bukkit.getPlayer(waitingPlayers.toArray(new UUID[waitingPlayers.size()])[0]);
+          team.addPlayer(pl);
+          savedPlayers.put(pl.getUniqueId(), new ConfigAccessor(plugin, pl.getUniqueId()+".yml", "Players"));
+          waitingPlayers.remove(pl.getUniqueId());
         }
       }
       return false;
     }
-  }
-  
-  private void savePlayer(UUID uuid) {
-    //todo
   }
   
   public void removePlayer(Player player) {
@@ -120,6 +149,9 @@ public class Data {
     return null;
   }
   
+  public boolean anyInProgress() {
+    return !savedPlayers.isEmpty() && !currentTeams.isEmpty();
+  }
   public SavedPlayer getSavedAnywhere(Player player) {
     for (Team t : savedTeams.values()) {
       if (t.isSaved(player.getUniqueId()))
@@ -158,7 +190,7 @@ public class Data {
         st.setMaxPlayers(fc.getInt("maxplayers"));
         if (fc.isConfigurationSection("startpoints")) {
           for (String index : fc.getConfigurationSection("startpoints").getKeys(false)) {
-            st.setStartPoints(new Location(Bukkit.getWorld(fc.getString("startpoints."+index+".world")), fc.getDouble("startpoints."+index+".x"), fc.getDouble("startpoints."+index+"y"), fc.getDouble("startpoints."+index+".z"), (float) fc.getDouble("startpoints."+index+".yaw"), (float) fc.getDouble("startpoints."+index+".pitch")), Integer.valueOf(index)+1);
+            st.setStartPoints(new Location(Bukkit.getWorld(fc.getString("startpoints."+index+".world")), fc.getDouble("startpoints."+index+".x"), fc.getDouble("startpoints."+index+".y"), fc.getDouble("startpoints."+index+".z"), (float) fc.getDouble("startpoints."+index+".yaw"), (float) fc.getDouble("startpoints."+index+".pitch")), Integer.valueOf(index)+1);
           }
         }
         savedTeams.put(team, st);

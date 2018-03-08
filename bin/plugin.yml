@@ -1,6 +1,7 @@
 name: AdminTools
 main: com.gmail.ZiomuuSs.Main
 version: 0.1
+softdepend: [Multiverse-Core]
 commands:
    AdminTools:
       aliases: [at, admin]

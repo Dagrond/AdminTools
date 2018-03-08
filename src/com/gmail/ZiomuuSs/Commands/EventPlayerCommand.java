@@ -1,5 +1,6 @@
 package com.gmail.ZiomuuSs.Commands;
 
+import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -25,6 +26,7 @@ public class EventPlayerCommand implements CommandExecutor {
             if (data.isSaved(player.getUniqueId())) {
               data.removePlayer(player);
               sender.sendMessage(Msg.get("event_quit", true));
+              data.broadcastToPlayers(Msg.get("event_idonteven", true, player.getDisplayName()));
               return true;
             } else {
               sender.sendMessage(Msg.get("event_error_not_in_event", true));
@@ -35,18 +37,27 @@ public class EventPlayerCommand implements CommandExecutor {
             return true;
           }
         } else if (args[0].equalsIgnoreCase("dolacz")) {
-          //todo
           if (sender instanceof Player) {
             if (data.isStarting()) {
               Player player = (Player) sender;
               if (!data.isSaved(player.getUniqueId())) {
                 if (!data.isQueued(player.getUniqueId())) {
                   if (data.CanJoin()) {
-                    if (data.addPlayer(player)) {
-                      sender.sendMessage(Msg.get("event_added", true));
-                      return true;
+                    if (player.getPassengers().isEmpty() && player.getVehicle() == null) {
+                      if (player.getGameMode() == GameMode.SURVIVAL) {
+                        if (data.addPlayer(player)) {
+                          sender.sendMessage(Msg.get("event_added", true));
+                          return true;
+                        } else {
+                          sender.sendMessage(Msg.get("event_queued", true));
+                          return true;
+                        }
+                      } else {
+                        sender.sendMessage(Msg.get("event_error_gamemode", true));
+                        return true;
+                      }
                     } else {
-                      sender.sendMessage(Msg.get("event_queued", true));
+                      sender.sendMessage(Msg.get("event_error_riding", true));
                       return true;
                     }
                   } else {

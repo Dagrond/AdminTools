@@ -32,14 +32,14 @@ public class Team {
   
   public void start(String displayName) {
     CountdownTimer timer = new CountdownTimer(data.getPlugin(), delay,
-        () -> Bukkit.broadcastMessage(Msg.get("event_start_broadcast", true, name, displayName, Integer.toString(delay))), () -> {
-          Bukkit.broadcastMessage(Msg.get("event_nojoin", true, displayName));
+        () -> broadcastToMembers(Msg.get("event_start_broadcast", true, displayName, Integer.toString(delay))), () -> {
+          broadcastToMembers(Msg.get("event_started", true));
           int index = 0;
           for (UUID uuid : savedPlayers.keySet()) {
             Player player = Bukkit.getPlayer(uuid);
             if (player != null) {
               player.teleport(startPoints.get(index));
-              if (index >= startPoints.size())
+              if (index == startPoints.size()-1)
                 index = 0;
               else
                 ++index;
@@ -47,11 +47,17 @@ public class Team {
           }
         },
         (t) -> {
-          if (t.getSecondsLeft() <= 3)
-            Bukkit.broadcastMessage(Msg.get("event_before_teleport", true, displayName, Integer.toString(t.getSecondsLeft())));
+          if (t.getSecondsLeft() <= 5)
+            broadcastToMembers(Msg.get("event_before_teleport", true, Integer.toString(t.getSecondsLeft())));
         }
         );
     timer.scheduleTimer();
+  }
+  
+  public void broadcastToMembers(String string) {
+    for (UUID uuid : savedPlayers.keySet()) {
+      Bukkit.getPlayer(uuid).sendMessage(string);
+    }
   }
   
   //returns false if ff was switched to false
@@ -67,7 +73,7 @@ public class Team {
   }
   
   public void addPlayer(Player player) {
-    savedPlayers.put(player.getUniqueId(), new SavedPlayer(player, lobby, inv));
+    savedPlayers.put(player.getUniqueId(), new SavedPlayer(player, lobby, inv, data));
   }
   
   public void delPlayer(Player player) {
@@ -122,10 +128,7 @@ public class Team {
   
   //checkers
   public boolean isReady() {
-    if (lobby != null && startPoints != null && inv != null)
-      return true;
-    else
-      return false;
+    return (lobby != null && !startPoints.isEmpty() && inv != null);
   }
   
   public boolean isSaved(UUID uuid) {

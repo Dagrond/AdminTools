@@ -10,18 +10,20 @@ import org.bukkit.inventory.ItemStack;
 public class SavedPlayer {
   
   UUID uuid;
+  Data data;
   protected int lvl;
   protected float xp;
   protected ItemStack[] inv;
   protected Location loc;
   
   @SuppressWarnings("deprecation")
-  public SavedPlayer(Player player, Location eloc, ItemStack[] it) {
+  public SavedPlayer(Player player, Location eloc, ItemStack[] it, Data data) {
     uuid = player.getUniqueId();
     inv = player.getInventory().getContents();
     loc = player.getLocation();
     lvl = player.getLevel();
     xp = player.getExp();
+    this.data = data;
     
     player.setLevel(0);
     player.setExp(0);
@@ -34,13 +36,17 @@ public class SavedPlayer {
   
   public void restore() {
     Player player = Bukkit.getPlayer(uuid);
-    player.getInventory().setContents(inv);
-    player.updateInventory();
-    player.setLevel(lvl);
-    player.setExp(xp);
-    //teleport 2 times so essentials's /back is not working
-    player.teleport(loc);
-    player.teleport(loc);
+    if (!player.isDead()) {
+      player.getInventory().setContents(inv);
+      player.updateInventory();
+      player.setLevel(lvl);
+      player.setExp(xp);
+      //teleport 2 times so essentials's /back is not working
+      player.teleport(loc);
+    } else {
+      if (!data.isToRestore(uuid))
+        data.addPlayerToRestore(uuid, this);
+    }
   }
   
 }

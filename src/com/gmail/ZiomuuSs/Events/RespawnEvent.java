@@ -4,22 +4,22 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
-import com.gmail.ZiomuuSs.Main;
+import com.gmail.ZiomuuSs.Utils.Data;
 
 public class RespawnEvent implements Listener {
-  public Main plugin;
+  public Data data;
   
-  public RespawnEvent (Main instance) {
-    plugin = instance;
+  public RespawnEvent (Data data) {
+    this.data = data;
   }
   
   @EventHandler
   public void onRespawn(PlayerRespawnEvent e) {
-    if (plugin.getData().isSaved(e.getPlayer().getUniqueId())) {   
-      plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+    if (data.isToRestore(e.getPlayer().getUniqueId())) {   
+      data.getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(data.getPlugin(), new Runnable() {
         @Override
         public void run() {
-          plugin.getData().getTeamByPlayer(e.getPlayer()).delPlayer(e.getPlayer());
+          data.restorePlayer(e.getPlayer().getUniqueId());
         }
       }, 10);
     }
