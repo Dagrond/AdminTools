@@ -23,6 +23,8 @@ public class OnDeathEvent implements Listener {
     if (data.isSaved(e.getEntity().getUniqueId())) {   
       Team team = data.getTeamByPlayer(e.getEntity());
       data.removePlayer(e.getEntity());
+      e.getDrops().clear();
+      e.setDroppedExp(0);
       if (e.getEntity().getKiller() instanceof Player) {
         Bukkit.broadcastMessage(Msg.get("event_killer", true, e.getEntity().getName(), e.getEntity().getKiller().getName(), Integer.toString(data.getSavedPlayersCount())));
       } else if (e.getEntity().getLastDamageCause().getCause() == DamageCause.VOID) {
