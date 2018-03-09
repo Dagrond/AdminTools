@@ -18,8 +18,9 @@ public class SavedPlayer {
   
   @SuppressWarnings("deprecation")
   public SavedPlayer(Player player, Location eloc, ItemStack[] it, Data data) {
-    uuid = player.getUniqueId();
+    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "scoreboard teams join nonametag "+player.getName());
     inv = player.getInventory().getContents();
+    uuid = player.getUniqueId();
     loc = player.getLocation();
     lvl = player.getLevel();
     xp = player.getExp();
@@ -41,7 +42,7 @@ public class SavedPlayer {
       player.updateInventory();
       player.setLevel(lvl);
       player.setExp(xp);
-      //teleport 2 times so essentials's /back is not working
+      Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "scoreboard teams leave "+player.getName());
       player.teleport(loc);
     } else {
       if (!data.isToRestore(uuid))

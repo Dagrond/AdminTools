@@ -12,7 +12,7 @@ import com.gmail.ZiomuuSs.Utils.Data;
 import com.gmail.ZiomuuSs.Utils.Msg;
 
 public class OnDeathEvent implements Listener {
-  public Data data;
+  private Data data;
   
   public OnDeathEvent (Data data) {
     this.data = data;
@@ -20,8 +20,9 @@ public class OnDeathEvent implements Listener {
   
   @EventHandler
   public void onDeath(PlayerDeathEvent e) {
-    if (data.isSaved(e.getEntity().getUniqueId())) {   
+    if (data.isSaved(e.getEntity().getUniqueId())) {
       Team team = data.getTeamByPlayer(e.getEntity());
+      data.addPlayerToFuckBack(e.getEntity().getUniqueId(), e.getEntity().getLocation());
       data.removePlayer(e.getEntity());
       e.getDrops().clear();
       e.setDroppedExp(0);
@@ -30,6 +31,8 @@ public class OnDeathEvent implements Listener {
       } else if (e.getEntity().getLastDamageCause().getCause() == DamageCause.VOID) {
         Bukkit.broadcastMessage(Msg.get("event_spleef_fall", true, e.getEntity().getName(), Integer.toString(team.getPlayerNumber())));
       }
+    } else {
+      data.deleteIfExistFuckingBack(e.getEntity().getUniqueId());
     }
   }
   

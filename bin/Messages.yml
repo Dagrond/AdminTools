@@ -104,6 +104,7 @@ event_error_maxplayers: "Nie mozesz dolaczyc do eventu poniewaz osiagnal on juz 
 event_error_kicked_queue: "Zostales wyrzucony z kolejki z powodu zbyt males ilosci graczy."
 event_error_riding: "Nie mozesz dolaczyc do eventu podczas jazdy!"
 event_error_gamemode: "Aby dolaczyc do eventu musisz byc na survivalu!"
+event_error_fuck_back: "Nie mozesz cofnac sie do areny eventowej!"
 
 #help pages
 help: "Pomoc pluginu %sAdminTools%n:"

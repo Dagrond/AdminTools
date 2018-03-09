@@ -28,6 +28,7 @@ public class Data {
   private HashMap<String, Team> savedTeams = new HashMap<>(); //all saved teams
   private HashMap<UUID, ConfigAccessor> savedPlayers = new HashMap<>(); //all saved players, for performance or smth I am not even sure anymore
   private HashMap<UUID, SavedPlayer> toRestore = new HashMap<>(); //players that are out of event, but waiting for respawn.
+  private HashMap<UUID, Location> fuckBack = new HashMap<>(); //fuck essential's /back.
   
   public Data(Main plugin) {
     this.plugin = plugin;
@@ -36,6 +37,19 @@ public class Data {
   
   public Main getPlugin() {
     return plugin;
+  }
+  
+  public void addPlayerToFuckBack(UUID uuid, Location loc) {
+    fuckBack.put(uuid, loc);
+  }
+  
+  public void deleteIfExistFuckingBack(UUID uuid) {
+    if (fuckBack.containsKey(uuid))
+      fuckBack.remove(uuid);
+  }
+  
+  public HashMap<UUID, Location> getFuckBack() {
+    return fuckBack;
   }
   
   public void broadcastToPlayers(String msg) {
@@ -75,6 +89,8 @@ public class Data {
   }
   
   public void setStarting(int delay, String displayName, Team...toStart) {
+    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "scoreboard teams add nonametag");
+    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "scoreboard teams option nonametag nametagVisibility never");
     for (Team team : toStart) {
       currentTeams.add(team);
     }
