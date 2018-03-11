@@ -2,12 +2,13 @@ package com.gmail.ZiomuuSs.Events;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-import com.gmail.ZiomuuSs.Team;
+import com.gmail.ZiomuuSs.EventTeam;
 import com.gmail.ZiomuuSs.Utils.Data;
 import com.gmail.ZiomuuSs.Utils.Msg;
 
@@ -21,8 +22,7 @@ public class OnDeathEvent implements Listener {
   @EventHandler
   public void onDeath(PlayerDeathEvent e) {
     if (data.isSaved(e.getEntity().getUniqueId())) {
-      Team team = data.getTeamByPlayer(e.getEntity());
-      data.addPlayerToFuckBack(e.getEntity().getUniqueId(), e.getEntity().getLocation());
+      EventTeam team = data.getTeamByPlayer(e.getEntity());
       data.removePlayer(e.getEntity());
       e.getDrops().clear();
       e.setDroppedExp(0);
@@ -31,8 +31,17 @@ public class OnDeathEvent implements Listener {
       } else if (e.getEntity().getLastDamageCause().getCause() == DamageCause.VOID) {
         Bukkit.broadcastMessage(Msg.get("event_spleef_fall", true, e.getEntity().getName(), Integer.toString(team.getPlayerNumber())));
       }
-    } else {
-      data.deleteIfExistFuckingBack(e.getEntity().getUniqueId());
+    //keep inventory of players with permission if they were not in event and were not killed by player
+    } else if (e.getEntity().hasPermission("AdminTools.keepinventory")) {
+      if (!(e.getEntity().getKiller() instanceof Player)) {
+        if (!(e.getEntity().getKiller() instanceof Projectile)) {
+          e.getDrops().clear();
+          data.getKeepInventory().put(e.getEntity().getUniqueId(), e.getEntity().getInventory().getContents());
+        } else if (!(((Projectile) e.getEntity().getKiller()).getShooter() instanceof Player)) {
+          e.getDrops().clear();
+          data.getKeepInventory().put(e.getEntity().getUniqueId(), e.getEntity().getInventory().getContents());
+        }
+      }
     }
   }
   

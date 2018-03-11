@@ -11,7 +11,6 @@ import com.gmail.ZiomuuSs.Events.OnCommandEvent;
 import com.gmail.ZiomuuSs.Events.OnDamageEvent;
 import com.gmail.ZiomuuSs.Events.OnDeathEvent;
 import com.gmail.ZiomuuSs.Events.OnLeaveEvent;
-import com.gmail.ZiomuuSs.Events.OnPlayerTeleportEvent;
 import com.gmail.ZiomuuSs.Events.RespawnEvent;
 import com.gmail.ZiomuuSs.Utils.Data;
 import com.gmail.ZiomuuSs.Utils.Msg;
@@ -27,7 +26,6 @@ public final class Main extends JavaPlugin {
     getServer().getPluginManager().registerEvents(new RespawnEvent(data), this);
     getServer().getPluginManager().registerEvents(new OnLeaveEvent(data), this);
     getServer().getPluginManager().registerEvents(new OnDeathEvent(data), this);
-    getServer().getPluginManager().registerEvents(new OnPlayerTeleportEvent(data), this);
     getServer().getPluginManager().registerEvents(new OnCommandEvent(this), this);
     getServer().getPluginManager().registerEvents(new OnDamageEvent(data), this);
   }
@@ -45,7 +43,6 @@ public final class Main extends JavaPlugin {
     getServer().getPluginManager().registerEvents(new RespawnEvent(data), this);
     getServer().getPluginManager().registerEvents(new OnLeaveEvent(data), this);
     getServer().getPluginManager().registerEvents(new OnDeathEvent(data), this);
-    getServer().getPluginManager().registerEvents(new OnPlayerTeleportEvent(data), this);
     getServer().getPluginManager().registerEvents(new OnCommandEvent(this), this);
     getServer().getPluginManager().registerEvents(new OnDamageEvent(data), this);
     sender.sendMessage(Msg.get("reloaded", true));

@@ -16,19 +16,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.gmail.ZiomuuSs.Main;
-import com.gmail.ZiomuuSs.Team;
+import com.gmail.ZiomuuSs.EventTeam;
+import com.gmail.ZiomuuSs.EventTeam.TeamStatus;
 
 public class Data {
   private Main plugin;
   private ConfigAccessor msgAccessor;
   private ConfigAccessor warpAccessor;
-  private HashSet<Team> currentTeams = new HashSet<>(); //teams that are currently starting in event
+  private HashSet<EventTeam> currentTeams = new HashSet<>(); //teams that are currently starting in event
   private HashSet<UUID> waitingPlayers = new HashSet<>(); //players queued to join event
+  private HashMap<UUID, ItemStack[]> keepInventory = new HashMap<>();
   private HashMap<String, Location> warps = new HashMap<>(); //saved warps
-  private HashMap<String, Team> savedTeams = new HashMap<>(); //all saved teams
+  private HashMap<String, EventTeam> savedTeams = new HashMap<>(); //all saved teams
   private HashMap<UUID, ConfigAccessor> savedPlayers = new HashMap<>(); //all saved players, for performance or smth I am not even sure anymore
   private HashMap<UUID, SavedPlayer> toRestore = new HashMap<>(); //players that are out of event, but waiting for respawn.
-  private HashMap<UUID, Location> fuckBack = new HashMap<>(); //fuck essential's /back.
   
   public Data(Main plugin) {
     this.plugin = plugin;
@@ -39,23 +40,14 @@ public class Data {
     return plugin;
   }
   
-  public void addPlayerToFuckBack(UUID uuid, Location loc) {
-    fuckBack.put(uuid, loc);
-  }
-  
-  public void deleteIfExistFuckingBack(UUID uuid) {
-    if (fuckBack.containsKey(uuid))
-      fuckBack.remove(uuid);
-  }
-  
-  public HashMap<UUID, Location> getFuckBack() {
-    return fuckBack;
-  }
-  
   public void broadcastToPlayers(String msg) {
     for (UUID uuid : savedPlayers.keySet()) {
       Bukkit.getPlayer(uuid).sendMessage(msg);
     }
+  }
+  
+  public HashMap<UUID, ItemStack[]> getKeepInventory() {
+    return keepInventory;
   }
   
   public int getSavedPlayersCount() {
@@ -77,7 +69,7 @@ public class Data {
   //checks maxplayers of current teams
   //and decides, if another player can join
   public boolean CanJoin() {
-    for (Team team : currentTeams) {
+    for (EventTeam team : currentTeams) {
       if (team.getMaxPlayers() > 0 && !(team.getMaxPlayers() > team.getPlayerNumber()))
         return false;
     }
@@ -88,18 +80,17 @@ public class Data {
     return !currentTeams.isEmpty();
   }
   
-  public void setStarting(int delay, String displayName, Team...toStart) {
-    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "scoreboard teams add nonametag");
-    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "scoreboard teams option nonametag nametagVisibility never");
-    for (Team team : toStart) {
+  public void setStarting(int delay, String displayName, EventTeam...toStart) {
+    for (EventTeam team : toStart) {
       currentTeams.add(team);
+      team.setTeamStatus(TeamStatus.LOBBY);
     }
     
     CountdownTimer timer = new CountdownTimer(plugin, delay, () -> Bukkit.broadcastMessage(Msg.get("event_start", true, displayName, 
         Integer.toString(delay))),
          () -> {
           Bukkit.broadcastMessage(Msg.get("event_nojoin", true, displayName));
-          for (Team team : currentTeams) {
+          for (EventTeam team : currentTeams) {
             team.start(displayName);
           }
           currentTeams.clear();
@@ -129,7 +120,7 @@ public class Data {
   public boolean addPlayer(Player player) {
     if (currentTeams.size() == 1) {
       //for 1 team
-      for (Team team : currentTeams)
+      for (EventTeam team : currentTeams)
         team.addPlayer(player);
       savedPlayers.put(player.getUniqueId(), new ConfigAccessor(plugin, player.getUniqueId()+".yml", "Players"));
       return true;
@@ -141,7 +132,7 @@ public class Data {
       }
       waitingPlayers.add(player.getUniqueId());
       if (currentTeams.size() == waitingPlayers.size()) {
-        for (Team team : currentTeams) {
+        for (EventTeam team : currentTeams) {
           Player pl = Bukkit.getPlayer(waitingPlayers.toArray(new UUID[waitingPlayers.size()])[0]);
           team.addPlayer(pl);
           savedPlayers.put(pl.getUniqueId(), new ConfigAccessor(plugin, pl.getUniqueId()+".yml", "Players"));
@@ -157,8 +148,8 @@ public class Data {
     savedPlayers.remove(player.getUniqueId());
   }
   
-  public Team getTeamByPlayer(Player player) {
-    for (Team t : savedTeams.values()) {
+  public EventTeam getTeamByPlayer(Player player) {
+    for (EventTeam t : savedTeams.values()) {
       if (t.isSaved(player.getUniqueId()))
         return t;
     }
@@ -169,7 +160,7 @@ public class Data {
     return !savedPlayers.isEmpty() && !currentTeams.isEmpty();
   }
   public SavedPlayer getSavedAnywhere(Player player) {
-    for (Team t : savedTeams.values()) {
+    for (EventTeam t : savedTeams.values()) {
       if (t.isSaved(player.getUniqueId()))
         return t.getPlayer(player);
     }
@@ -196,13 +187,20 @@ public class Data {
         FileConfiguration fc = YamlConfiguration.loadConfiguration(file);
         String team = file.getName();
         team = team.substring(0, team.length() - 4); //remove the .yml
-        Team st = new Team(team, this);
-        if (fc.isList("inventory"))
-          st.setInventory(((List<ItemStack>) fc.getList("inventory")).toArray(new ItemStack[0]));
+        EventTeam st = new EventTeam(team, this);
+        if (fc.isConfigurationSection("inventories")) {
+          for (String name : fc.getConfigurationSection("inventories").getKeys(false)) {
+            st.setInventory(name, ((List<ItemStack>) fc.getList("inventories."+name+".contents")).toArray(new ItemStack[0]));
+            if (fc.isConfigurationSection("inventories."+name+"icon"))
+              st.setInventoryIcon(name, fc.getItemStack("inventories."+name+".icon"));
+          }
+        }
         if (fc.isConfigurationSection("lobby"))
           st.setLobby(new Location(Bukkit.getWorld(fc.getString("lobby.world")), fc.getDouble("lobby.x"), fc.getDouble("lobby.y"), fc.getDouble("lobby.z"), (float) fc.getDouble("lobby.yaw"), (float) fc.getDouble("lobby.pitch")));
         if (fc.isBoolean("friendlyfire") && !fc.getBoolean("friendlyfire"))
           st.switchFriendlyFire();
+        if (fc.isBoolean("NametagVisibility") && fc.getBoolean("NametagVisibility"))
+          st.switchNametagVisibility();
         st.setMaxPlayers(fc.getInt("maxplayers"));
         if (fc.isConfigurationSection("startpoints")) {
           for (String index : fc.getConfigurationSection("startpoints").getKeys(false)) {
@@ -226,11 +224,11 @@ public class Data {
   }
   
   public void addTeam(String name) {
-    savedTeams.put(name, new Team(name, this));
+    savedTeams.put(name, new EventTeam(name, this));
     saveTeam(name);
   }
   
-  public Team getTeam(String name) {
+  public EventTeam getTeam(String name) {
     return savedTeams.get(name);
   }
   
@@ -250,11 +248,15 @@ public class Data {
   public void saveTeam(String team) {
     if (savedTeams.get(team) == null)
       return;
-    Team tm = savedTeams.get(team);
+    //delete file. This is just easier to work on clear config
+    new File(plugin.getDataFolder()+String.valueOf(File.separatorChar)+"Teams", team+".yml").delete();
+    EventTeam tm = savedTeams.get(team);
     ConfigAccessor ca = new ConfigAccessor(plugin, team+".yml", "Teams");
     ConfigurationSection cs = ca.getConfig();
     if (!savedTeams.get(team).getFriendlyFire())
       cs.set("friendlyfire", false);
+    if (savedTeams.get(team).getNametagVisibility())
+      cs.set("NametagVisibility", true);
     if (savedTeams.get(team).getLobby() != null) {
       cs.set("lobby.x", tm.getLobby().getX());
       cs.set("lobby.y", tm.getLobby().getY());
@@ -264,8 +266,6 @@ public class Data {
       cs.set("lobby.world", tm.getLobby().getWorld().getName());
     }
     cs.set("maxplayers", tm.getMaxPlayers());
-    //you can delete an startpoint, so its safer to delete all (potentially) saved startpoints first
-    cs.set("startpoints", null);
     if (!tm.getStartPoints().isEmpty()) {
       int count = 0;
       for (Location loc : tm.getStartPoints()) {
@@ -278,8 +278,14 @@ public class Data {
         ++count;
       }
     }
-    if (tm.getInventory() != null)
-        cs.set("inventory", Arrays.asList(tm.getInventory()));
+    if (!tm.getInventories().isEmpty()) {
+      for (String name : tm.getInventories()) {
+        cs.set("inventories."+name+".contents", Arrays.asList(tm.getInventory(name)));
+        if (tm.getInventoryIcon(name) != null) {
+          cs.set("inventories."+name+".icon", tm.getInventoryIcon(name));
+        }
+      }
+    }
     ca.saveConfig();
   }
   

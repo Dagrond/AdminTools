@@ -10,7 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.gmail.ZiomuuSs.Main;
-import com.gmail.ZiomuuSs.Team;
+import com.gmail.ZiomuuSs.EventTeam;
 import com.gmail.ZiomuuSs.Utils.Data;
 import com.gmail.ZiomuuSs.Utils.Msg;
 
@@ -131,11 +131,14 @@ public class AdminToolsCommand implements CommandExecutor {
             sender.sendMessage(Msg.get("error_permission", true));
             return true;
           }
-        } else if(args[0].equalsIgnoreCase("event") || args[0].equalsIgnoreCase("e")) {
+        } else if (args[0].equalsIgnoreCase("event") || args[0].equalsIgnoreCase("e")) {
+          //tooooooooo
+          //dooooooooo
+        } else if(args[0].equalsIgnoreCase("team") || args[0].equalsIgnoreCase("t") || args[0].equalsIgnoreCase("teams")) {
           if (sender.hasPermission("AdminTools.event") || sender.hasPermission("AdminTools.*")) {
             if (args.length>2) {
               if (data.getTeam(args[1]) != null) {
-                Team team = data.getTeam(args[1]);
+                EventTeam team = data.getTeam(args[1]);
                 if (args[2].equalsIgnoreCase("lobby")) {
                   if (sender instanceof Player) {
                     if (team.setLobby(((Player) sender).getLocation()))
@@ -147,13 +150,65 @@ public class AdminToolsCommand implements CommandExecutor {
                     return true;
                   }
                 } else if (args[2].equalsIgnoreCase("inventory")) {
-                  if (sender instanceof Player) {
-                    if (team.setInventory(((Player) sender).getInventory().getContents()))
-                      sender.sendMessage(Msg.get("team_inventory_set", true, args[1]));
-                    else
-                      sender.sendMessage(Msg.get("team_inventory_edited", true, args[1]));
+                  if (args.length>3) {
+                    if (args[3].equalsIgnoreCase("info") || args[3].equalsIgnoreCase("list")) {
+                      sender.sendMessage(Msg.get("team_inventory_display", true, args[1], team.getPrettyInventoryList()));
+                      return true;
+                    } else if (args[3].equalsIgnoreCase("del") || args[3].equalsIgnoreCase("delete") || args[3].equalsIgnoreCase("remove")) {
+                      if (args.length>3) {
+                        if (team.isInventory(args[4])) {
+                          team.removeInventory(args[4]);
+                          sender.sendMessage(Msg.get("team_inventory_deleted", true, args[4], args[1]));
+                        } else {
+                          sender.sendMessage(Msg.get("error_inventory_not_exist", true, args[4], args[1]));
+                          return true;
+                        }
+                      } else {
+                        sender.sendMessage(Msg.get("error_usage", true, "/at e (team) inventory del (name)"));
+                        return true;
+                      }
+                    } else if (args[3].equalsIgnoreCase("add")) {
+                      if (args.length>3) {
+                        if (!team.isInventory(args[4])) {
+                          if (sender instanceof Player) {
+                            team.addInventory(args[4], ((Player) sender).getInventory().getContents());
+                            sender.sendMessage(Msg.get("team_inventory_added", true, args[4], args[1]));
+                          } else {
+                            sender.sendMessage(Msg.get("error_player_needed", true));
+                            return true;
+                          }
+                        } else {
+                          sender.sendMessage(Msg.get("error_inventory_already_exist", true, args[4], args[1]));
+                          return true;
+                        }
+                      } else {
+                        sender.sendMessage(Msg.get("error_usage", true, "/at e (team) inventory add (name)"));
+                        return true;
+                      }
+                    } else if (args[3].equalsIgnoreCase("set") || args[3].equalsIgnoreCase("edit")) {
+                      if (sender instanceof Player) {
+                        if (args.length>3) {
+                          if (team.isInventory(args[4])) {
+                            team.addInventory(args[4], ((Player) sender).getInventory().getContents());
+                            sender.sendMessage(Msg.get("team_inventory_edited", true, args[4], args[1]));
+                          } else {
+                            sender.sendMessage(Msg.get("error_inventory_not_exist", true, args[4], args[1]));
+                            return true;
+                          }
+                        } else {
+                          sender.sendMessage(Msg.get("error_usage", true, "/at e (team) inventory set (name)"));
+                          return true;
+                        }
+                      } else {
+                        sender.sendMessage(Msg.get("error_player_needed", true));
+                        return true;
+                      }
+                    } else {
+                      sender.sendMessage(Msg.get("error_usage", true, "/at e (team) inventory list/del/add/set"));
+                      return true;
+                    }
                   } else {
-                    sender.sendMessage(Msg.get("error_player_needed", true));
+                    sender.sendMessage(Msg.get("error_usage", true, "/at e (team) inventory list/del/add/set"));
                     return true;
                   }
                 } else if (args[2].equalsIgnoreCase("startpoint") || args[2].equalsIgnoreCase("startpoints")) {
@@ -181,7 +236,7 @@ public class AdminToolsCommand implements CommandExecutor {
                           return true;
                         }
                       } else {
-                        sender.sendMessage(Msg.get("error_usage", true, "/at e (team) startpoint set (index)"));
+                        sender.sendMessage(Msg.get("error_usage", true, "/at e (team) startpoint det (index)"));
                         return true;
                       }
                     } else if (args[3].equalsIgnoreCase("add")) {
@@ -228,15 +283,20 @@ public class AdminToolsCommand implements CommandExecutor {
                       sender.sendMessage(Msg.get("team_ff_on", true, args[2]));
                     else
                       sender.sendMessage(Msg.get("team_ff_off", true, args[2]));
+                } else if (args[2].equalsIgnoreCase("nametag")) {
+                  if (team.switchNametagVisibility())
+                    sender.sendMessage(Msg.get("team_nametag_on", true, args[2]));
+                  else
+                    sender.sendMessage(Msg.get("team_nametag_off", true, args[2]));
                 } else if (args[2].equalsIgnoreCase("info")) {
                   sender.sendMessage(Msg.get("team_info", true, args[1]));
                   sender.sendMessage(Msg.get("team_info_ff", true, team.getFriendlyFire() ? Msg.get("yes_", false) : Msg.get("no_", false)));
+                  sender.sendMessage(Msg.get("team_info_nametag", true, team.getNametagVisibility() ? Msg.get("yes_", false) : Msg.get("no_", false)));
                   sender.sendMessage(Msg.get("team_info_maxplayers", true, team.getMaxPlayers()==0 ? Msg.get("unlimited", false) : Integer.toString(team.getMaxPlayers())));
                   sender.sendMessage(Msg.get("team_info_startpoints", true, team.getStartPoints().isEmpty() ? Msg.get("not_set", false) : Integer.toString(team.getStartPoints().size())));
                   sender.sendMessage(Msg.get("team_info_lobby", true, team.getLobby() != null ? Msg.get("set", false) : Msg.get("not_set", false)));
-                  sender.sendMessage(Msg.get("team_info_inventory", true, team.getInventory() != null ? Msg.get("set", false) : Msg.get("not_set", false)));
+                  sender.sendMessage(Msg.get("team_info_inventory", true, !team.getInventories().isEmpty() ? Msg.get("set", false) : Msg.get("not_set", false)));
                   sender.sendMessage(Msg.get("team_info_playersin", true, Integer.toString(team.getPlayerNumber())));
-                  //returns true because it's only showing informations, not setting anything
                   return true;
                 } else if (args[2].equalsIgnoreCase("maxplayers")) {
                   if (args.length>3) {
@@ -282,10 +342,10 @@ public class AdminToolsCommand implements CommandExecutor {
               if (args[1].matches("-?\\d+")) {
                 int delay = Integer.valueOf(args[1]);
                 if (delay>0) {
-                  HashSet<Team> teams= new HashSet<>();
+                  HashSet<EventTeam> teams= new HashSet<>();
                   for (int i = 3; i < args.length; ++i) {
                     if (data.isTeam(args[i])) {
-                      Team team = data.getTeam(args[i]);
+                      EventTeam team = data.getTeam(args[i]);
                       if (team.isReady()) {
                         teams.add(team);
                       } else {
@@ -297,7 +357,7 @@ public class AdminToolsCommand implements CommandExecutor {
                       return true;
                     }
                   }
-                  data.setStarting(delay, args[2], teams.toArray(new Team[teams.size()]));
+                  data.setStarting(delay, args[2], teams.toArray(new EventTeam[teams.size()]));
                 } else {
                   sender.sendMessage(Msg.get("error_must_be_integer", true, "delay"));
                   return true;
