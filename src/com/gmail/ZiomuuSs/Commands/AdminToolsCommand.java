@@ -1,7 +1,5 @@
 package com.gmail.ZiomuuSs.Commands;
 
-import java.util.HashSet;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -337,35 +335,9 @@ public class AdminToolsCommand implements CommandExecutor {
           }
       } else if (args[0].equalsIgnoreCase("start")) {
         if (sender.hasPermission("AdminTools.start") || sender.hasPermission("AdminTools.*")) {
-          if (!data.anyInProgress()) {
-            if (args.length>3) {
-              if (args[1].matches("-?\\d+")) {
-                int delay = Integer.valueOf(args[1]);
-                if (delay>0) {
-                  HashSet<EventTeam> teams= new HashSet<>();
-                  for (int i = 3; i < args.length; ++i) {
-                    if (data.isTeam(args[i])) {
-                      EventTeam team = data.getTeam(args[i]);
-                      if (team.isReady()) {
-                        teams.add(team);
-                      } else {
-                        sender.sendMessage(Msg.get("error_team_not_ready", true, args[i]));
-                        return true;
-                      }
-                    } else {
-                      sender.sendMessage(Msg.get("error_team_not_exist", true, args[i]));
-                      return true;
-                    }
-                  }
-                  data.setStarting(delay, args[2], teams.toArray(new EventTeam[teams.size()]));
-                } else {
-                  sender.sendMessage(Msg.get("error_must_be_integer", true, "delay"));
-                  return true;
-                }
-              } else {
-                sender.sendMessage(Msg.get("error_must_be_integer", true, "delay"));
-                return true;
-              }
+          if (data.getCurrentEvent() != null) {
+            if (args.length>1) {
+              //todo
             } else {
               sender.sendMessage(Msg.get("error_usage", true, "/e start (delay) (displayname) (team1) <team2>"));
               return true;
@@ -394,13 +366,18 @@ public class AdminToolsCommand implements CommandExecutor {
       } else if (args[0].equalsIgnoreCase("bc") || args[0].equalsIgnoreCase("broadcast")) {
         if (sender.hasPermission("AdminTools.broadcast") || sender.hasPermission("AdminTools.*")) {
           if (args.length>1) {
-            String msg = "";
-            args[0] = "";
-            for (String s : args) {
-              msg += s+" ";
+            if (data.getCurrentEvent() != null) {
+              String msg = "";
+              args[0] = "";
+              for (String s : args) {
+                msg += s+" ";
+              }
+              data.getCurrentEvent().broadcastToEvent(Msg.get("event_broadcast", true, msg));
+              return true;
+            } else {
+              sender.sendMessage(Msg.get("error_event_not_in_progress", true));
+              return true;
             }
-            Bukkit.broadcastMessage(Msg.get("event_broadcast", true, msg));
-            return true;
           } else {
             sender.sendMessage(Msg.get("error_usage", true, "/at bc (msg)"));
             return true;
@@ -414,9 +391,9 @@ public class AdminToolsCommand implements CommandExecutor {
           if (args.length>1) {
             if (Bukkit.getPlayer(args[1]) != null) {
               Player player = Bukkit.getPlayer(args[1]);
-              if (data.isSaved(player.getUniqueId())) {
-                data.broadcastToPlayers((Msg.get("event_kicked", true, args[1])));
-                data.removePlayer(player);
+              if (data.getCurrentEvent().isSaved(player.getUniqueId())) {
+                data.getCurrentEvent().broadcastToEvent((Msg.get("event_kicked", true, args[1])));
+                data.getCurrentEvent().removePlayer(player);
                 sender.sendMessage(Msg.get("player_deleted", true, args[1]));
                 return true;
               } else {
@@ -437,7 +414,7 @@ public class AdminToolsCommand implements CommandExecutor {
         }
       } else if(args[0].equalsIgnoreCase("reload")) {
         if (sender.hasPermission("AdminTools.reload") || sender.hasPermission("AdminTools.*")) {
-          if (!data.anyInProgress()) {
+          if (data.getCurrentEvent() == null) {
             plugin.reload(sender);
             return true;
           } else {

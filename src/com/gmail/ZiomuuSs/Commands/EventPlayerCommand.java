@@ -38,14 +38,14 @@ public class EventPlayerCommand implements CommandExecutor {
           }
         } else if (args[0].equalsIgnoreCase("dolacz")) {
           if (sender instanceof Player) {
-            if (/*todo*/) {
+            if (data.getCurrentEvent() != null) {
               Player player = (Player) sender;
-              if (!data.isSaved(player.getUniqueId())) {
-                if (!data.isQueued(player.getUniqueId())) {
-                  if (data.CanJoin()) {
+              if (!data.getCurrentEvent().isSaved(player.getUniqueId())) {
+                if (!data.getCurrentEvent().isQueued(player.getUniqueId())) {
+                  if (data.getCurrentEvent().CanJoin()) {
                     if (player.getPassengers().isEmpty() && player.getVehicle() == null) {
                       if (player.getGameMode() == GameMode.SURVIVAL) {
-                        if (data.addPlayer(player)) {
+                        if (data.getCurrentEvent().addPlayer(player)) {
                           sender.sendMessage(Msg.get("event_added", true));
                           return true;
                         } else {

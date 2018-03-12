@@ -25,11 +25,16 @@ public class EventGroup {
   private HashSet<UUID> savedPlayers = new HashSet<>(); //all saved players, for performance or smth I am not even sure anymore
   private String name; //name of this event for operators
   private String displayName; //display name for players
-  private int delay;
+  private int delay = 60;
   private Location spec;
   
-  public EventGroup(Data data) {
+  public EventGroup(Data data, String name, String displayName) {
     this.data = data;
+    this.name = name;
+    this.displayName = displayName;
+  }
+  
+  public void start() {
     CountdownTimer timer = new CountdownTimer(data.getPlugin(), delay, () -> Bukkit.broadcastMessage(Msg.get("event_start", true, displayName, 
         Integer.toString(delay))),
          () -> {
@@ -50,6 +55,7 @@ public class EventGroup {
     timer.scheduleTimer();
   }
   
+  //getters
   public EventStatus getEventStatus() {
     return status;
   }
@@ -60,15 +66,6 @@ public class EventGroup {
   
   public int getParticipantCount() {
     return savedPlayers.size();
-  }
-  
-  public boolean isSaved(UUID uuid) {
-    return savedPlayers.contains(uuid);
-  }
-  
-  public void removePlayer(Player player) {
-    getTeamByPlayer(player).delPlayer(player);
-    savedPlayers.remove(player.getUniqueId());
   }
   
   public HashSet<UUID> getSavedPlayers() {
@@ -83,13 +80,29 @@ public class EventGroup {
     return null;
   }
   
-  public void broadcastToEvent(String msg) {
-    for (UUID uuid : spectators) {
-      Bukkit.getPlayer(uuid).sendMessage(msg);
-    }
-    for (UUID uuid : savedPlayers) {
-      Bukkit.getPlayer(uuid).sendMessage(msg);
-    }
+  public String getDisplayName() {
+    return displayName;
+  }
+  
+  public HashMap<String, EventTeam> getTeams() {
+    return teams;
+  }
+  
+  public Location getSpecLocation() {
+    return spec;
+  }
+  
+  public int getDelay() {
+    return delay;
+  }
+  
+  @Override
+  public String toString() {
+    return name;
+  }
+  //checkers
+  public boolean isSaved(UUID uuid) {
+    return savedPlayers.contains(uuid);
   }
   
   public boolean isQueued(UUID uuid) {
@@ -104,6 +117,21 @@ public class EventGroup {
         return false;
     }
     return true;
+  }
+  
+  //setters
+  public void removePlayer(Player player) {
+    getTeamByPlayer(player).delPlayer(player);
+    savedPlayers.remove(player.getUniqueId());
+  }
+  
+  public void broadcastToEvent(String msg) {
+    for (UUID uuid : spectators) {
+      Bukkit.getPlayer(uuid).sendMessage(msg);
+    }
+    for (UUID uuid : savedPlayers) {
+      Bukkit.getPlayer(uuid).sendMessage(msg);
+    }
   }
   
   public void addSpectator(Player player) {

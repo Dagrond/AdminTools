@@ -82,6 +82,7 @@ error_inprogress: "Nie mozna tego zrobic poniewaz trwa aktualnie event!"
 error_no_startpoint: "Punkt startowy o numerze %1 nie istnieje!"
 error_inventory_not_exist: "Klasa %1 nie istnieje w druzynie %2!"
 error_inventory_already_exist: "Klasa %1 juz istnieje w druzynie %2!"
+error_event_not_in_progress: "Aktualnie nie trwa zaden event!"
 
 #event messages
 event_quit: "Pomyslnie opusciles event!"
