@@ -25,6 +25,7 @@ public class EventGroup {
   private HashSet<UUID> savedPlayers = new HashSet<>(); //all saved players, for performance or smth I am not even sure anymore
   private String name; //name of this event for operators
   private String displayName; //display name for players
+  private int min = 2; //min players needed to start event
   private int delay = 60;
   private Location spec;
   
@@ -50,12 +51,17 @@ public class EventGroup {
           waitingPlayers.clear();
           },
         (t) -> {
-          //there will be check if counting was stopped or smth
+          //there will be smth. Or not.
         });
     timer.scheduleTimer();
   }
   
   //getters
+  
+  public int getMinPlayers() {
+    return min;
+  }
+  
   public EventStatus getEventStatus() {
     return status;
   }
@@ -100,6 +106,40 @@ public class EventGroup {
   public String toString() {
     return name;
   }
+  
+  public String getPrettyTeamList() {
+    String list = "";
+    for (String team : teams.keySet()) {
+      list += team+", ";
+    }
+    if (!list.equalsIgnoreCase(""))
+      return list.substring(0, list.length() - 2);
+    else
+      return Msg.get("none", false);
+  }
+  
+  public String getPrettyParticipantList() {
+    String list = "";
+    for (UUID uuid : savedPlayers) {
+      list += Bukkit.getOfflinePlayer(uuid).getName()+", ";
+    }
+    if (!list.equalsIgnoreCase(""))
+      return list.substring(0, list.length() - 2);
+    else
+      return Msg.get("none", false);
+  }
+  
+  public String getPrettySpectatorsList() {
+    String list = "";
+    for (UUID uuid : spectators) {
+      list += Bukkit.getOfflinePlayer(uuid).getName()+", ";
+    }
+    if (!list.equalsIgnoreCase(""))
+      return list.substring(0, list.length() - 2);
+    else
+      return Msg.get("none", false);
+  }
+  
   //checkers
   public boolean isSaved(UUID uuid) {
     return savedPlayers.contains(uuid);
@@ -120,6 +160,29 @@ public class EventGroup {
   }
   
   //setters
+  
+  public void setMinPlayers(int min) {
+    this.min = min;
+  }
+  
+  public void setDelay(int delay) {
+    this.delay = delay;
+  }
+  
+  public void addTeam(EventTeam team) {
+    teams.put(team.toString(), team);
+  }
+  
+  public boolean setSpectatorsLocation(Location loc) {
+    if (spec == null) {
+      spec = loc;
+      return false;
+    } else {
+      spec = loc;
+      return true;
+    }
+  }
+  
   public void removePlayer(Player player) {
     getTeamByPlayer(player).delPlayer(player);
     savedPlayers.remove(player.getUniqueId());

@@ -96,6 +96,10 @@ public class Data {
   public void removeTeam(String name) {
     savedTeams.remove(name);
     new File(plugin.getDataFolder()+String.valueOf(File.separatorChar)+"Teams", name+".yml").delete();
+    for (EventGroup group : savedGroups.values()) {
+      if (group.getTeams().containsKey(name))
+        group.getTeams().remove(name);
+    }
   }
   
   public EventTeam getTeam(String name) {
@@ -171,6 +175,7 @@ public class Data {
     ConfigurationSection cs = ca.getConfig();
     //todo
     cs.set("delay", group.getDelay());
+    cs.set("minplayers", group.getMinPlayers());
     cs.set("displayname", group.getDisplayName());
     if (group.getSpecLocation() != null) {
       Location l = group.getSpecLocation();
@@ -238,13 +243,16 @@ public class Data {
     warpAccessor.saveDefaultConfig();
     Msg.set(msgAccessor.getConfig());
     //loading warps
+    int warpsCount = 0;
     ConfigurationSection w = warpAccessor.getConfig();
     if (w.isConfigurationSection("warp")) {
       for (String warp : w.getConfigurationSection("warp").getKeys(false)) {
         warps.put(warp, new Location(Bukkit.getWorld(w.getString("warp."+warp+".world")), w.getDouble("warp."+warp+".x"), w.getDouble("warp."+warp+".y"), w.getDouble("warp."+warp+".z"), (float) w.getDouble("warp."+warp+".yaw"), (float) w.getDouble("warp."+warp+".pitch")));
+        ++warpsCount;
       }
     }
     //loading teams
+    int teamsCount = 0;
     if (new File(plugin.getDataFolder().getAbsolutePath() + File.separatorChar + "Teams").exists()) {
       for (File file : new File(plugin.getDataFolder().getAbsolutePath() + File.separatorChar + "Teams").listFiles()) {
         FileConfiguration fc = YamlConfiguration.loadConfiguration(file);
@@ -271,7 +279,30 @@ public class Data {
           }
         }
         savedTeams.put(team, st);
+        ++teamsCount;
       }
     }
+    //loading groups
+    int groupsCount = 0;
+    if (new File(plugin.getDataFolder().getAbsolutePath() + File.separatorChar + "Groups").exists()) {
+      for (File file : new File(plugin.getDataFolder().getAbsolutePath() + File.separatorChar + "Groups").listFiles()) {
+        FileConfiguration fc = YamlConfiguration.loadConfiguration(file);
+        String gn = file.getName();
+        gn = gn.substring(0, gn.length() - 4); //remove the .yml
+        EventGroup group = new EventGroup(this, gn, fc.getString("displayname"));
+        group.setDelay(fc.getInt("delay"));
+        group.setMinPlayers(fc.getInt("minplayers"));
+        if (fc.isConfigurationSection("spec"))
+          group.setSpectatorsLocation(new Location(Bukkit.getWorld(fc.getString("spec.world")), fc.getDouble("spec.x"), fc.getDouble("spec.y"), fc.getDouble("spec.z"), (float) fc.getDouble("spec.yaw"), (float) fc.getDouble("spec.pitch")));
+        if (fc.isList("teams")) {
+          for (String team : fc.getList("teams").toArray(new String[0])) {
+            group.addTeam(getTeam(team));
+          }
+        }
+        savedGroups.put(gn, group);
+        ++groupsCount;
+      }
+    }
+    Bukkit.getLogger().info(Msg.get("console_loaded", true, Integer.toString(warpsCount), Integer.toString(teamsCount), Integer.toString(groupsCount)));
   }
 }

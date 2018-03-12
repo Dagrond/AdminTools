@@ -2,12 +2,16 @@ package com.gmail.ZiomuuSs;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Team;
 
@@ -22,12 +26,14 @@ public class EventTeam {
   }
   private Data data;
   private String name;
-  private ItemStack[] inv;
   private TeamStatus status; //status of team
   private HashMap<String, ItemStack[]> inventories; //can pick inventory from an event
   private HashMap<String, ItemStack> inventoryIcons; //Icon of /\ when player can pick it.
   private Team team; //scoreboard team of EventTeam... this is getting ridiculous
+  private Inventory gui; //gui for inventory selection
   private Location lobby; //lobby of an event
+  CountdownTimer timer;
+  private HashSet<UUID> hasInventory = new HashSet<>(); //players that already choosen their inventory
   private ArrayList<Location> startPoints = new ArrayList<>(); //list of start point of event
   private int maxPlayers = 0; //0 - unlimited
   private int delay;
@@ -40,9 +46,31 @@ public class EventTeam {
   }
   
   public void start(String displayName) {
-    CountdownTimer timer = new CountdownTimer(data.getPlugin(), delay,
-        () -> broadcastToMembers(Msg.get("event_start_broadcast", true, displayName, Integer.toString(delay))), () -> {
-          broadcastToMembers(Msg.get("event_started", true));
+    //gui creation
+    ItemStack noIcon = new ItemStack(Material.DIAMOND_SWORD, 1);
+    noIcon.getItemMeta().addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+    if (inventories.size()>1) {
+      gui = Bukkit.createInventory(null, inventories.size() < 10 ? 9 : inventories.size() < 19 ? 18 : inventories.size() < 28 ? 27 : inventories.size() < 37 ? 36 : inventories.size() < 46 ? 45 : 54, Msg.get("class_choose_inventory", false));
+      for (String inv : inventories.keySet()) {
+        if (inventoryIcons.containsKey(inv))
+          gui.addItem(inventoryIcons.get(inv));
+        else {
+          noIcon.getItemMeta().setDisplayName(inv);
+          gui.addItem(noIcon);
+        }
+      }
+      ItemStack none = new ItemStack(Material.BARRIER, 1);
+      none.getItemMeta().setDisplayName("");
+      none.getItemMeta().addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+      while(gui.firstEmpty() != -1)
+        gui.addItem(none);
+      
+    }
+    
+    //timer
+    timer = new CountdownTimer(data.getPlugin(), delay,
+        () -> broadcastToMembers(Msg.get("event_team_startpoint_tp", true, Integer.toString(delay))), () -> {
+          broadcastToMembers(Msg.get("event_team_teleported", true));
           int index = 0;
           for (UUID uuid : savedPlayers.keySet()) {
             Player player = Bukkit.getPlayer(uuid);
@@ -96,8 +124,25 @@ public class EventTeam {
     }
   }
   
+  public int getTimeToStart() {
+    return timer.getSecondsLeft();
+  }
+  
   public void addPlayer(Player player) {
     savedPlayers.put(player.getUniqueId(), new SavedPlayer(player, lobby, data, team));
+    //anti escape because of plugins with teleport delay that works badly (they are not considering teleport as move)
+    player.setVelocity(player.getLocation().getDirection().multiply(1.2));
+    if (inventories.isEmpty())
+      return;
+    if (inventories.size() == 1) {
+      for (ItemStack[] inv : inventories.values()) {
+        player.getInventory().setContents(inv);
+        player.updateInventory();
+      }
+    } else {
+      player.sendMessage(Msg.get("event_choose_inventory", true));
+      player.openInventory(gui);
+    }
   }
   
   public void delPlayer(Player player) {
@@ -109,6 +154,10 @@ public class EventTeam {
   @Override
   public String toString() {
     return name;
+  }
+  
+  public HashSet<UUID> getPlayersWithInventory() {
+    return hasInventory;
   }
   
   public String getPrettyPlayerList() {
@@ -175,7 +224,7 @@ public class EventTeam {
   
   //checkers
   public boolean isReady() {
-    return (lobby != null && !startPoints.isEmpty() && inv != null);
+    return (lobby != null && !startPoints.isEmpty() && !inventories.isEmpty());
   }
   
   public boolean isSaved(UUID uuid) {
@@ -192,6 +241,11 @@ public class EventTeam {
   //setters
   //returns true if value was set
   //or false if value was changed
+  
+  public void removeInventoryIcon(String name) {
+    inventoryIcons.remove(name);
+  }
+  
   public boolean setMaxPlayers(int mp) {
     if (maxPlayers>0) {
       maxPlayers = mp;
