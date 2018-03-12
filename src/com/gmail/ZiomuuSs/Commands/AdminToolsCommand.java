@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.gmail.ZiomuuSs.Main;
+import com.gmail.ZiomuuSs.EventGroup;
 import com.gmail.ZiomuuSs.EventTeam;
 import com.gmail.ZiomuuSs.Utils.Data;
 import com.gmail.ZiomuuSs.Utils.Msg;
@@ -130,10 +131,50 @@ public class AdminToolsCommand implements CommandExecutor {
             return true;
           }
         } else if (args[0].equalsIgnoreCase("event") || args[0].equalsIgnoreCase("e")) {
-          //tooooooooo
-          //dooooooooo
+          if (sender.hasPermission("AdminTools.team") || sender.hasPermission("AdminTools.*")) {
+            if (args.length>2) {
+              if (data.isEventGroup(args[1])) {
+                EventGroup group = data.getEventGroupByName(args[1]);
+                if (args[2].equalsIgnoreCase("info")) {
+                  //todo
+                } else if (args[2].equalsIgnoreCase("remove")) {
+                  //todo
+                  data.removeEventGroup(args[1]);
+                  sender.sendMessage(Msg.get("group_removed", true, args[1]));
+                  return true;
+                } else if (args[2].equalsIgnoreCase("spec")) {
+                  //todo
+                } else if (args[2].equalsIgnoreCase("delay")) {
+                  //todo
+                } else if (args[2].equalsIgnoreCase("team")) {
+                  //todo
+                } else {
+                  sender.sendMessage(Msg.get("error_usage", true, "/at e (event) create/delete/info/spec/delay/team"));
+                  return true;
+                }
+              } else if (args[2].equalsIgnoreCase("create")) {
+                if (args.length>2) {
+                  data.addEventGroup(args[1], args[3]);
+                  sender.sendMessage(Msg.get("group_added", true, args[1], args[3]));
+                  return true;
+                } else {
+                  sender.sendMessage(Msg.get("error_usage", true, "/at e (event) create (displayname)"));
+                  return true;
+                }
+              } else {
+                sender.sendMessage(Msg.get("error_event_not_exist", true, args[1]));
+                return true;
+              }
+            } else {
+              sender.sendMessage(Msg.get("error_usage", true, "/at e (event) create/delete/info/spec/delay/team"));
+              return true;
+            }
+          } else {
+            sender.sendMessage(Msg.get("error_permission", true));
+            return true;
+          }
         } else if(args[0].equalsIgnoreCase("team") || args[0].equalsIgnoreCase("t") || args[0].equalsIgnoreCase("teams")) {
-          if (sender.hasPermission("AdminTools.event") || sender.hasPermission("AdminTools.*")) {
+          if (sender.hasPermission("AdminTools.team") || sender.hasPermission("AdminTools.*")) {
             if (args.length>2) {
               if (data.getTeam(args[1]) != null) {
                 EventTeam team = data.getTeam(args[1]);

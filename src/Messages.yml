@@ -61,6 +61,8 @@ team_info_lobby: "Lobby: %1"
 team_info_inventory: "Ekwipunek startowy: %1"
 team_info_playersin: "Gracze w evencie: %1"
 reloaded: "Pomyslnie przeladowano plugin!"
+group_added: "Pomyslnie dodano event o nazwie %1 z nazwa wyswietlana %2!"
+group_removed: "Pomyslnie usunieto event o nazwie %1!"
 
 #error messages
 error_permission: "Nie posiadasz odpowiednich uprawnien aby uzyc tej komendy!"
@@ -83,6 +85,7 @@ error_no_startpoint: "Punkt startowy o numerze %1 nie istnieje!"
 error_inventory_not_exist: "Klasa %1 nie istnieje w druzynie %2!"
 error_inventory_already_exist: "Klasa %1 juz istnieje w druzynie %2!"
 error_event_not_in_progress: "Aktualnie nie trwa zaden event!"
+error_event_not_exist: "Event o nazwie %1 nie istnieje!"
 
 #event messages
 event_quit: "Pomyslnie opusciles event!"

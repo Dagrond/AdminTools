@@ -1,7 +1,6 @@
 package com.gmail.ZiomuuSs.Utils;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +43,10 @@ public class Data {
   
   public int getEventGroupNumber() {
     return savedGroups.size();
+  }
+  
+  public EventGroup getEventGroupByName(String name) {
+    return savedGroups.get(name);
   }
   
   public void addEventGroup(String name, String displayName) {
@@ -179,10 +182,7 @@ public class Data {
       cs.set("spec.world", l.getWorld().getName());
     }
     if (!group.getTeams().isEmpty()) {
-      ArrayList<String> l = new ArrayList<>();
-      for (EventTeam team : group.getTeams())
-        l.add(team.toString());
-      cs.set("teams", l);
+      cs.set("teams", group.getTeams().keySet());
     }
     ca.saveConfig();
   }
