@@ -18,19 +18,19 @@ import com.gmail.ZiomuuSs.Utils.SavedPlayer;
 
 public class EventTeam {
   public static enum TeamStatus {
-    LOBBY, DISABLED, IN_PROGRESS; //lobby - players are in lobby, disabled - no one is in event, in_progress - players are in event and were teleported to their startpoints
+    LOBBY, DISABLED, IN_PROGRESS; //lobby - players are in lobby and waiting to teleport to startpoints, disabled - no one is in team, in_progress - players were teleported to ther startpoints
   }
   private Data data;
   private String name;
   private ItemStack[] inv;
+  private TeamStatus status; //status of team
   private HashMap<String, ItemStack[]> inventories; //can pick inventory from an event
   private HashMap<String, ItemStack> inventoryIcons; //Icon of /\ when player can pick it.
   private Team team; //scoreboard team of EventTeam... this is getting ridiculous
   private Location lobby; //lobby of an event
   private ArrayList<Location> startPoints = new ArrayList<>(); //list of start point of event
   private int maxPlayers = 0; //0 - unlimited
-  private int delay = 10; //time (in seconds), after players from lobby are teleported into event startpoints (its counting every second)
-  private TeamStatus status = TeamStatus.DISABLED;
+  private int delay;
   private HashMap<UUID, SavedPlayer> savedPlayers = new HashMap<>();
   
   public EventTeam (String name, Data data) {
@@ -44,7 +44,6 @@ public class EventTeam {
         () -> broadcastToMembers(Msg.get("event_start_broadcast", true, displayName, Integer.toString(delay))), () -> {
           broadcastToMembers(Msg.get("event_started", true));
           int index = 0;
-          status = TeamStatus.IN_PROGRESS;
           for (UUID uuid : savedPlayers.keySet()) {
             Player player = Bukkit.getPlayer(uuid);
             if (player != null) {
@@ -82,6 +81,10 @@ public class EventTeam {
     }
   }
   
+  public TeamStatus getTeamStatus() {
+    return status;
+  }
+  
   //same as ff
   public boolean switchNametagVisibility() {
     if (getNametagVisibility()) {
@@ -100,18 +103,12 @@ public class EventTeam {
   public void delPlayer(Player player) {
     savedPlayers.get(player.getUniqueId()).restore();
     savedPlayers.remove(player.getUniqueId());
-    if (savedPlayers.isEmpty())
-      status = TeamStatus.DISABLED;
   }
   
   //getters
   @Override
   public String toString() {
     return name;
-  }
-  
-  public TeamStatus getTeamStatus() {
-    return status;
   }
   
   public String getPrettyPlayerList() {
@@ -249,10 +246,6 @@ public class EventTeam {
       startPoints.add(loc);
       return false;
     }
-  }
-  
-  public void setTeamStatus(TeamStatus status) {
-    this.status = status;
   }
   
   public void removeInventory(String inv) {

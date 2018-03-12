@@ -3,7 +3,6 @@ package com.gmail.ZiomuuSs.Utils;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,19 +15,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.gmail.ZiomuuSs.Main;
+import com.gmail.ZiomuuSs.EventGroup;
 import com.gmail.ZiomuuSs.EventTeam;
-import com.gmail.ZiomuuSs.EventTeam.TeamStatus;
 
 public class Data {
   private Main plugin;
   private ConfigAccessor msgAccessor;
   private ConfigAccessor warpAccessor;
-  private HashSet<EventTeam> currentTeams = new HashSet<>(); //teams that are currently starting in event
-  private HashSet<UUID> waitingPlayers = new HashSet<>(); //players queued to join event
+  private EventGroup current; //Event that is in progress
   private HashMap<UUID, ItemStack[]> keepInventory = new HashMap<>();
   private HashMap<String, Location> warps = new HashMap<>(); //saved warps
   private HashMap<String, EventTeam> savedTeams = new HashMap<>(); //all saved teams
-  private HashMap<UUID, ConfigAccessor> savedPlayers = new HashMap<>(); //all saved players, for performance or smth I am not even sure anymore
+  private HashMap<String, EventGroup> savedGroups = new HashMap<>(); //all saved groups
   private HashMap<UUID, SavedPlayer> toRestore = new HashMap<>(); //players that are out of event, but waiting for respawn.
   
   public Data(Main plugin) {
@@ -40,18 +38,8 @@ public class Data {
     return plugin;
   }
   
-  public void broadcastToPlayers(String msg) {
-    for (UUID uuid : savedPlayers.keySet()) {
-      Bukkit.getPlayer(uuid).sendMessage(msg);
-    }
-  }
-  
   public HashMap<UUID, ItemStack[]> getKeepInventory() {
     return keepInventory;
-  }
-  
-  public int getSavedPlayersCount() {
-    return savedPlayers.size();
   }
   public boolean isToRestore(UUID uuid) {
     return toRestore.containsKey(uuid);
@@ -66,99 +54,10 @@ public class Data {
     toRestore.remove(uuid);
   }
   
-  //checks maxplayers of current teams
-  //and decides, if another player can join
-  public boolean CanJoin() {
-    for (EventTeam team : currentTeams) {
-      if (team.getMaxPlayers() > 0 && !(team.getMaxPlayers() > team.getPlayerNumber()))
-        return false;
-    }
-    return true;
+  public EventGroup getCurrentEvent() {
+    return current;
   }
   
-  public boolean isStarting() {
-    return !currentTeams.isEmpty();
-  }
-  
-  public void setStarting(int delay, String displayName, EventTeam...toStart) {
-    for (EventTeam team : toStart) {
-      currentTeams.add(team);
-      team.setTeamStatus(TeamStatus.LOBBY);
-    }
-    
-    CountdownTimer timer = new CountdownTimer(plugin, delay, () -> Bukkit.broadcastMessage(Msg.get("event_start", true, displayName, 
-        Integer.toString(delay))),
-         () -> {
-          Bukkit.broadcastMessage(Msg.get("event_nojoin", true, displayName));
-          for (EventTeam team : currentTeams) {
-            team.start(displayName);
-          }
-          currentTeams.clear();
-          for (UUID uuid : waitingPlayers) {
-            Player player = Bukkit.getPlayer(uuid);
-            if (player != null)
-              player.sendMessage(Msg.get("event_error_kicked_queue", true));
-          }
-          waitingPlayers.clear();
-          },
-        (t) -> {
-          //there will be check if counting was stopped or smth
-        });
-    timer.scheduleTimer();
-  }
-  
-  public boolean isSaved(UUID uuid) {
-    return savedPlayers.containsKey(uuid);
-  }
-  
-  public boolean isQueued(UUID uuid) {
-    return waitingPlayers.contains(uuid);
-  }
-  
-  //return true if player was added to event
-  //or false if player was queued to event
-  public boolean addPlayer(Player player) {
-    if (currentTeams.size() == 1) {
-      //for 1 team
-      for (EventTeam team : currentTeams)
-        team.addPlayer(player);
-      savedPlayers.put(player.getUniqueId(), new ConfigAccessor(plugin, player.getUniqueId()+".yml", "Players"));
-      return true;
-    } else {
-      //for more teams
-      for (UUID uuid : waitingPlayers) {
-        if (Bukkit.getPlayer(uuid) == null)
-          waitingPlayers.remove(uuid);
-      }
-      waitingPlayers.add(player.getUniqueId());
-      if (currentTeams.size() == waitingPlayers.size()) {
-        for (EventTeam team : currentTeams) {
-          Player pl = Bukkit.getPlayer(waitingPlayers.toArray(new UUID[waitingPlayers.size()])[0]);
-          team.addPlayer(pl);
-          savedPlayers.put(pl.getUniqueId(), new ConfigAccessor(plugin, pl.getUniqueId()+".yml", "Players"));
-          waitingPlayers.remove(pl.getUniqueId());
-        }
-      }
-      return false;
-    }
-  }
-  
-  public void removePlayer(Player player) {
-    getTeamByPlayer(player).delPlayer(player);
-    savedPlayers.remove(player.getUniqueId());
-  }
-  
-  public EventTeam getTeamByPlayer(Player player) {
-    for (EventTeam t : savedTeams.values()) {
-      if (t.isSaved(player.getUniqueId()))
-        return t;
-    }
-    return null;
-  }
-  
-  public boolean anyInProgress() {
-    return !savedPlayers.isEmpty() && !currentTeams.isEmpty();
-  }
   public SavedPlayer getSavedAnywhere(Player player) {
     for (EventTeam t : savedTeams.values()) {
       if (t.isSaved(player.getUniqueId()))
@@ -213,10 +112,7 @@ public class Data {
   }
   
   public boolean isTeam(String name) {
-    if (savedTeams.containsKey(name))
-      return true;
-    else
-      return false;
+    return savedTeams.containsKey(name);
   }
   
   public int getEventNumber() {

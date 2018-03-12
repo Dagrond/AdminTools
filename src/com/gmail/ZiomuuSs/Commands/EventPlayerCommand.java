@@ -23,10 +23,10 @@ public class EventPlayerCommand implements CommandExecutor {
         if (args[0].equalsIgnoreCase("wyjdz")) {
           if (sender instanceof Player) {
             Player player = (Player) sender;
-            if (data.isSaved(player.getUniqueId())) {
-              data.removePlayer(player);
+            if (data.getCurrentEvent().isSaved(player.getUniqueId())) {
+              data.getCurrentEvent().removePlayer(player);
               sender.sendMessage(Msg.get("event_quit", true));
-              data.broadcastToPlayers(Msg.get("event_idonteven", true, player.getDisplayName()));
+              data.getCurrentEvent().broadcastToEvent(Msg.get("event_idonteven", true, player.getDisplayName()));
               return true;
             } else {
               sender.sendMessage(Msg.get("event_error_not_in_event", true));
@@ -38,7 +38,7 @@ public class EventPlayerCommand implements CommandExecutor {
           }
         } else if (args[0].equalsIgnoreCase("dolacz")) {
           if (sender instanceof Player) {
-            if (data.isStarting()) {
+            if (/*todo*/) {
               Player player = (Player) sender;
               if (!data.isSaved(player.getUniqueId())) {
                 if (!data.isQueued(player.getUniqueId())) {

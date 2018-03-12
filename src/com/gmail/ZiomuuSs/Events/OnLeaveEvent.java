@@ -17,9 +17,9 @@ public class OnLeaveEvent implements Listener {
   
   @EventHandler
   public void onLeave(PlayerQuitEvent e) {
-    if (data.isSaved(e.getPlayer().getUniqueId())) {
-      data.removePlayer(e.getPlayer());
-      Bukkit.broadcastMessage(Msg.get("event_leaved", true, e.getPlayer().getDisplayName(), Integer.toString(data.getSavedPlayersCount())));
+    if (data.getCurrentEvent().isSaved(e.getPlayer().getUniqueId())) {
+      data.getCurrentEvent().removePlayer(e.getPlayer());
+      Bukkit.broadcastMessage(Msg.get("event_leaved", true, e.getPlayer().getDisplayName(), Integer.toString(data.getCurrentEvent().getParticipantCount())));
     }
   }
   

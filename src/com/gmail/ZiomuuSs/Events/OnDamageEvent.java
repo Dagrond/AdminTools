@@ -18,7 +18,7 @@ public class OnDamageEvent implements Listener {
   //check if player is in lobby of an event. If so, cancel damage
   @EventHandler
   public void onDamage(EntityDamageByEntityEvent e) {
-    if (e.getEntity() instanceof Player && data.isSaved(e.getEntity().getUniqueId()) && data.getTeamByPlayer((Player) e.getEntity()).getTeamStatus() == TeamStatus.LOBBY) {
+    if (e.getEntity() instanceof Player && data.getCurrentEvent().isSaved(e.getEntity().getUniqueId()) && data.getCurrentEvent().getTeamByPlayer(((Player) e.getEntity())).getTeamStatus() == TeamStatus.LOBBY) {
       e.setCancelled(true);
     }
   }
