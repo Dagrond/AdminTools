@@ -1,6 +1,6 @@
 name: AdminTools
 main: com.gmail.ZiomuuSs.Main
-version: 0.1
+version: 0.4
 softdepend: [Multiverse-Core]
 commands:
    AdminTools:

@@ -80,6 +80,8 @@ public class EventPlayerCommand implements CommandExecutor {
             sender.sendMessage(Msg.get("event_error_player_needed", true));
             return true;
           }
+        } else if (args[0].equalsIgnoreCase("obserwuj")) {
+          //todo
         } else {
           sender.sendMessage(Msg.get("event_error_usage", true, "/e dolacz/wyjdz"));
           return true;

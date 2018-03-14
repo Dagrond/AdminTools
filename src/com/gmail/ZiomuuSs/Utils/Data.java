@@ -4,9 +4,11 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -17,6 +19,8 @@ import org.bukkit.inventory.ItemStack;
 import com.gmail.ZiomuuSs.Main;
 import com.gmail.ZiomuuSs.Events.OnCommandEvent;
 import com.gmail.ZiomuuSs.Events.OnDamageEvent;
+import com.gmail.ZiomuuSs.Events.OnInventoryClickEvent;
+import com.gmail.ZiomuuSs.Events.OnInventoryCloseEvent;
 import com.gmail.ZiomuuSs.Events.OnLeaveEvent;
 import com.gmail.ZiomuuSs.EventGroup;
 import com.gmail.ZiomuuSs.EventTeam;
@@ -32,8 +36,10 @@ public class Data {
   private HashMap<String, EventGroup> savedGroups = new HashMap<>(); //all saved groups
   private HashMap<UUID, SavedPlayer> toRestore = new HashMap<>(); //players that are out of event, but waiting for respawn.
   private OnLeaveEvent leaveListener = new OnLeaveEvent(this);
-  private OnCommandEvent commandListener = new OnCommandEvent(plugin);
+  private OnCommandEvent commandListener = new OnCommandEvent(this);
   private OnDamageEvent damageListener = new OnDamageEvent(this);
+  private OnInventoryCloseEvent inventoryCloseListener = new OnInventoryCloseEvent(this);
+  private OnInventoryClickEvent inventoryClickListener = new OnInventoryClickEvent(this);
   
   public Data(Main plugin) {
     this.plugin = plugin;
@@ -49,6 +55,8 @@ public class Data {
     plugin.getServer().getPluginManager().registerEvents(leaveListener, plugin);
     plugin.getServer().getPluginManager().registerEvents(commandListener, plugin);
     plugin.getServer().getPluginManager().registerEvents(damageListener, plugin);
+    plugin.getServer().getPluginManager().registerEvents(inventoryCloseListener, plugin);
+    plugin.getServer().getPluginManager().registerEvents(inventoryClickListener, plugin);
   }
   
   //stop code for event
@@ -60,6 +68,8 @@ public class Data {
     HandlerList.unregisterAll(leaveListener);
     HandlerList.unregisterAll(commandListener);
     HandlerList.unregisterAll(damageListener);
+    HandlerList.unregisterAll(inventoryCloseListener);
+    HandlerList.unregisterAll(inventoryClickListener);
   }
   
   
@@ -80,7 +90,7 @@ public class Data {
   }
   
   public void addEventGroup(String name, String displayName) {
-    savedGroups.put(name, new EventGroup(this, name, displayName));
+    savedGroups.put(name, new EventGroup(this, name, ChatColor.translateAlternateColorCodes('&', displayName.replaceAll("_", " "))));
     saveGroup(name);
   }
   
@@ -217,7 +227,8 @@ public class Data {
       cs.set("spec.world", l.getWorld().getName());
     }
     if (!group.getTeams().isEmpty()) {
-      cs.set("teams", group.getTeams().keySet());
+      Set<String> teams = group.getTeams().keySet();
+      cs.set("teams", teams.toArray(new String[teams.size()]));
     }
     ca.saveConfig();
   }
@@ -231,8 +242,8 @@ public class Data {
     ConfigurationSection cs = ca.getConfig();
     if (!tm.getFriendlyFire())
       cs.set("friendlyfire", false);
-    if (tm.getNametagVisibility())
-      cs.set("NametagVisibility", true);
+    if (!tm.getNametagVisibility())
+      cs.set("NametagVisibility", false);
     if (tm.getLobby() != null) {
       cs.set("lobby.x", tm.getLobby().getX());
       cs.set("lobby.y", tm.getLobby().getY());
@@ -292,7 +303,7 @@ public class Data {
         if (fc.isConfigurationSection("inventories")) {
           for (String name : fc.getConfigurationSection("inventories").getKeys(false)) {
             st.setInventory(name, ((List<ItemStack>) fc.getList("inventories."+name+".contents")).toArray(new ItemStack[0]));
-            if (fc.isConfigurationSection("inventories."+name+"icon"))
+            if (fc.isConfigurationSection("inventories."+name+".icon"))
               st.setInventoryIcon(name, fc.getItemStack("inventories."+name+".icon"));
           }
         }
@@ -314,8 +325,8 @@ public class Data {
     }
     //loading groups
     int groupsCount = 0;
-    if (new File(plugin.getDataFolder().getAbsolutePath() + File.separatorChar + "Groups").exists()) {
-      for (File file : new File(plugin.getDataFolder().getAbsolutePath() + File.separatorChar + "Groups").listFiles()) {
+    if (new File(plugin.getDataFolder().getAbsolutePath() + File.separatorChar + "Events").exists()) {
+      for (File file : new File(plugin.getDataFolder().getAbsolutePath() + File.separatorChar + "Events").listFiles()) {
         FileConfiguration fc = YamlConfiguration.loadConfiguration(file);
         String gn = file.getName();
         gn = gn.substring(0, gn.length() - 4); //remove the .yml

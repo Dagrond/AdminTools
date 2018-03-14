@@ -220,7 +220,7 @@ public class AdminToolsCommand implements CommandExecutor {
                   return true;
                 }
               } else if (args[2].equalsIgnoreCase("create")) {
-                if (args.length>2) {
+                if (args.length>3) {
                   data.addEventGroup(args[1], args[3]);
                   sender.sendMessage(Msg.get("group_added", true, args[1], args[3]));
                   return true;
@@ -262,7 +262,7 @@ public class AdminToolsCommand implements CommandExecutor {
                       return true;
                     } else if (args[3].equalsIgnoreCase("icon")) {
                       if (sender instanceof Player) {
-                        if (args.length>3) {
+                        if (args.length>4) {
                           if (team.isInventory(args[4])) {
                             Player player = (Player) sender;
                             if (player.getInventory().getItemInMainHand().getType() == Material.AIR) {
@@ -287,7 +287,7 @@ public class AdminToolsCommand implements CommandExecutor {
                         return true;
                       }
                     } else if (args[3].equalsIgnoreCase("del") || args[3].equalsIgnoreCase("delete") || args[3].equalsIgnoreCase("remove")) {
-                      if (args.length>3) {
+                      if (args.length>4) {
                         if (team.isInventory(args[4])) {
                           team.removeInventory(args[4]);
                           sender.sendMessage(Msg.get("team_inventory_deleted", true, args[4], args[1]));
@@ -300,7 +300,7 @@ public class AdminToolsCommand implements CommandExecutor {
                         return true;
                       }
                     } else if (args[3].equalsIgnoreCase("add")) {
-                      if (args.length>3) {
+                      if (args.length>4) {
                         if (!team.isInventory(args[4])) {
                           if (sender instanceof Player) {
                             team.addInventory(args[4], ((Player) sender).getInventory().getContents());
@@ -469,12 +469,12 @@ public class AdminToolsCommand implements CommandExecutor {
           }
       } else if (args[0].equalsIgnoreCase("start")) {
         if (sender.hasPermission("AdminTools.start") || sender.hasPermission("AdminTools.*")) {
-          if (data.getCurrentEvent() != null) {
+          if (data.getCurrentEvent() == null) {
             if (args.length>1) {
               EventGroup group = data.getEventGroupByName(args[1]);
               if (group != null) {
                 if (group.isReady()) {
-                  group.start();
+                  data.start(group);
                   sender.sendMessage(Msg.get("group_started", true, args[1]));
                   return true;
                 } else {

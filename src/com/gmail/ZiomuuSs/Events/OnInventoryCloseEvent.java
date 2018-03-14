@@ -16,9 +16,14 @@ public class OnInventoryCloseEvent implements Listener {
   
   @EventHandler
   public void onInventoryClose(InventoryCloseEvent e) {
-    //todo
     if (e.getInventory().getName().equals(Msg.get("class_choose_inventory", false))) {
-      
+      data.getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(data.getPlugin(), new Runnable() {
+        @Override
+        public void run() {
+          e.getPlayer().openInventory(e.getInventory());
+          e.getPlayer().sendMessage(Msg.get("event_error_choose_inventory", true));
+        }
+      }, 1);
     }
   }
   

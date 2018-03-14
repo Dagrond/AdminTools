@@ -132,6 +132,7 @@ event_team_startpoint_tp: "Zostaniesz teleportowany na arene za %1 sekund!"
 event_team_teleported: "Zostales teleportowany na arene! Powodzenia!"
 event_kicked: "%1 zostal wyrzucony z eventu!"
 event_choose_inventory: "Wybierz swoja klase!"
+event_inventory_chosen: "Pomyslnie wybrales klase %1!"
 
 #event error messages
 
@@ -147,7 +148,8 @@ event_error_kicked_queue: "Zostales wyrzucony z kolejki z powodu zbyt males ilos
 event_error_riding: "Nie mozesz dolaczyc do eventu podczas jazdy!"
 event_error_gamemode: "Aby dolaczyc do eventu musisz byc na survivalu!"
 event_error_fuck_back: "Nie mozesz cofnac sie do areny eventowej!"
-event_error_not_enough_players: "Event nie mogl sie rozpoczac z powodu zbyt malej ilosci graczy!"
+event_error_not_enough_players: "Event %1 nie rozpoczal sie z powodu zbyt malej ilosci graczy!"
+event_error_choose_inventory: "Wybierz wlasciwa klase!"
 
 #help pages
 help: "Pomoc pluginu %sAdminTools%n:"

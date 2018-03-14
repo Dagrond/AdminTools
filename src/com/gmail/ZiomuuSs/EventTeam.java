@@ -1,12 +1,13 @@
 package com.gmail.ZiomuuSs;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -27,13 +28,12 @@ public class EventTeam {
   private Data data;
   private String name;
   private TeamStatus status; //status of team
-  private HashMap<String, ItemStack[]> inventories; //can pick inventory from an event
-  private HashMap<String, ItemStack> inventoryIcons; //Icon of /\ when player can pick it.
+  private HashMap<String, ItemStack[]> inventories = new HashMap<>(); //can pick inventory from an event
+  private HashMap<String, ItemStack> inventoryIcons = new HashMap<>(); //Icon of /\ when player can pick it.
   private Team team; //scoreboard team of EventTeam... this is getting ridiculous
   private Inventory gui; //gui for inventory selection
   private Location lobby; //lobby of an event
   CountdownTimer timer;
-  private HashSet<UUID> hasInventory = new HashSet<>(); //players that already choosen their inventory
   private ArrayList<Location> startPoints = new ArrayList<>(); //list of start point of event
   private int maxPlayers = 0; //0 - unlimited
   private int delay;
@@ -47,20 +47,23 @@ public class EventTeam {
   
   public void start(String displayName) {
     //gui creation
-    ItemStack noIcon = new ItemStack(Material.DIAMOND_SWORD, 1);
+    ItemStack noIcon = new ItemStack(Material.DIAMOND_SWORD);
+    noIcon.setAmount(1);
     noIcon.getItemMeta().addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+    noIcon.getItemMeta().setLore(Arrays.asList(ChatColor.translateAlternateColorCodes('&', "&5Nie ustawiono ikony!")));
     if (inventories.size()>1) {
       gui = Bukkit.createInventory(null, inventories.size() < 10 ? 9 : inventories.size() < 19 ? 18 : inventories.size() < 28 ? 27 : inventories.size() < 37 ? 36 : inventories.size() < 46 ? 45 : 54, Msg.get("class_choose_inventory", false));
       for (String inv : inventories.keySet()) {
-        if (inventoryIcons.containsKey(inv))
+        /*if (inventoryIcons.containsKey(inv))
           gui.addItem(inventoryIcons.get(inv));
-        else {
+        else {*/
           noIcon.getItemMeta().setDisplayName(inv);
           gui.addItem(noIcon);
-        }
+        //}
       }
-      ItemStack none = new ItemStack(Material.BARRIER, 1);
+      ItemStack none = new ItemStack(Material.BARRIER);
       none.getItemMeta().setDisplayName("");
+      none.setAmount(1);
       none.getItemMeta().addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       while(gui.firstEmpty() != -1)
         gui.addItem(none);
@@ -94,6 +97,17 @@ public class EventTeam {
   public void broadcastToMembers(String string) {
     for (UUID uuid : savedPlayers.keySet()) {
       Bukkit.getPlayer(uuid).sendMessage(string);
+    }
+  }
+  
+  public void setPlayerInventoryByIcon(ItemStack icon, Player player) {
+    if (icon != null && inventoryIcons.containsValue(icon)) {
+      String invname = getInventoryNameByIcon(icon);
+      player.getInventory().setContents(inventories.get(invname));
+      player.updateInventory();
+      player.sendMessage(Msg.get("event_inventory_chosen", true, invname));
+    } else {
+      player.sendMessage(Msg.get("event_error_choose_inventory", true));
     }
   }
   
@@ -140,8 +154,8 @@ public class EventTeam {
         player.updateInventory();
       }
     } else {
-      player.sendMessage(Msg.get("event_choose_inventory", true));
       player.openInventory(gui);
+      player.sendMessage(Msg.get("event_choose_inventory", true));
     }
   }
   
@@ -173,8 +187,12 @@ public class EventTeam {
     return name;
   }
   
-  public HashSet<UUID> getPlayersWithInventory() {
-    return hasInventory;
+  public String getInventoryNameByIcon(ItemStack icon) {
+    for (String name : inventoryIcons.keySet()) {
+      if (inventoryIcons.get(name).equals(icon))
+        return name;
+    }
+    return null;
   }
   
   public String getPrettyPlayerList() {

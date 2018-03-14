@@ -54,12 +54,16 @@ public class EventGroup {
           waitingPlayers.clear();
           status = EventStatus.IN_PROGRESS;
           if (savedPlayers.size() < min) {
-            broadcastToEvent(Msg.get("event_error_not_enough_players", true));
+            Bukkit.broadcastMessage(Msg.get("event_error_not_enough_players", true, displayName));
             data.stop();
           }
           },
         (t) -> {
           //there will be smth. Or not.
+          if (t.getSecondsLeft() == delay/2)
+            Bukkit.broadcastMessage(Msg.get("event_start", true, displayName, Integer.toString(t.getSecondsLeft())));
+          else if (t.getSecondsLeft() == 10)
+            Bukkit.broadcastMessage(Msg.get("event_start", true, displayName, Integer.toString(t.getSecondsLeft())));
         });
     timer.scheduleTimer();
   }
