@@ -83,6 +83,7 @@ group_spec_location_set: "Pomyslnie ustawiono lokacje startowa obserwatorow w ev
 team_inventoryicon_removed: "Pomyslnie usunieto ikonke klasy %1 z druzyny %2!"
 team_inventoryicon_edit: "Pomyslnie zmieniono ikone klasy %1 w druzynie %2!"
 team_inventoryicon_add: "Pomyslnie dodano ikone klasy %1 w druzynie %2!"
+group_started: "Pomyslnie rozpoczeto event %1!"
 
 #error messages
 error_permission: "Nie posiadasz odpowiednich uprawnien aby uzyc tej komendy!"
@@ -109,6 +110,8 @@ error_event_not_exist: "Event o nazwie %1 nie istnieje!"
 error_team_not_listed_in_group: "Druzyna %1 nie przylaczona do eventu %2!"
 error_team_already_in_group: "Druzyna %1 jest juz przylaczona do eventu %2!"
 error_cannot_edit_while_in_progress: "Nie mozesz edytowac eventu ktory aktualnie trwa!"
+error_group_not_exist: "Event %1 nie istnieje!"
+error_group_not_ready: "Grupa %1 nie jest gotowa na start!"
 
 #event messages
 event_quit: "Pomyslnie opusciles event!"
@@ -144,6 +147,7 @@ event_error_kicked_queue: "Zostales wyrzucony z kolejki z powodu zbyt males ilos
 event_error_riding: "Nie mozesz dolaczyc do eventu podczas jazdy!"
 event_error_gamemode: "Aby dolaczyc do eventu musisz byc na survivalu!"
 event_error_fuck_back: "Nie mozesz cofnac sie do areny eventowej!"
+event_error_not_enough_players: "Event nie mogl sie rozpoczac z powodu zbyt malej ilosci graczy!"
 
 #help pages
 help: "Pomoc pluginu %sAdminTools%n:"

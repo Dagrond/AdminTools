@@ -471,7 +471,20 @@ public class AdminToolsCommand implements CommandExecutor {
         if (sender.hasPermission("AdminTools.start") || sender.hasPermission("AdminTools.*")) {
           if (data.getCurrentEvent() != null) {
             if (args.length>1) {
-              //todo
+              EventGroup group = data.getEventGroupByName(args[1]);
+              if (group != null) {
+                if (group.isReady()) {
+                  group.start();
+                  sender.sendMessage(Msg.get("group_started", true, args[1]));
+                  return true;
+                } else {
+                  sender.sendMessage(Msg.get("error_group_not_exist", true, args[1]));
+                  return true;
+                }
+              } else {
+                sender.sendMessage(Msg.get("error_group_not_ready", true, args[1]));
+                return true;
+              }
             } else {
               sender.sendMessage(Msg.get("error_usage", true, "/e start (delay) (displayname) (team1) <team2>"));
               return true;

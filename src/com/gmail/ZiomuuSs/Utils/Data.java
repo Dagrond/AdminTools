@@ -11,9 +11,13 @@ import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 
 import com.gmail.ZiomuuSs.Main;
+import com.gmail.ZiomuuSs.Events.OnCommandEvent;
+import com.gmail.ZiomuuSs.Events.OnDamageEvent;
+import com.gmail.ZiomuuSs.Events.OnLeaveEvent;
 import com.gmail.ZiomuuSs.EventGroup;
 import com.gmail.ZiomuuSs.EventTeam;
 
@@ -27,11 +31,37 @@ public class Data {
   private HashMap<String, EventTeam> savedTeams = new HashMap<>(); //all saved teams
   private HashMap<String, EventGroup> savedGroups = new HashMap<>(); //all saved groups
   private HashMap<UUID, SavedPlayer> toRestore = new HashMap<>(); //players that are out of event, but waiting for respawn.
+  private OnLeaveEvent leaveListener = new OnLeaveEvent(this);
+  private OnCommandEvent commandListener = new OnCommandEvent(plugin);
+  private OnDamageEvent damageListener = new OnDamageEvent(this);
   
   public Data(Main plugin) {
     this.plugin = plugin;
     load();
   }
+  
+  //start code for event
+  public void start(EventGroup group) {
+    //todo
+    current = group;
+    current.start();
+    //registering events
+    plugin.getServer().getPluginManager().registerEvents(leaveListener, plugin);
+    plugin.getServer().getPluginManager().registerEvents(commandListener, plugin);
+    plugin.getServer().getPluginManager().registerEvents(damageListener, plugin);
+  }
+  
+  //stop code for event
+  public void stop() {
+    //todo
+    current.stop();
+    current = null;
+    //unregistering events
+    HandlerList.unregisterAll(leaveListener);
+    HandlerList.unregisterAll(commandListener);
+    HandlerList.unregisterAll(damageListener);
+  }
+  
   
   public Main getPlugin() {
     return plugin;

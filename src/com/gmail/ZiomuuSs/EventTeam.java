@@ -148,6 +148,23 @@ public class EventTeam {
   public void delPlayer(Player player) {
     savedPlayers.get(player.getUniqueId()).restore();
     savedPlayers.remove(player.getUniqueId());
+    if (!data.getCurrentEvent().getWaitingPlayers().isEmpty()) {
+      EventGroup group = data.getCurrentEvent();
+      for (UUID uuid : group.getWaitingPlayers()) {
+        if (Bukkit.getPlayer(uuid) != null) {
+          group.addPlayer(Bukkit.getPlayer(uuid));
+          Bukkit.getPlayer(uuid).sendMessage(Msg.get("event_added", true));
+        } else {
+          group.getWaitingPlayers().remove(uuid);
+        }
+      }
+    }
+  }
+  
+  public void delAllPlayers() {
+    for (UUID uuid : savedPlayers.keySet()) {
+      delPlayer(Bukkit.getPlayer(uuid));
+    }
   }
   
   //getters

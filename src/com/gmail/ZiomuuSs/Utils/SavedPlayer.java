@@ -39,6 +39,7 @@ public class SavedPlayer {
   public void restore() {
     Player player = Bukkit.getPlayer(uuid);
     if (!player.isDead()) {
+      player.closeInventory();
       player.getInventory().setContents(inv);
       team.removeEntry(player.getName());
       player.updateInventory();

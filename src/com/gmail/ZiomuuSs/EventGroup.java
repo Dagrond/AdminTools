@@ -36,8 +36,11 @@ public class EventGroup {
   }
   
   public void start() {
-    CountdownTimer timer = new CountdownTimer(data.getPlugin(), delay, () -> Bukkit.broadcastMessage(Msg.get("event_start", true, displayName, 
-        Integer.toString(delay))),
+    CountdownTimer timer = new CountdownTimer(data.getPlugin(), delay,
+        () -> {
+          Bukkit.broadcastMessage(Msg.get("event_start", true, displayName, Integer.toString(delay)));
+          status = EventStatus.COUNTDOWN;
+        },
          () -> {
           Bukkit.broadcastMessage(Msg.get("event_nojoin", true, displayName));
           for (EventTeam team : teams.values()) {
@@ -49,6 +52,11 @@ public class EventGroup {
               player.sendMessage(Msg.get("event_error_kicked_queue", true));
           }
           waitingPlayers.clear();
+          status = EventStatus.IN_PROGRESS;
+          if (savedPlayers.size() < min) {
+            broadcastToEvent(Msg.get("event_error_not_enough_players", true));
+            data.stop();
+          }
           },
         (t) -> {
           //there will be smth. Or not.
@@ -56,10 +64,23 @@ public class EventGroup {
     timer.scheduleTimer();
   }
   
+  public void stop() {
+    //todo
+    status = EventStatus.DISABLED;
+    for (EventTeam team : teams.values()) {
+      team.delAllPlayers();
+    }
+    savedPlayers.clear();
+  }
+  
   //getters
   
   public int getMinPlayers() {
     return min;
+  }
+  
+  public HashSet<UUID> getWaitingPlayers() {
+    return waitingPlayers;
   }
   
   public EventStatus getEventStatus() {
@@ -141,6 +162,17 @@ public class EventGroup {
   }
   
   //checkers
+  public boolean isReady() {
+    if (!teams.isEmpty()) {
+      for (EventTeam team : teams.values()) {
+        if (!team.isReady())
+          return false;
+      }
+      return true;
+    } else
+      return false;
+  }
+  
   public boolean isSaved(UUID uuid) {
     return savedPlayers.contains(uuid);
   }
@@ -201,6 +233,13 @@ public class EventGroup {
     player.teleport(spec);
     player.setGameMode(GameMode.SPECTATOR);
   }
+  
+  public void kickSpectator (Player player) {
+    spectators.remove(player.getUniqueId());
+    player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+    player.setGameMode(GameMode.SURVIVAL);
+  }
+  
   //return true if player was added to event
   //or false if player was queued to event
   public boolean addPlayer(Player player) {
@@ -212,9 +251,19 @@ public class EventGroup {
       return true;
     } else {
       //for more teams
+      //checking if all queued players are online
       for (UUID uuid : waitingPlayers) {
         if (Bukkit.getPlayer(uuid) == null)
           waitingPlayers.remove(uuid);
+      }
+      //checking if there's team balance
+      int i = -1;
+      for (EventTeam team : teams.values()) {
+        if (i > -1 && team.getPlayerNumber() < i) {
+          team.addPlayer(player);
+          return true;
+        } else
+          i = team.getPlayerNumber();
       }
       waitingPlayers.add(player.getUniqueId());
       if (teams.size() == waitingPlayers.size()) {

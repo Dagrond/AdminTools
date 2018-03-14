@@ -15,7 +15,7 @@ public class OnCommandEvent implements Listener {
   }
   
   @EventHandler
-  public void onDeath(PlayerCommandPreprocessEvent e) {
+  public void onCommand(PlayerCommandPreprocessEvent e) {
     if (plugin.getData().getCurrentEvent().isSaved(e.getPlayer().getUniqueId()) && !e.getPlayer().isOp()) {   
       if (!e.getMessage().toLowerCase().startsWith("/e ") && !e.getMessage().toLowerCase().startsWith("/event ")) {
         e.getPlayer().sendMessage(Msg.get("event_error_command", false));
