@@ -1,5 +1,6 @@
 package com.gmail.ZiomuuSs.Events;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -20,8 +21,10 @@ public class OnInventoryCloseEvent implements Listener {
       data.getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(data.getPlugin(), new Runnable() {
         @Override
         public void run() {
-          e.getPlayer().openInventory(e.getInventory());
-          e.getPlayer().sendMessage(Msg.get("event_error_choose_inventory", true));
+          if (data.getCurrentEvent() != null && data.getCurrentEvent().isSaved(e.getPlayer().getUniqueId()) && !data.getCurrentEvent().getTeamByPlayer((Player) e.getPlayer()).hasChosenInventory(e.getPlayer().getUniqueId())) {
+            e.getPlayer().openInventory(e.getInventory());
+            e.getPlayer().sendMessage(Msg.get("event_error_choose_inventory", true));
+          }
         }
       }, 1);
     }

@@ -40,18 +40,15 @@ public class EventGroup {
         () -> {
           Bukkit.broadcastMessage(Msg.get("event_start", true, displayName, Integer.toString(delay)));
           status = EventStatus.COUNTDOWN;
+          for (EventTeam team : teams.values()) {
+            team.createGui();
+          }
         },
          () -> {
           Bukkit.broadcastMessage(Msg.get("event_nojoin", true, displayName));
           for (EventTeam team : teams.values()) {
             team.start(displayName);
           }
-          for (UUID uuid : waitingPlayers) {
-            Player player = Bukkit.getPlayer(uuid);
-            if (player != null)
-              player.sendMessage(Msg.get("event_error_kicked_queue", true));
-          }
-          waitingPlayers.clear();
           status = EventStatus.IN_PROGRESS;
           if (savedPlayers.size() < min) {
             Bukkit.broadcastMessage(Msg.get("event_error_not_enough_players", true, displayName));
@@ -72,7 +69,7 @@ public class EventGroup {
     //todo
     status = EventStatus.DISABLED;
     for (EventTeam team : teams.values()) {
-      team.delAllPlayers();
+      team.stop();
     }
     savedPlayers.clear();
   }

@@ -82,6 +82,24 @@ public class EventPlayerCommand implements CommandExecutor {
           }
         } else if (args[0].equalsIgnoreCase("obserwuj")) {
           //todo
+        } else if (args[0].equalsIgnoreCase("klasa") || args[0].equalsIgnoreCase("wybierz") || args[0].equalsIgnoreCase("klasy")) {
+          if (sender instanceof Player) {
+            if (data.getCurrentEvent() != null) {
+              Player player = (Player) sender;
+              if (data.getCurrentEvent().isSaved(player.getUniqueId())) {
+                data.getCurrentEvent().getTeamByPlayer(player).changeInventory(player);
+              } else {
+                sender.sendMessage(Msg.get("event_error_not_in_event", true));
+                return true;
+              }
+            } else {
+              sender.sendMessage(Msg.get("event_error_no_open", true));
+              return true;
+            }
+          } else {
+            sender.sendMessage(Msg.get("event_error_player_needed", true));
+            return true;
+          }
         } else {
           sender.sendMessage(Msg.get("event_error_usage", true, "/e dolacz/wyjdz"));
           return true;

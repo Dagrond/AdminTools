@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import com.gmail.ZiomuuSs.Main;
 import com.gmail.ZiomuuSs.Events.OnCommandEvent;
 import com.gmail.ZiomuuSs.Events.OnDamageEvent;
+import com.gmail.ZiomuuSs.Events.OnDropEvent;
 import com.gmail.ZiomuuSs.Events.OnInventoryClickEvent;
 import com.gmail.ZiomuuSs.Events.OnInventoryCloseEvent;
 import com.gmail.ZiomuuSs.Events.OnLeaveEvent;
@@ -40,6 +41,7 @@ public class Data {
   private OnDamageEvent damageListener = new OnDamageEvent(this);
   private OnInventoryCloseEvent inventoryCloseListener = new OnInventoryCloseEvent(this);
   private OnInventoryClickEvent inventoryClickListener = new OnInventoryClickEvent(this);
+  private OnDropEvent dropListener = new OnDropEvent(this);
   
   public Data(Main plugin) {
     this.plugin = plugin;
@@ -57,6 +59,7 @@ public class Data {
     plugin.getServer().getPluginManager().registerEvents(damageListener, plugin);
     plugin.getServer().getPluginManager().registerEvents(inventoryCloseListener, plugin);
     plugin.getServer().getPluginManager().registerEvents(inventoryClickListener, plugin);
+    plugin.getServer().getPluginManager().registerEvents(dropListener, plugin);
   }
   
   //stop code for event
@@ -70,6 +73,7 @@ public class Data {
     HandlerList.unregisterAll(damageListener);
     HandlerList.unregisterAll(inventoryCloseListener);
     HandlerList.unregisterAll(inventoryClickListener);
+    HandlerList.unregisterAll(dropListener);
   }
   
   
@@ -303,7 +307,7 @@ public class Data {
         if (fc.isConfigurationSection("inventories")) {
           for (String name : fc.getConfigurationSection("inventories").getKeys(false)) {
             st.setInventory(name, ((List<ItemStack>) fc.getList("inventories."+name+".contents")).toArray(new ItemStack[0]));
-            if (fc.isConfigurationSection("inventories."+name+".icon"))
+            if (fc.isItemStack("inventories."+name+".icon"))
               st.setInventoryIcon(name, fc.getItemStack("inventories."+name+".icon"));
           }
         }

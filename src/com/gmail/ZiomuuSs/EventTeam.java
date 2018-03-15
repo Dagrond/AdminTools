@@ -1,13 +1,12 @@
 package com.gmail.ZiomuuSs;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -30,6 +29,7 @@ public class EventTeam {
   private TeamStatus status; //status of team
   private HashMap<String, ItemStack[]> inventories = new HashMap<>(); //can pick inventory from an event
   private HashMap<String, ItemStack> inventoryIcons = new HashMap<>(); //Icon of /\ when player can pick it.
+  private HashSet<UUID> playersWithChosenInventory = new HashSet<>(); //players that already chosen their inventory
   private Team team; //scoreboard team of EventTeam... this is getting ridiculous
   private Inventory gui; //gui for inventory selection
   private Location lobby; //lobby of an event
@@ -46,30 +46,6 @@ public class EventTeam {
   }
   
   public void start(String displayName) {
-    //gui creation
-    ItemStack noIcon = new ItemStack(Material.DIAMOND_SWORD);
-    noIcon.setAmount(1);
-    noIcon.getItemMeta().addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-    noIcon.getItemMeta().setLore(Arrays.asList(ChatColor.translateAlternateColorCodes('&', "&5Nie ustawiono ikony!")));
-    if (inventories.size()>1) {
-      gui = Bukkit.createInventory(null, inventories.size() < 10 ? 9 : inventories.size() < 19 ? 18 : inventories.size() < 28 ? 27 : inventories.size() < 37 ? 36 : inventories.size() < 46 ? 45 : 54, Msg.get("class_choose_inventory", false));
-      for (String inv : inventories.keySet()) {
-        /*if (inventoryIcons.containsKey(inv))
-          gui.addItem(inventoryIcons.get(inv));
-        else {*/
-          noIcon.getItemMeta().setDisplayName(inv);
-          gui.addItem(noIcon);
-        //}
-      }
-      ItemStack none = new ItemStack(Material.BARRIER);
-      none.getItemMeta().setDisplayName("");
-      none.setAmount(1);
-      none.getItemMeta().addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-      while(gui.firstEmpty() != -1)
-        gui.addItem(none);
-      
-    }
-    
     //timer
     timer = new CountdownTimer(data.getPlugin(), delay,
         () -> broadcastToMembers(Msg.get("event_team_startpoint_tp", true, Integer.toString(delay))), () -> {
@@ -94,15 +70,40 @@ public class EventTeam {
     timer.scheduleTimer();
   }
   
+  public void stop() {
+    delAllPlayers();
+    playersWithChosenInventory.clear();
+    status = TeamStatus.DISABLED;
+    gui = null;
+  }
+  
   public void broadcastToMembers(String string) {
     for (UUID uuid : savedPlayers.keySet()) {
       Bukkit.getPlayer(uuid).sendMessage(string);
     }
   }
   
+  public void createGui() {
+    //gui creation
+    if (inventories.size()>1) {
+      gui = Bukkit.createInventory(null, inventories.size() < 10 ? 9 : inventories.size() < 19 ? 18 : inventories.size() < 28 ? 27 : inventories.size() < 37 ? 36 : inventories.size() < 46 ? 45 : 54, Msg.get("class_choose_inventory", false));
+      for (String inv : inventories.keySet()) {
+        gui.setItem(gui.firstEmpty(), inventoryIcons.get(inv));
+      }
+      ItemStack none = new ItemStack(Material.BARRIER);
+      none.getItemMeta().setDisplayName("");
+      none.setAmount(1);
+      none.getItemMeta().addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+      while(gui.firstEmpty() != -1)
+        gui.setItem(gui.firstEmpty(), none);
+    }
+  }
+  
   public void setPlayerInventoryByIcon(ItemStack icon, Player player) {
     if (icon != null && inventoryIcons.containsValue(icon)) {
       String invname = getInventoryNameByIcon(icon);
+      playersWithChosenInventory.add(player.getUniqueId());
+      player.closeInventory();
       player.getInventory().setContents(inventories.get(invname));
       player.updateInventory();
       player.sendMessage(Msg.get("event_inventory_chosen", true, invname));
@@ -144,8 +145,6 @@ public class EventTeam {
   
   public void addPlayer(Player player) {
     savedPlayers.put(player.getUniqueId(), new SavedPlayer(player, lobby, data, team));
-    //anti escape because of plugins with teleport delay that works badly (they are not considering teleport as move)
-    player.setVelocity(player.getLocation().getDirection().multiply(1.2));
     if (inventories.isEmpty())
       return;
     if (inventories.size() == 1) {
@@ -162,6 +161,7 @@ public class EventTeam {
   public void delPlayer(Player player) {
     savedPlayers.get(player.getUniqueId()).restore();
     savedPlayers.remove(player.getUniqueId());
+    playersWithChosenInventory.remove(player.getUniqueId());
     if (!data.getCurrentEvent().getWaitingPlayers().isEmpty()) {
       EventGroup group = data.getCurrentEvent();
       for (UUID uuid : group.getWaitingPlayers()) {
@@ -181,6 +181,12 @@ public class EventTeam {
     }
   }
   
+  public void changeInventory(Player player) {
+    playersWithChosenInventory.remove(player.getUniqueId());
+    player.openInventory(gui);
+    player.sendMessage(Msg.get("event_choose_inventory", true));
+  }
+  
   //getters
   @Override
   public String toString() {
@@ -189,7 +195,7 @@ public class EventTeam {
   
   public String getInventoryNameByIcon(ItemStack icon) {
     for (String name : inventoryIcons.keySet()) {
-      if (inventoryIcons.get(name).equals(icon))
+      if (inventoryIcons.get(name).isSimilar(icon))
         return name;
     }
     return null;
@@ -258,6 +264,11 @@ public class EventTeam {
   }
   
   //checkers
+  
+  public boolean hasChosenInventory(UUID uuid) {
+    return playersWithChosenInventory.contains(uuid);
+  }
+  
   public boolean isReady() {
     return (lobby != null && !startPoints.isEmpty() && !inventories.isEmpty());
   }
@@ -344,5 +355,10 @@ public class EventTeam {
   
   public void addInventory(String name, ItemStack[] inv) {
     inventories.put(name, inv);
+    if (!inventoryIcons.containsKey(name)) {
+      ItemStack noIcon = new ItemStack(Material.DIAMOND_SWORD, 1);
+      noIcon.getItemMeta().setDisplayName("&6Klasa "+name);
+      inventoryIcons.put(name, noIcon);
+    }
   }
 }
