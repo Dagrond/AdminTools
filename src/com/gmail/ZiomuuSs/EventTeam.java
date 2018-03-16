@@ -7,12 +7,14 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scoreboard.Team;
 
 import com.gmail.ZiomuuSs.Utils.CountdownTimer;
@@ -27,6 +29,7 @@ public class EventTeam {
   private Data data;
   private String name;
   private TeamStatus status; //status of team
+  private HashSet<UUID> originalPlayers = new HashSet<>(); //list of players that were in this team after start
   private HashMap<String, ItemStack[]> inventories = new HashMap<>(); //can pick inventory from an event
   private HashMap<String, ItemStack> inventoryIcons = new HashMap<>(); //Icon of /\ when player can pick it.
   private HashSet<UUID> playersWithChosenInventory = new HashSet<>(); //players that already chosen their inventory
@@ -52,6 +55,7 @@ public class EventTeam {
           broadcastToMembers(Msg.get("event_team_teleported", true));
           int index = 0;
           for (UUID uuid : savedPlayers.keySet()) {
+            originalPlayers.add(uuid);
             Player player = Bukkit.getPlayer(uuid);
             if (player != null) {
               player.teleport(startPoints.get(index));
@@ -90,10 +94,11 @@ public class EventTeam {
       for (String inv : inventories.keySet()) {
         gui.setItem(gui.firstEmpty(), inventoryIcons.get(inv));
       }
-      ItemStack none = new ItemStack(Material.BARRIER);
-      none.getItemMeta().setDisplayName("");
-      none.setAmount(1);
-      none.getItemMeta().addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+      ItemStack none = new ItemStack(Material.BARRIER, 1);
+      ItemMeta meta = none.getItemMeta();
+      meta.setDisplayName("");
+      meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+      none.setItemMeta(meta);
       while(gui.firstEmpty() != -1)
         gui.setItem(gui.firstEmpty(), none);
     }
@@ -191,6 +196,10 @@ public class EventTeam {
   @Override
   public String toString() {
     return name;
+  }
+  
+  public HashSet<UUID> getOriginalPlayers() {
+    return originalPlayers;
   }
   
   public String getInventoryNameByIcon(ItemStack icon) {
@@ -357,7 +366,10 @@ public class EventTeam {
     inventories.put(name, inv);
     if (!inventoryIcons.containsKey(name)) {
       ItemStack noIcon = new ItemStack(Material.DIAMOND_SWORD, 1);
-      noIcon.getItemMeta().setDisplayName("&6Klasa "+name);
+      ItemMeta meta = noIcon.getItemMeta();
+      meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&6"+name));
+      meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+      noIcon.setItemMeta(meta);
       inventoryIcons.put(name, noIcon);
     }
   }

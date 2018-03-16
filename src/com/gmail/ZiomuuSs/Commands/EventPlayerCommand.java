@@ -88,6 +88,7 @@ public class EventPlayerCommand implements CommandExecutor {
               Player player = (Player) sender;
               if (data.getCurrentEvent().isSaved(player.getUniqueId())) {
                 data.getCurrentEvent().getTeamByPlayer(player).changeInventory(player);
+                return true;
               } else {
                 sender.sendMessage(Msg.get("event_error_not_in_event", true));
                 return true;

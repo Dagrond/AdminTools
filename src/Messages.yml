@@ -83,7 +83,9 @@ group_spec_location_set: "Pomyslnie ustawiono lokacje startowa obserwatorow w ev
 team_inventoryicon_removed: "Pomyslnie usunieto ikonke klasy %1 z druzyny %2!"
 team_inventoryicon_edit: "Pomyslnie zmieniono ikone klasy %1 w druzynie %2!"
 team_inventoryicon_add: "Pomyslnie dodano ikone klasy %1 w druzynie %2!"
+group_cancelled: "Pomyslnie wylaczyles event!"
 group_started: "Pomyslnie rozpoczeto event %1!"
+group_wincondition_set: "Pomyslnie ustawiono warunek zwycieztwa eventu %1 na %2!"
 
 #error messages
 error_permission: "Nie posiadasz odpowiednich uprawnien aby uzyc tej komendy!"
@@ -111,7 +113,9 @@ error_team_not_listed_in_group: "Druzyna %1 nie przylaczona do eventu %2!"
 error_team_already_in_group: "Druzyna %1 jest juz przylaczona do eventu %2!"
 error_cannot_edit_while_in_progress: "Nie mozesz edytowac eventu ktory aktualnie trwa!"
 error_group_not_exist: "Event %1 nie istnieje!"
-error_group_not_ready: "Grupa %1 nie jest gotowa na start!"
+error_group_not_ready: "Grupa %1 (lub jeden z przylaczonych do niej eventow) nie jest gotowa na start!"
+error_non_in_progress: "Obecnie nie ma trwa zaden event!"
+error_wincondition_not_exist: "Warunek %1 nie istnieje! Obecne warunki: %2"
 
 #event messages
 event_quit: "Pomyslnie opusciles event!"
@@ -133,6 +137,8 @@ event_team_teleported: "Zostales teleportowany na arene! Powodzenia!"
 event_kicked: "%1 zostal wyrzucony z eventu!"
 event_choose_inventory: "Wybierz swoja klase!"
 event_inventory_chosen: "Pomyslnie wybrales klase %1!"
+event_winner: "Event %1 wygral gracz %2!"
+event_team_winner: "Event %1 wygrala druzyna %2!"
 
 #event error messages
 

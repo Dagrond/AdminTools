@@ -17,6 +17,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 
 import com.gmail.ZiomuuSs.Main;
+import com.gmail.ZiomuuSs.EventGroup.StopCondition;
 import com.gmail.ZiomuuSs.Events.OnCommandEvent;
 import com.gmail.ZiomuuSs.Events.OnDamageEvent;
 import com.gmail.ZiomuuSs.Events.OnDropEvent;
@@ -218,6 +219,7 @@ public class Data {
     ConfigAccessor ca = new ConfigAccessor(plugin, name+".yml", "Events");
     ConfigurationSection cs = ca.getConfig();
     //todo
+    cs.set("stopcondition", group.getStopCondition().toString());
     cs.set("delay", group.getDelay());
     cs.set("minplayers", group.getMinPlayers());
     cs.set("displayname", group.getDisplayName());
@@ -336,6 +338,8 @@ public class Data {
         gn = gn.substring(0, gn.length() - 4); //remove the .yml
         EventGroup group = new EventGroup(this, gn, fc.getString("displayname"));
         group.setDelay(fc.getInt("delay"));
+        //cs.set("stopcondition", group.getStopCondition().toString());
+        group.setStopCondition(StopCondition.valueOf(fc.getString("stopcondition")));
         group.setMinPlayers(fc.getInt("minplayers"));
         if (fc.isConfigurationSection("spec"))
           group.setSpectatorsLocation(new Location(Bukkit.getWorld(fc.getString("spec.world")), fc.getDouble("spec.x"), fc.getDouble("spec.y"), fc.getDouble("spec.z"), (float) fc.getDouble("spec.yaw"), (float) fc.getDouble("spec.pitch")));

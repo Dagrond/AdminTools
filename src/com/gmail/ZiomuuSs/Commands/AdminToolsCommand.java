@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import com.gmail.ZiomuuSs.Main;
 import com.gmail.ZiomuuSs.EventGroup;
+import com.gmail.ZiomuuSs.EventGroup.StopCondition;
 import com.gmail.ZiomuuSs.EventTeam;
 import com.gmail.ZiomuuSs.Utils.Data;
 import com.gmail.ZiomuuSs.Utils.Msg;
@@ -132,7 +133,7 @@ public class AdminToolsCommand implements CommandExecutor {
             return true;
           }
         } else if (args[0].equalsIgnoreCase("event") || args[0].equalsIgnoreCase("e")) {
-          if (sender.hasPermission("AdminTools.team") || sender.hasPermission("AdminTools.*")) {
+          if (sender.hasPermission("AdminTools.event") || sender.hasPermission("AdminTools.*")) {
             if (args.length>2) {
               if (data.isEventGroup(args[1])) {
                 EventGroup group = data.getEventGroupByName(args[1]);
@@ -160,12 +161,30 @@ public class AdminToolsCommand implements CommandExecutor {
                       sender.sendMessage(Msg.get("error_player_needed", true));
                       return true;
                     }
-                  } else if (args[2].equalsIgnoreCase("delay")) {
-                    if (args[4].matches("-?\\d+")) {
-                      group.setDelay(Integer.valueOf(args[4]));
-                      sender.sendMessage(Msg.get("group_set_delay", true, args[1], args[4]));
+                  } else if (args[2].equalsIgnoreCase("wincondition")) {
+                    if (args.length>3) {
+                      try {
+                        group.setStopCondition(StopCondition.valueOf(args[3].toUpperCase()));
+                        sender.sendMessage(Msg.get("group_wincondition_set", true, args[1], args[3].toUpperCase()));
+                      } catch (IllegalArgumentException e) {
+                        sender.sendMessage(Msg.get("error_wincondition_not_exist", true, args[3], "LAST_PLAYER, LAST_TEAM"));
+                        return true;
+                      }
                     } else {
-                      sender.sendMessage(Msg.get("error_must_be_integer", true, "delay"));
+                      sender.sendMessage(Msg.get("error_usage", true, "/at e (event) wincondition (condition)"));
+                      return true;
+                    }
+                  } else if (args[2].equalsIgnoreCase("delay")) {
+                    if (args.length>3) {
+                      if (args[3].matches("-?\\d+")) {
+                        group.setDelay(Integer.valueOf(args[4]));
+                        sender.sendMessage(Msg.get("group_set_delay", true, args[1], args[4]));
+                      } else {
+                        sender.sendMessage(Msg.get("error_must_be_integer", true, "delay"));
+                        return true;
+                      }
+                    } else {
+                      sender.sendMessage(Msg.get("error_usage", true, "/at e (event) delay (delay)"));
                       return true;
                     }
                   } else if (args[2].equalsIgnoreCase("min")) {
@@ -467,6 +486,20 @@ public class AdminToolsCommand implements CommandExecutor {
             sender.sendMessage(Msg.get("error_permission", true));
             return true;
           }
+      } else if (args[0].equalsIgnoreCase("stop")) {
+        if (sender.hasPermission("AdminTools.stop") || sender.hasPermission("AdminTools.*")) {
+          if (data.getCurrentEvent() != null) {
+            data.getCurrentEvent().setCancelled();
+            sender.sendMessage(Msg.get("group_cancelled", true));
+            return true;
+          } else {
+            sender.sendMessage(Msg.get("error_non_in_progress", true));
+            return true;
+          }
+        } else {
+          sender.sendMessage(Msg.get("error_permission", true));
+          return true;
+        }
       } else if (args[0].equalsIgnoreCase("start")) {
         if (sender.hasPermission("AdminTools.start") || sender.hasPermission("AdminTools.*")) {
           if (data.getCurrentEvent() == null) {
@@ -478,11 +511,11 @@ public class AdminToolsCommand implements CommandExecutor {
                   sender.sendMessage(Msg.get("group_started", true, args[1]));
                   return true;
                 } else {
-                  sender.sendMessage(Msg.get("error_group_not_exist", true, args[1]));
+                  sender.sendMessage(Msg.get("error_group_not_ready", true, args[1]));
                   return true;
                 }
               } else {
-                sender.sendMessage(Msg.get("error_group_not_ready", true, args[1]));
+                sender.sendMessage(Msg.get("error_group_not_exist", true, args[1]));
                 return true;
               }
             } else {
