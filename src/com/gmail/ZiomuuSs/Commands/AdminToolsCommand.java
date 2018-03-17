@@ -147,7 +147,7 @@ public class AdminToolsCommand implements CommandExecutor {
                     sender.sendMessage(Msg.get("group_info_spectators", true, Integer.toString(group.getSpectatorCount())));
                     sender.sendMessage(Msg.get("group_info_playersin", true, Integer.toString(group.getSavedPlayers().size())));
                     return true;
-                  } else if (args[2].equalsIgnoreCase("remove")) {
+                  } else if (args[2].equalsIgnoreCase("remove") || args[2].equalsIgnoreCase("del")) {
                     data.removeEventGroup(args[1]);
                     sender.sendMessage(Msg.get("group_removed", true, args[1]));
                     return true;
@@ -161,7 +161,7 @@ public class AdminToolsCommand implements CommandExecutor {
                       sender.sendMessage(Msg.get("error_player_needed", true));
                       return true;
                     }
-                  } else if (args[2].equalsIgnoreCase("wincondition")) {
+                  } else if (args[2].equalsIgnoreCase("wincondition") || args[2].equalsIgnoreCase("wc")) {
                     if (args.length>3) {
                       try {
                         group.setStopCondition(StopCondition.valueOf(args[3].toUpperCase()));
@@ -177,8 +177,8 @@ public class AdminToolsCommand implements CommandExecutor {
                   } else if (args[2].equalsIgnoreCase("delay")) {
                     if (args.length>3) {
                       if (args[3].matches("-?\\d+")) {
-                        group.setDelay(Integer.valueOf(args[4]));
-                        sender.sendMessage(Msg.get("group_set_delay", true, args[1], args[4]));
+                        group.setDelay(Integer.valueOf(args[3]));
+                        sender.sendMessage(Msg.get("group_set_delay", true, args[1], args[3]));
                       } else {
                         sender.sendMessage(Msg.get("error_must_be_integer", true, "delay"));
                         return true;
@@ -274,7 +274,7 @@ public class AdminToolsCommand implements CommandExecutor {
                     sender.sendMessage(Msg.get("error_player_needed", true));
                     return true;
                   }
-                } else if (args[2].equalsIgnoreCase("inventory")) {
+                } else if (args[2].equalsIgnoreCase("inventory") || args[2].equalsIgnoreCase("inv")) {
                   if (args.length>3) {
                     if (args[3].equalsIgnoreCase("info") || args[3].equalsIgnoreCase("list")) {
                       sender.sendMessage(Msg.get("team_inventory_display", true, args[1], team.getPrettyInventoryList()));
@@ -362,7 +362,7 @@ public class AdminToolsCommand implements CommandExecutor {
                     sender.sendMessage(Msg.get("error_usage", true, "/at e (team) inventory list/del/add/set"));
                     return true;
                   }
-                } else if (args[2].equalsIgnoreCase("startpoint") || args[2].equalsIgnoreCase("startpoints")) {
+                } else if (args[2].equalsIgnoreCase("startpoint") || args[2].equalsIgnoreCase("startpoints") || args[2].equalsIgnoreCase("sp")) {
                   if (args.length>3) {
                     if (args[3].equalsIgnoreCase("info") || args[3].equalsIgnoreCase("list")) {
                       sender.sendMessage(Msg.get("team_startpoints_display", true, args[1]));
@@ -429,12 +429,12 @@ public class AdminToolsCommand implements CommandExecutor {
                     sender.sendMessage(Msg.get("error_usage", true, "/at e (team) startpoint list/del/add/set"));
                     return true;
                   }
-                } else if (args[2].equalsIgnoreCase("friendlyfire")) {
+                } else if (args[2].equalsIgnoreCase("friendlyfire") || args[2].equalsIgnoreCase("ff")) {
                     if (team.switchFriendlyFire())
                       sender.sendMessage(Msg.get("team_ff_on", true, args[2]));
                     else
                       sender.sendMessage(Msg.get("team_ff_off", true, args[2]));
-                } else if (args[2].equalsIgnoreCase("nametag")) {
+                } else if (args[2].equalsIgnoreCase("nametag") || args[2].equalsIgnoreCase("nt")) {
                   if (team.switchNametagVisibility())
                     sender.sendMessage(Msg.get("team_nametag_on", true, args[2]));
                   else
@@ -449,7 +449,7 @@ public class AdminToolsCommand implements CommandExecutor {
                   sender.sendMessage(Msg.get("team_info_inventory", true, !team.getInventories().isEmpty() ? Msg.get("set", false) : Msg.get("not_set", false), Integer.toString(team.getInventories().size())));
                   sender.sendMessage(Msg.get("team_info_playersin", true, Integer.toString(team.getPlayerNumber())));
                   return true;
-                } else if (args[2].equalsIgnoreCase("maxplayers")) {
+                } else if (args[2].equalsIgnoreCase("maxplayers") || args[2].equalsIgnoreCase("mp")) {
                   if (args.length>3) {
                     if (args[3].matches("-?\\d+")) {
                       if (team.setMaxPlayers(Integer.valueOf(args[3])))
@@ -610,7 +610,7 @@ public class AdminToolsCommand implements CommandExecutor {
         return true;
       }
     } else {
-      sender.sendMessage(Msg.get("error_player_needed", true));
+      sender.sendMessage(Msg.get("error_usage", true, "/at help"));
       return true;
     }
   }

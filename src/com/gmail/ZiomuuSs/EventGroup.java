@@ -84,6 +84,7 @@ public class EventGroup {
   }
   
   public void setCancelled() {
+    Bukkit.broadcastMessage(Msg.get("event_error_cancelled", true, displayName));
     if (status == EventStatus.COUNTDOWN)
       cancelled = true;
     else
