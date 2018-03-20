@@ -139,6 +139,7 @@ event_choose_inventory: "Wybierz swoja klase!"
 event_inventory_chosen: "Pomyslnie wybrales klase %1!"
 event_winner: "Event %1 wygral gracz %2!"
 event_team_winner: "Event %1 wygrala druzyna %2!"
+event_auto_inventory_choose: "Nie wybrales klasy! Otrzymales losowa klase (%1)."
 
 #event error messages
 

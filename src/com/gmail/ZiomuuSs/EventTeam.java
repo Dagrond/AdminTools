@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -58,6 +59,13 @@ public class EventTeam {
             originalPlayers.add(uuid);
             Player player = Bukkit.getPlayer(uuid);
             if (player != null) {
+              if (!playersWithChosenInventory.contains(player.getUniqueId())) {
+                playersWithChosenInventory.add(player.getUniqueId());
+                player.closeInventory();
+                String randomInv = inventories.keySet().toArray(new String[inventories.size()])[ThreadLocalRandom.current().nextInt(0, inventories.size())];
+                player.getInventory().setContents(inventories.get(randomInv));
+                player.sendMessage(Msg.get("event_auto_inventory_choose", true, inventoryIcons.get(randomInv).getItemMeta().getDisplayName()));
+              }
               player.teleport(startPoints.get(index));
               if (index == startPoints.size()-1)
                 index = 0;
