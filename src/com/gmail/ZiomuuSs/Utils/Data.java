@@ -20,10 +20,12 @@ import com.gmail.ZiomuuSs.Main;
 import com.gmail.ZiomuuSs.EventGroup.StopCondition;
 import com.gmail.ZiomuuSs.Events.OnCommandEvent;
 import com.gmail.ZiomuuSs.Events.OnDamageEvent;
+import com.gmail.ZiomuuSs.Events.OnDeathEvent;
 import com.gmail.ZiomuuSs.Events.OnDropEvent;
 import com.gmail.ZiomuuSs.Events.OnInventoryClickEvent;
 import com.gmail.ZiomuuSs.Events.OnInventoryCloseEvent;
 import com.gmail.ZiomuuSs.Events.OnLeaveEvent;
+import com.gmail.ZiomuuSs.Events.RespawnEvent;
 import com.gmail.ZiomuuSs.EventGroup;
 import com.gmail.ZiomuuSs.EventTeam;
 
@@ -32,7 +34,6 @@ public class Data {
   private ConfigAccessor msgAccessor;
   private ConfigAccessor warpAccessor;
   private EventGroup current; //Event that is in progress
-  private HashMap<UUID, ItemStack[]> keepInventory = new HashMap<>();
   private HashMap<String, Location> warps = new HashMap<>(); //saved warps
   private HashMap<String, EventTeam> savedTeams = new HashMap<>(); //all saved teams
   private HashMap<String, EventGroup> savedGroups = new HashMap<>(); //all saved groups
@@ -43,6 +44,8 @@ public class Data {
   private OnInventoryCloseEvent inventoryCloseListener = new OnInventoryCloseEvent(this);
   private OnInventoryClickEvent inventoryClickListener = new OnInventoryClickEvent(this);
   private OnDropEvent dropListener = new OnDropEvent(this);
+  private OnDeathEvent deathListener = new OnDeathEvent(this);
+  private RespawnEvent respawnListenert = new RespawnEvent(this);
   
   public Data(Main plugin) {
     this.plugin = plugin;
@@ -56,6 +59,9 @@ public class Data {
     current.start();
     //registering events
     plugin.getServer().getPluginManager().registerEvents(leaveListener, plugin);
+    plugin.getServer().getPluginManager().registerEvents(dropListener, plugin);
+    plugin.getServer().getPluginManager().registerEvents(deathListener, plugin);
+    plugin.getServer().getPluginManager().registerEvents(respawnListenert, plugin);
     plugin.getServer().getPluginManager().registerEvents(commandListener, plugin);
     plugin.getServer().getPluginManager().registerEvents(damageListener, plugin);
     plugin.getServer().getPluginManager().registerEvents(inventoryCloseListener, plugin);
@@ -70,6 +76,8 @@ public class Data {
     current = null;
     //unregistering events
     HandlerList.unregisterAll(leaveListener);
+    HandlerList.unregisterAll(deathListener);
+    HandlerList.unregisterAll(respawnListenert);
     HandlerList.unregisterAll(commandListener);
     HandlerList.unregisterAll(damageListener);
     HandlerList.unregisterAll(inventoryCloseListener);
@@ -102,10 +110,6 @@ public class Data {
   public void removeEventGroup(String name) {
     savedGroups.remove(name);
     new File(plugin.getDataFolder()+String.valueOf(File.separatorChar)+"Events", name+".yml").delete();
-  }
-  
-  public HashMap<UUID, ItemStack[]> getKeepInventory() {
-    return keepInventory;
   }
   
   public boolean isToRestore(UUID uuid) {
