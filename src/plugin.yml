@@ -15,7 +15,3 @@ commands:
       aliases: [e]
       description: Komenda gracza do eventu.
       usage: /e
-   Nation:
-      aliases: [n]
-      description: Komenda panstw.
-      usage: /n
