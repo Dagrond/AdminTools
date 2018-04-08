@@ -57,6 +57,20 @@ public class AdminToolsCommand implements CommandExecutor {
             sender.sendMessage(Msg.get("error_permission", true));
             return true;
           }
+        } else if (args[0].equalsIgnoreCase("items")) {
+          if (sender.hasPermission("AdminTools.SetItemsForGuild") || sender.hasPermission("AdminTools.*")) {
+            if (sender instanceof Player) {
+              data.setGuildItems(((Player) sender).getInventory().getContents());
+              sender.sendMessage(Msg.get("items_setted", true));
+              return true;
+            } else {
+              sender.sendMessage(Msg.get("error_player_needed", true));
+              return true;
+            }
+          } else {
+            sender.sendMessage(Msg.get("error_permission", true));
+            return true;
+          }
         } else if (args[0].equalsIgnoreCase("cc") || args[0].equalsIgnoreCase("clearchat")) {
           if (sender.hasPermission("AdminTools.ClearChat") || sender.hasPermission("AdminTools.*")) {
             for (Player player : Bukkit.getOnlinePlayers()) {

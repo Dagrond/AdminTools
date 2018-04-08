@@ -4,5 +4,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="C:/Users/Ziomu/Desktop/Java/Libraries/spigot-api-1.12-R0.1-SNAPSHOT-shaded-b1349.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Ziomu/Desktop/Java/Libraries/Vault.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ziomu/Desktop/Java/Libraries/LegacyFactions.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

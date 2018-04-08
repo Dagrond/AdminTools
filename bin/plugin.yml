@@ -1,7 +1,7 @@
 name: AdminTools
 main: com.gmail.ZiomuuSs.Main
 version: 0.4
-softdepend: [Multiverse-Core]
+softdepend: [Multiverse-Core, LegacyFactions]
 commands:
    AdminTools:
       aliases: [at, admin]
@@ -15,3 +15,15 @@ commands:
       aliases: [e]
       description: Komenda gracza do eventu.
       usage: /e
+   Vip:
+      description: Wyswietla informacje o randze VIP.
+      usage: /vip
+   Drop:
+      description: Wyswietla drop.
+      usage: /drop
+   Komendy:
+      description: Wyswietla komendy dostepne na serwerze.
+      usage: /komendy
+   Pomoc:
+      description: Wyswietla pomoc.
+      usage: /pomoc

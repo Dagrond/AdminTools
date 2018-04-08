@@ -20,12 +20,10 @@ import com.gmail.ZiomuuSs.Main;
 import com.gmail.ZiomuuSs.EventGroup.StopCondition;
 import com.gmail.ZiomuuSs.Events.OnCommandEvent;
 import com.gmail.ZiomuuSs.Events.OnDamageEvent;
-import com.gmail.ZiomuuSs.Events.OnDeathEvent;
 import com.gmail.ZiomuuSs.Events.OnDropEvent;
 import com.gmail.ZiomuuSs.Events.OnInventoryClickEvent;
 import com.gmail.ZiomuuSs.Events.OnInventoryCloseEvent;
 import com.gmail.ZiomuuSs.Events.OnLeaveEvent;
-import com.gmail.ZiomuuSs.Events.RespawnEvent;
 import com.gmail.ZiomuuSs.EventGroup;
 import com.gmail.ZiomuuSs.EventTeam;
 
@@ -33,19 +31,19 @@ public class Data {
   private Main plugin;
   private ConfigAccessor msgAccessor;
   private ConfigAccessor warpAccessor;
+  private ConfigAccessor dataAccessor;
   private EventGroup current; //Event that is in progress
   private HashMap<String, Location> warps = new HashMap<>(); //saved warps
   private HashMap<String, EventTeam> savedTeams = new HashMap<>(); //all saved teams
   private HashMap<String, EventGroup> savedGroups = new HashMap<>(); //all saved groups
   private HashMap<UUID, SavedPlayer> toRestore = new HashMap<>(); //players that are out of event, but waiting for respawn.
+  private ItemStack[] guildItems;
   private OnLeaveEvent leaveListener = new OnLeaveEvent(this);
   private OnCommandEvent commandListener = new OnCommandEvent(this);
   private OnDamageEvent damageListener = new OnDamageEvent(this);
   private OnInventoryCloseEvent inventoryCloseListener = new OnInventoryCloseEvent(this);
   private OnInventoryClickEvent inventoryClickListener = new OnInventoryClickEvent(this);
   private OnDropEvent dropListener = new OnDropEvent(this);
-  private OnDeathEvent deathListener = new OnDeathEvent(this);
-  private RespawnEvent respawnListenert = new RespawnEvent(this);
   
   public Data(Main plugin) {
     this.plugin = plugin;
@@ -60,8 +58,6 @@ public class Data {
     //registering events
     plugin.getServer().getPluginManager().registerEvents(leaveListener, plugin);
     plugin.getServer().getPluginManager().registerEvents(dropListener, plugin);
-    plugin.getServer().getPluginManager().registerEvents(deathListener, plugin);
-    plugin.getServer().getPluginManager().registerEvents(respawnListenert, plugin);
     plugin.getServer().getPluginManager().registerEvents(commandListener, plugin);
     plugin.getServer().getPluginManager().registerEvents(damageListener, plugin);
     plugin.getServer().getPluginManager().registerEvents(inventoryCloseListener, plugin);
@@ -76,8 +72,6 @@ public class Data {
     current = null;
     //unregistering events
     HandlerList.unregisterAll(leaveListener);
-    HandlerList.unregisterAll(deathListener);
-    HandlerList.unregisterAll(respawnListenert);
     HandlerList.unregisterAll(commandListener);
     HandlerList.unregisterAll(damageListener);
     HandlerList.unregisterAll(inventoryCloseListener);
@@ -96,6 +90,10 @@ public class Data {
   
   public int getEventGroupNumber() {
     return savedGroups.size();
+  }
+  
+  public ItemStack[] getItemsForGuild() {
+    return guildItems;
   }
   
   public EventGroup getEventGroupByName(String name) {
@@ -215,6 +213,15 @@ public class Data {
     warpAccessor.saveConfig();
   }
   
+  public void setGuildItems(ItemStack[] it) {
+    guildItems = it;
+    new File(plugin.getDataFolder()+String.valueOf(File.separatorChar)+"Data.yml").delete();
+    ConfigAccessor ca = new ConfigAccessor(plugin, "Data.yml");
+    ConfigurationSection cs = ca.getConfig();
+    cs.set("RequiredItemsForGuild", Arrays.asList(it));
+    ca.saveConfig();
+  }
+  
   public void saveGroup(String name) {
     if (savedGroups.get(name) == null)
       return;
@@ -290,9 +297,14 @@ public class Data {
   private void load() {
     msgAccessor = new ConfigAccessor(plugin, "Messages.yml");
     warpAccessor = new ConfigAccessor(plugin, "Warps.yml");
+    dataAccessor = new ConfigAccessor(plugin, "Data.yml");
     msgAccessor.saveDefaultConfig();
     warpAccessor.saveDefaultConfig();
+    dataAccessor.saveDefaultConfig();
     Msg.set(msgAccessor.getConfig());
+    //loading GuildItems
+    if (dataAccessor.getConfig().isList("RequiredItemsForGuild"))
+      guildItems = ((List<ItemStack>) dataAccessor.getConfig().getList("RequiredItemsForGuild")).toArray(new ItemStack[0]);
     //loading warps
     int warpsCount = 0;
     ConfigurationSection w = warpAccessor.getConfig();

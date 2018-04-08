@@ -1,7 +1,9 @@
 package com.gmail.ZiomuuSs.Events;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -20,7 +22,7 @@ public class OnDeathEvent implements Listener {
   
   @EventHandler
   public void onDeath(PlayerDeathEvent e) {
-    if (data.getCurrentEvent().isSaved(e.getEntity().getUniqueId())) {
+    if (data.getCurrentEvent() != null && data.getCurrentEvent().isSaved(e.getEntity().getUniqueId())) {
       EventTeam team = data.getCurrentEvent().getTeamByPlayer(e.getEntity());
       data.getCurrentEvent().removePlayer(e.getEntity());
       e.getDrops().clear();
@@ -29,6 +31,12 @@ public class OnDeathEvent implements Listener {
         Bukkit.broadcastMessage(Msg.get("event_killer", true, e.getEntity().getName(), e.getEntity().getKiller().getName(), Integer.toString(data.getCurrentEvent().getParticipantCount())));
       } else if (e.getEntity().getLastDamageCause().getCause() == DamageCause.VOID) {
         Bukkit.broadcastMessage(Msg.get("event_spleef_fall", true, e.getEntity().getName(), Integer.toString(team.getPlayerNumber())));
+      }
+    } else if (e.getEntity().hasPermission("AdminTools.keepinventory")) {
+      Entity killer = e.getEntity().getKiller();
+      if (!(killer instanceof Player) && (!(killer instanceof Projectile) || !(((Projectile) killer).getShooter() instanceof Player))) {
+        RespawnEvent.getSavedInvs().put(e.getEntity(), e.getEntity().getInventory().getContents());
+        e.getDrops().clear();
       }
     }
   }

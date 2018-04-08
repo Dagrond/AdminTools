@@ -86,6 +86,8 @@ team_inventoryicon_add: "Pomyslnie dodano ikone klasy %1 w druzynie %2!"
 group_cancelled: "Pomyslnie wylaczyles event!"
 group_started: "Pomyslnie rozpoczeto event %1!"
 group_wincondition_set: "Pomyslnie ustawiono warunek zwycieztwa eventu %1 na %2!"
+inventory_restored: "Pomyslnie przywrocono Twoj ekwipunek!"
+items_setted: "Pomyslnie ustalono przedmioty potrzebne do zalozenia gildii!"
 
 #error messages
 error_permission: "Nie posiadasz odpowiednich uprawnien aby uzyc tej komendy!"
@@ -116,6 +118,7 @@ error_group_not_exist: "Event %1 nie istnieje!"
 error_group_not_ready: "Grupa %1 (lub jeden z przylaczonych do niej eventow) nie jest gotowa na start!"
 error_non_in_progress: "Obecnie nie ma trwa zaden event!"
 error_wincondition_not_exist: "Warunek %1 nie istnieje! Obecne warunki: %2"
+error_no_items: "Nie posiadasz wystarczajacej ilosci przedmiotow aby zalozyc gildie! Mozesz zobaczyc ilosc wymaganych przedmiotow pod %s/help itemy"
 
 #event messages
 event_quit: "Pomyslnie opusciles event!"
