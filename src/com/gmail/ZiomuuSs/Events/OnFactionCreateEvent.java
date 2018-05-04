@@ -32,6 +32,8 @@ public class OnFactionCreateEvent implements Listener {
           e.getFPlayer().getPlayer().getInventory().removeItem(item);
       }
       e.getFPlayer().getPlayer().updateInventory();
+    } else if (e.getFPlayer().getPlayer().hasPermission("AdminTools.GuildCreateBypass") ) {
+      e.getFPlayer().getPlayer().sendMessage(Msg.get("items_not_needed", false));
     }
   }
   

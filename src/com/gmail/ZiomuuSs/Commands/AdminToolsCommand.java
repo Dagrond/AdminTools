@@ -83,69 +83,6 @@ public class AdminToolsCommand implements CommandExecutor {
             sender.sendMessage(Msg.get("error_permission", true));
             return true;
           }
-        } else if (args[0].equalsIgnoreCase("setwarp")) {
-          if (sender instanceof Player) {
-            if (sender.hasPermission("AdminTools.setwarp") || sender.hasPermission("AdminTools.*")) {
-              if (args.length>1) {
-                if (data.setWarp(args[1], ((Player) sender).getLocation()))
-                  sender.sendMessage(Msg.get("warp_add", true, args[1]));
-                else
-                  sender.sendMessage(Msg.get("warp_set", true, args[1]));
-                return true;
-              } else {
-                sender.sendMessage(Msg.get("error_name_needed", true));
-                return true;
-              }
-            } else {
-              sender.sendMessage(Msg.get("error_permission", true));
-              return true;
-            }
-          } else {
-            sender.sendMessage(Msg.get("error_player_needed", true));
-            return true;
-          }
-        } else if (args[0].equalsIgnoreCase("warp")) {
-          if (sender instanceof Player) {
-            if (sender.hasPermission("AdminTools.warp") || sender.hasPermission("AdminTools.*")) {
-              if (args.length>1) {
-                if (data.getWarp(args[1]) != null) {
-                  ((Player) sender).teleport(data.getWarp(args[1]));
-                  sender.sendMessage(Msg.get("warp_tp", true, args[1]));
-                  return true;
-                } else {
-                  sender.sendMessage(Msg.get("error_warp_not_exist", true, args[1]));
-                  return true;
-                }
-              } else {
-                sender.sendMessage(Msg.get("warp_list", true, data.getPrettyWarpList()));
-              }
-            } else {
-              sender.sendMessage(Msg.get("error_permission", true));
-              return true;
-            }
-          } else {
-            sender.sendMessage(Msg.get("error_player_needed", true));
-            return true;
-          }
-        } else if (args[0].equalsIgnoreCase("delwarp")) {
-          if (sender.hasPermission("AdminTools.delwarp") || sender.hasPermission("AdminTools.*")) {
-            if (args.length>1) {
-              if (data.getWarp(args[1]) != null) {
-                data.delWarp(args[1]);
-                sender.sendMessage(Msg.get("warp_del", true, args[1]));
-                return true;
-              } else {
-                sender.sendMessage(Msg.get("error_warp_not_exist", true, args[1]));
-                return true;
-              }
-            } else {
-              sender.sendMessage(Msg.get("error_warp_needed", true));
-              return true;
-            }
-          } else {
-            sender.sendMessage(Msg.get("error_permission", true));
-            return true;
-          }
         } else if (args[0].equalsIgnoreCase("event") || args[0].equalsIgnoreCase("e")) {
           if (sender.hasPermission("AdminTools.event") || sender.hasPermission("AdminTools.*")) {
             if (args.length>2) {

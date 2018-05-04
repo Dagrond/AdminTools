@@ -21,7 +21,6 @@ import com.gmail.ZiomuuSs.EventGroup.StopCondition;
 import com.gmail.ZiomuuSs.Events.OnCommandEvent;
 import com.gmail.ZiomuuSs.Events.OnDamageEvent;
 import com.gmail.ZiomuuSs.Events.OnDropEvent;
-import com.gmail.ZiomuuSs.Events.OnInventoryClickEvent;
 import com.gmail.ZiomuuSs.Events.OnInventoryCloseEvent;
 import com.gmail.ZiomuuSs.Events.OnLeaveEvent;
 import com.gmail.ZiomuuSs.EventGroup;
@@ -33,16 +32,14 @@ public class Data {
   private ConfigAccessor warpAccessor;
   private ConfigAccessor dataAccessor;
   private EventGroup current; //Event that is in progress
-  private HashMap<String, Location> warps = new HashMap<>(); //saved warps
   private HashMap<String, EventTeam> savedTeams = new HashMap<>(); //all saved teams
   private HashMap<String, EventGroup> savedGroups = new HashMap<>(); //all saved groups
   private HashMap<UUID, SavedPlayer> toRestore = new HashMap<>(); //players that are out of event, but waiting for respawn.
-  private ItemStack[] guildItems;
+  private ItemStack[] guildItems; //items needed to create guild
   private OnLeaveEvent leaveListener = new OnLeaveEvent(this);
   private OnCommandEvent commandListener = new OnCommandEvent(this);
   private OnDamageEvent damageListener = new OnDamageEvent(this);
   private OnInventoryCloseEvent inventoryCloseListener = new OnInventoryCloseEvent(this);
-  private OnInventoryClickEvent inventoryClickListener = new OnInventoryClickEvent(this);
   private OnDropEvent dropListener = new OnDropEvent(this);
   
   public Data(Main plugin) {
@@ -61,7 +58,6 @@ public class Data {
     plugin.getServer().getPluginManager().registerEvents(commandListener, plugin);
     plugin.getServer().getPluginManager().registerEvents(damageListener, plugin);
     plugin.getServer().getPluginManager().registerEvents(inventoryCloseListener, plugin);
-    plugin.getServer().getPluginManager().registerEvents(inventoryClickListener, plugin);
     plugin.getServer().getPluginManager().registerEvents(dropListener, plugin);
   }
   
@@ -75,7 +71,6 @@ public class Data {
     HandlerList.unregisterAll(commandListener);
     HandlerList.unregisterAll(damageListener);
     HandlerList.unregisterAll(inventoryCloseListener);
-    HandlerList.unregisterAll(inventoryClickListener);
     HandlerList.unregisterAll(dropListener);
   }
   
@@ -152,35 +147,6 @@ public class Data {
   public EventTeam getTeam(String name) {
     return savedTeams.get(name);
   }
-  
-  //return true if warp was added, return false if warp was edited
-  public boolean setWarp(String name, Location loc) {
-    if (warps.containsKey(name)) {
-      warps.put(name, loc);
-      saveWarps();
-      return false;
-    } else {
-      warps.put(name, loc);
-      saveWarps();
-      return true;
-    }
-  }
-  
-  public void delWarp(String warp) {
-    warps.remove(warp);
-    warpAccessor.getConfig().set("warp."+warp, null);
-    saveWarps();
-  }
-  public String getPrettyWarpList() {
-    String list = "";
-    for (String s : warps.keySet()) {
-      list += s+", ";
-    }
-    if (!list.equalsIgnoreCase(""))
-      return list.substring(0, list.length() - 2);
-    else
-      return Msg.get("none", false);
-  }
 
   public String getPrettyTeamList() {
     String list = "";
@@ -192,14 +158,7 @@ public class Data {
     else
       return Msg.get("none", false);
   }
-  
-  public Location getWarp(String warp) {
-    if (warps.containsKey(warp))
-      return warps.get(warp);
-    else
-      return null;
-  }
-  
+  /*
   private void saveWarps() {
     ConfigurationSection w = warpAccessor.getConfig();
     for (String warp : warps.keySet()) {
@@ -212,6 +171,7 @@ public class Data {
     }
     warpAccessor.saveConfig();
   }
+  */
   
   public void setGuildItems(ItemStack[] it) {
     guildItems = it;
@@ -305,7 +265,7 @@ public class Data {
     //loading GuildItems
     if (dataAccessor.getConfig().isList("RequiredItemsForGuild"))
       guildItems = ((List<ItemStack>) dataAccessor.getConfig().getList("RequiredItemsForGuild")).toArray(new ItemStack[0]);
-    //loading warps
+    /*
     int warpsCount = 0;
     ConfigurationSection w = warpAccessor.getConfig();
     if (w.isConfigurationSection("warp")) {
@@ -313,7 +273,7 @@ public class Data {
         warps.put(warp, new Location(Bukkit.getWorld(w.getString("warp."+warp+".world")), w.getDouble("warp."+warp+".x"), w.getDouble("warp."+warp+".y"), w.getDouble("warp."+warp+".z"), (float) w.getDouble("warp."+warp+".yaw"), (float) w.getDouble("warp."+warp+".pitch")));
         ++warpsCount;
       }
-    }
+    }*/
     //loading teams
     int teamsCount = 0;
     if (new File(plugin.getDataFolder().getAbsolutePath() + File.separatorChar + "Teams").exists()) {
@@ -368,6 +328,6 @@ public class Data {
         ++groupsCount;
       }
     }
-    Bukkit.getLogger().info(Msg.get("console_loaded", true, Integer.toString(warpsCount), Integer.toString(teamsCount), Integer.toString(groupsCount)));
+    Bukkit.getLogger().info(Msg.get("console_loaded", true, Integer.toString(teamsCount), Integer.toString(groupsCount)));
   }
 }

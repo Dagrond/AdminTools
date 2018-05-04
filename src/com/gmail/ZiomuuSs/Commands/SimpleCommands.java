@@ -20,6 +20,9 @@ public class SimpleCommands implements CommandExecutor {
     if (cmd.getName().equalsIgnoreCase("vip")) {
       if (sender instanceof Player)
         ((Player) sender).performCommand("help vip");
+    } else if (cmd.getName().equalsIgnoreCase("supervip") || cmd.getName().equalsIgnoreCase("svip")) {
+      if (sender instanceof Player)
+        ((Player) sender).performCommand("help svip");
     } else if (cmd.getName().equalsIgnoreCase("drop")) {
       ((Player) sender).sendMessage(ChatColor.translateAlternateColorCodes('&', "&a&lNa naszym serwerze drop jest z rud!"));
     } else if (cmd.getName().equalsIgnoreCase("pomoc")) {

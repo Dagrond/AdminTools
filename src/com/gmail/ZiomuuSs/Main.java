@@ -7,9 +7,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.gmail.ZiomuuSs.Commands.AdminToolsCommand;
 import com.gmail.ZiomuuSs.Commands.EventPlayerCommand;
+import com.gmail.ZiomuuSs.Commands.SetWarpCommand;
 import com.gmail.ZiomuuSs.Commands.SimpleCommands;
+import com.gmail.ZiomuuSs.Commands.WarpCommand;
 import com.gmail.ZiomuuSs.Events.OnDeathEvent;
 import com.gmail.ZiomuuSs.Events.OnFactionCreateEvent;
+import com.gmail.ZiomuuSs.Events.OnInventoryClickEvent;
+import com.gmail.ZiomuuSs.Events.OnInventoryMoveItemEvent;
 import com.gmail.ZiomuuSs.Events.RespawnEvent;
 import com.gmail.ZiomuuSs.Commands.ClearChatCommand;
 import com.gmail.ZiomuuSs.Utils.Data;
@@ -36,9 +40,13 @@ public final class Main extends JavaPlugin {
     data = new Data(this);
     getServer().getPluginManager().registerEvents(new OnDeathEvent(data), this);
     getServer().getPluginManager().registerEvents(new RespawnEvent(data), this);
+    getServer().getPluginManager().registerEvents(new OnInventoryClickEvent(data), this);
+    getServer().getPluginManager().registerEvents(new OnInventoryMoveItemEvent(), this);
     getCommand("AdminTools").setExecutor(new AdminToolsCommand(this));
     getCommand("ClearChat").setExecutor(new ClearChatCommand(this));
     getCommand("Event").setExecutor(new EventPlayerCommand(data));
+    getCommand("SetWarp").setExecutor(new SetWarpCommand(data));
+    getCommand("Warp").setExecutor(new WarpCommand(data));
     SimpleCommands cmds = new SimpleCommands(this);
     getCommand("vip").setExecutor(cmds);
     getCommand("komendy").setExecutor(cmds);

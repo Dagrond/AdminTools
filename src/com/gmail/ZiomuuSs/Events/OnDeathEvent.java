@@ -32,11 +32,25 @@ public class OnDeathEvent implements Listener {
       } else if (e.getEntity().getLastDamageCause().getCause() == DamageCause.VOID) {
         Bukkit.broadcastMessage(Msg.get("event_spleef_fall", true, e.getEntity().getName(), Integer.toString(team.getPlayerNumber())));
       }
-    } else if (e.getEntity().hasPermission("AdminTools.keepinventory")) {
+    } else if (e.getEntity().hasPermission("AdminTools.keepinventory") || e.getEntity().hasPermission("AdminTools.keepexperience")) {
       Entity killer = e.getEntity().getKiller();
       if (!(killer instanceof Player) && (!(killer instanceof Projectile) || !(((Projectile) killer).getShooter() instanceof Player))) {
-        RespawnEvent.getSavedInvs().put(e.getEntity(), e.getEntity().getInventory().getContents());
-        e.getDrops().clear();
+        if (e.getEntity().hasPermission("AdminTools.keepinventory")) {
+          e.setKeepInventory(true);
+          e.getEntity().sendMessage(Msg.get("inventory_restored", false));
+        }
+        if (e.getEntity().hasPermission("AdminTools.keepexperience")) {
+          e.setKeepLevel(true);
+          e.setDroppedExp(0);
+          e.getEntity().sendMessage(Msg.get("experience_restored", false));
+        }
+      } else {
+        if (e.getEntity().hasPermission("AdminTools.keepinventory")) {
+          e.getEntity().sendMessage(Msg.get("error_inventory_not_restored", false));
+        }
+        if (e.getEntity().hasPermission("AdminTools.keepexperience")) {
+          e.getEntity().sendMessage(Msg.get("error_experience_not_restored", false));
+        }
       }
     }
   }

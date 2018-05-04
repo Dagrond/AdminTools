@@ -8,6 +8,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import com.gmail.ZiomuuSs.EventTeam;
 import com.gmail.ZiomuuSs.Utils.Data;
 import com.gmail.ZiomuuSs.Utils.Msg;
+import com.gmail.ZiomuuSs.Utils.Warp;
 
 public class OnInventoryClickEvent implements Listener {
   public Data data;
@@ -17,11 +18,14 @@ public class OnInventoryClickEvent implements Listener {
   }
   
   @EventHandler
-  public void onInventoryClose(InventoryClickEvent  e) {
+  public void onInventoryClick(InventoryClickEvent  e) {
     if (e.getInventory().getName().equals(Msg.get("class_choose_inventory", false))) {
       Player player = (Player) e.getWhoClicked();
       EventTeam team = data.getCurrentEvent().getTeamByPlayer(player);
       team.setPlayerInventoryByIcon(e.getCurrentItem(), player);
+      e.setCancelled(true);
+    } else if (e.getInventory().getName().equals(Msg.get("warp_choose_inventory", false))) {
+      Warp.getWarps().get(e.getCurrentItem()).teleport((Player) e.getWhoClicked());
       e.setCancelled(true);
     }
   }
