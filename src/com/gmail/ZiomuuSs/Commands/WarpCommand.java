@@ -22,8 +22,17 @@ public class WarpCommand implements CommandExecutor {
       if (sender instanceof Player) {
         Player player = (Player) sender;
         if (!Warp.isInProgress(player)) {
-          Warp.showWarps(player);
-          sender.sendMessage(Msg.get("warp_opened", false));
+          if (args.length < 1) {
+            Warp.showWarps(player);
+            sender.sendMessage(Msg.get("warp_opened", false));
+          } else {
+            Warp warp = Warp.getWarpByString(args[0]);
+            if (warp != null) {
+              warp.teleport(player);
+            } else {
+              sender.sendMessage(Msg.get("error_warp_not_exist", false, args[0]));
+            }
+          }
           return true;
         } else {
           sender.sendMessage(Msg.get("error_warp_in_progress", false));

@@ -25,7 +25,12 @@ public class OnInventoryClickEvent implements Listener {
       team.setPlayerInventoryByIcon(e.getCurrentItem(), player);
       e.setCancelled(true);
     } else if (e.getInventory().getName().equals(Msg.get("warp_choose_inventory", false))) {
-      Warp.getWarps().get(e.getCurrentItem()).teleport((Player) e.getWhoClicked());
+      Warp warp = Warp.getWarps().get(e.getCurrentItem());
+      if (warp != null) warp.teleport((Player) e.getWhoClicked());
+      e.setCancelled(true);
+    }
+    String inv = e.getWhoClicked().getOpenInventory().getTopInventory().getName();
+    if (inv.equals(Msg.get("class_choose_inventory", false)) || inv.equals(Msg.get("warp_choose_inventory", false))) {
       e.setCancelled(true);
     }
   }

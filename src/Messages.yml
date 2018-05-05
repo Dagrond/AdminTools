@@ -21,10 +21,10 @@ warp_choose_inventory: "&5&lWarpy:"
 #Variables are colored automatically (colors section above to change colors of it or completely remove  
 #You can also use standard minecraft colors (&1, &2, &c, etc.), but it's better to use colors section (so you don't have to edit all messages when you want to change colors)
 
-console_loaded: "Pomyslnie zaladowano %1 druzyn i %2 eventow!"
+console_loaded: "Pomyslnie zaladowano %1 warpow, %2 druzyn i %3 eventow!"
+hooked_into: "Pomyslnie polaczono z %1!"
 player_mining: "Gracze, ktorzy prawdopodobnie kopia surowce: %1"
 chat_cleared: "Chat zostal wyczyszczony przez %1!"
-warp_created: "Pomyslnie dodano warp %1!"
 team_created: "Pomyslnie utworzono druzyne o nazwie %1!"
 team_lobby_set: "Pomyslnie ustawiles lobby dla eventu %1!"
 team_lobby_edited: "Pomyslnie zmieniles lobby dla eventu %1!"
@@ -87,9 +87,13 @@ experience_restored: "Dzieki Twoim przywilejom Twoje punkty doswiadczenia zostal
 inventory_restored: "Dzieki Twoim przywilejom Twoj ekwipunek zostal zachowany!"
 items_setted: "Pomyslnie ustalono przedmioty potrzebne do zalozenia gildii!"
 items_not_needed: "Dzieki Twoim przywilejom przedmioty na zalozenie gildii nie sa wymagane!"
+warp_created: "Pomyslnie dodano warp %1!"
+warp_created_with_price: "Pomyslnie dodano warp %1 z cena %2!"
 warp_delay: "Zostaniesz teleportowany do warpu %1 za %2 sekund."
 warp_teleported: "Pomyslnie teleportowano do warpu %1!"
 warp_opened: "Otworzono Menu warpow!"
+warp_list: "Lista warpow(miejsce w ekwipunku): %1"
+warp_deleted: "Warp %1 zostal pomyslnie usuniety!"
 
 #error messages
 error_permission: "Nie posiadasz odpowiednich uprawnien aby uzyc tej komendy!"
@@ -123,6 +127,8 @@ error_experience_not_restored: "Twoje doswiadczenie nie zostalo zachowane, ponie
 error_warp_cancelled: "Poruszyles sie! Teleportacja zostala przerwana."
 error_warp_item_needed: "Aby dodac warp, musisz trzymac przedmiot go reprezentujacy w rece!"
 error_warp_in_progress: "Jestes juz w trakcie teleportacji!"
+error_warp_not_exist: "Warp o nazwie %1 nie istnieje! Wpisz %s/warp %naby wyswietlic liste warpow."
+error_warp_not_enough_money: "Nie masz wystarczajacej ilosci pieniedzy aby teleportowac sie na warp %1! Potrzebujesz %2!"
 
 #event messages
 event_quit: "Pomyslnie opusciles event!"

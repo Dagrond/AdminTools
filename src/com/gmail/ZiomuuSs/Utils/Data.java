@@ -23,13 +23,15 @@ import com.gmail.ZiomuuSs.Events.OnDamageEvent;
 import com.gmail.ZiomuuSs.Events.OnDropEvent;
 import com.gmail.ZiomuuSs.Events.OnInventoryCloseEvent;
 import com.gmail.ZiomuuSs.Events.OnLeaveEvent;
+
+import net.milkbowl.vault.economy.Economy;
+
 import com.gmail.ZiomuuSs.EventGroup;
 import com.gmail.ZiomuuSs.EventTeam;
 
 public class Data {
   private Main plugin;
   private ConfigAccessor msgAccessor;
-  private ConfigAccessor warpAccessor;
   private ConfigAccessor dataAccessor;
   private EventGroup current; //Event that is in progress
   private HashMap<String, EventTeam> savedTeams = new HashMap<>(); //all saved teams
@@ -38,11 +40,12 @@ public class Data {
   private ItemStack[] guildItems; //items needed to create guild
   private OnLeaveEvent leaveListener = new OnLeaveEvent(this);
   private OnCommandEvent commandListener = new OnCommandEvent(this);
+  private Economy econ;
   private OnDamageEvent damageListener = new OnDamageEvent(this);
   private OnInventoryCloseEvent inventoryCloseListener = new OnInventoryCloseEvent(this);
   private OnDropEvent dropListener = new OnDropEvent(this);
   
-  public Data(Main plugin) {
+  public Data(Main plugin, Economy econ) {
     this.plugin = plugin;
     load();
   }
@@ -144,6 +147,10 @@ public class Data {
     }
   }
   
+  public Economy getEconomy() {
+    return econ;
+  }
+  
   public EventTeam getTeam(String name) {
     return savedTeams.get(name);
   }
@@ -158,20 +165,6 @@ public class Data {
     else
       return Msg.get("none", false);
   }
-  /*
-  private void saveWarps() {
-    ConfigurationSection w = warpAccessor.getConfig();
-    for (String warp : warps.keySet()) {
-      w.set("warp."+warp+".x", warps.get(warp).getX());
-      w.set("warp."+warp+".y", warps.get(warp).getY());
-      w.set("warp."+warp+".z", warps.get(warp).getZ());
-      w.set("warp."+warp+".yaw", warps.get(warp).getYaw());
-      w.set("warp."+warp+".pitch", warps.get(warp).getPitch());
-      w.set("warp."+warp+".world", warps.get(warp).getWorld().getName());
-    }
-    warpAccessor.saveConfig();
-  }
-  */
   
   public void setGuildItems(ItemStack[] it) {
     guildItems = it;
@@ -256,24 +249,13 @@ public class Data {
   @SuppressWarnings("unchecked")
   private void load() {
     msgAccessor = new ConfigAccessor(plugin, "Messages.yml");
-    warpAccessor = new ConfigAccessor(plugin, "Warps.yml");
     dataAccessor = new ConfigAccessor(plugin, "Data.yml");
     msgAccessor.saveDefaultConfig();
-    warpAccessor.saveDefaultConfig();
     dataAccessor.saveDefaultConfig();
     Msg.set(msgAccessor.getConfig());
     //loading GuildItems
     if (dataAccessor.getConfig().isList("RequiredItemsForGuild"))
       guildItems = ((List<ItemStack>) dataAccessor.getConfig().getList("RequiredItemsForGuild")).toArray(new ItemStack[0]);
-    /*
-    int warpsCount = 0;
-    ConfigurationSection w = warpAccessor.getConfig();
-    if (w.isConfigurationSection("warp")) {
-      for (String warp : w.getConfigurationSection("warp").getKeys(false)) {
-        warps.put(warp, new Location(Bukkit.getWorld(w.getString("warp."+warp+".world")), w.getDouble("warp."+warp+".x"), w.getDouble("warp."+warp+".y"), w.getDouble("warp."+warp+".z"), (float) w.getDouble("warp."+warp+".yaw"), (float) w.getDouble("warp."+warp+".pitch")));
-        ++warpsCount;
-      }
-    }*/
     //loading teams
     int teamsCount = 0;
     if (new File(plugin.getDataFolder().getAbsolutePath() + File.separatorChar + "Teams").exists()) {
@@ -314,7 +296,6 @@ public class Data {
         gn = gn.substring(0, gn.length() - 4); //remove the .yml
         EventGroup group = new EventGroup(this, gn, fc.getString("displayname"));
         group.setDelay(fc.getInt("delay"));
-        //cs.set("stopcondition", group.getStopCondition().toString());
         group.setStopCondition(StopCondition.valueOf(fc.getString("stopcondition")));
         group.setMinPlayers(fc.getInt("minplayers"));
         if (fc.isConfigurationSection("spec"))
@@ -328,6 +309,7 @@ public class Data {
         ++groupsCount;
       }
     }
-    Bukkit.getLogger().info(Msg.get("console_loaded", true, Integer.toString(teamsCount), Integer.toString(groupsCount)));
+    int warpsCount = Warp.loadWarps(plugin);
+    Bukkit.getLogger().info(Msg.get("console_loaded", true, Integer.toString(warpsCount), Integer.toString(teamsCount), Integer.toString(groupsCount)));
   }
 }

@@ -1,7 +1,7 @@
 name: AdminTools
 main: com.gmail.ZiomuuSs.Main
 version: 0.4
-softdepend: [Multiverse-Core, LegacyFactions]
+softdepend: [Multiverse-Core, LegacyFactions, Vault]
 commands:
    AdminTools:
       aliases: [at, admin]
@@ -34,5 +34,11 @@ commands:
       description: Ustawia nowy warp.
       usage: /setwarp
    Warp:
-      description: Wyswietla liste warpow.
+      description: Wyswietla liste warpow w formie GUI.
+      usage: /warp
+   WarpList:
+      description: Wyswietla liste warpow w formie tekstu.
+      usage: /warp
+   DelWArp:
+      description: Usuwa dany warp.
       usage: /warp
