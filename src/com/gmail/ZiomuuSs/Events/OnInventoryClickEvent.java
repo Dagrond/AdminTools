@@ -1,9 +1,11 @@
 package com.gmail.ZiomuuSs.Events;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 
 import com.gmail.ZiomuuSs.EventTeam;
 import com.gmail.ZiomuuSs.Utils.Data;
@@ -32,6 +34,22 @@ public class OnInventoryClickEvent implements Listener {
     String inv = e.getWhoClicked().getOpenInventory().getTopInventory().getName();
     if (inv.equals(Msg.get("class_choose_inventory", false)) || inv.equals(Msg.get("warp_choose_inventory", false))) {
       e.setCancelled(true);
+    }
+    
+    if (e.getCurrentItem() != null) {
+      Material m = e.getCurrentItem().getType();
+      if (m == Material.EMERALD || m == Material.EMERALD_BLOCK || m == Material.EMERALD_ORE) {
+        InventoryType type = e.getWhoClicked().getOpenInventory().getTopInventory().getType();
+        if (type == InventoryType.ENDER_CHEST || type == InventoryType.SHULKER_BOX) {
+          e.getWhoClicked().sendMessage(Msg.get("error_currency_hide", false));
+          e.setCancelled(true);
+        }
+        InventoryType invt = e.getInventory().getType();
+        if (e.getWhoClicked().getWorld().getName().equals("dzialki") && (invt == InventoryType.CHEST || invt == InventoryType.DROPPER || invt == InventoryType.DISPENSER || invt == InventoryType.HOPPER)) {
+          e.getWhoClicked().sendMessage(Msg.get("error_currency_world", false));
+          e.setCancelled(true);
+        }
+      }
     }
   }
   

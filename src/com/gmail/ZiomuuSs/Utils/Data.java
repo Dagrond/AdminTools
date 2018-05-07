@@ -20,7 +20,6 @@ import com.gmail.ZiomuuSs.Main;
 import com.gmail.ZiomuuSs.EventGroup.StopCondition;
 import com.gmail.ZiomuuSs.Events.OnCommandEvent;
 import com.gmail.ZiomuuSs.Events.OnDamageEvent;
-import com.gmail.ZiomuuSs.Events.OnDropEvent;
 import com.gmail.ZiomuuSs.Events.OnInventoryCloseEvent;
 import com.gmail.ZiomuuSs.Events.OnLeaveEvent;
 
@@ -43,7 +42,6 @@ public class Data {
   private Economy econ;
   private OnDamageEvent damageListener = new OnDamageEvent(this);
   private OnInventoryCloseEvent inventoryCloseListener = new OnInventoryCloseEvent(this);
-  private OnDropEvent dropListener = new OnDropEvent(this);
   
   public Data(Main plugin, Economy econ) {
     this.plugin = plugin;
@@ -57,11 +55,9 @@ public class Data {
     current.start();
     //registering events
     plugin.getServer().getPluginManager().registerEvents(leaveListener, plugin);
-    plugin.getServer().getPluginManager().registerEvents(dropListener, plugin);
     plugin.getServer().getPluginManager().registerEvents(commandListener, plugin);
     plugin.getServer().getPluginManager().registerEvents(damageListener, plugin);
     plugin.getServer().getPluginManager().registerEvents(inventoryCloseListener, plugin);
-    plugin.getServer().getPluginManager().registerEvents(dropListener, plugin);
   }
   
   //stop code for event
@@ -74,7 +70,6 @@ public class Data {
     HandlerList.unregisterAll(commandListener);
     HandlerList.unregisterAll(damageListener);
     HandlerList.unregisterAll(inventoryCloseListener);
-    HandlerList.unregisterAll(dropListener);
   }
   
   

@@ -94,6 +94,7 @@ warp_teleported: "Pomyslnie teleportowano do warpu %1!"
 warp_opened: "Otworzono Menu warpow!"
 warp_list: "Lista warpow(miejsce w ekwipunku): %1"
 warp_deleted: "Warp %1 zostal pomyslnie usuniety!"
+warp_charged: "Zaplaciles %1 za teleport do warpu %2!"
 
 #error messages
 error_permission: "Nie posiadasz odpowiednich uprawnien aby uzyc tej komendy!"
@@ -129,6 +130,8 @@ error_warp_item_needed: "Aby dodac warp, musisz trzymac przedmiot go reprezentuj
 error_warp_in_progress: "Jestes juz w trakcie teleportacji!"
 error_warp_not_exist: "Warp o nazwie %1 nie istnieje! Wpisz %s/warp %naby wyswietlic liste warpow."
 error_warp_not_enough_money: "Nie masz wystarczajacej ilosci pieniedzy aby teleportowac sie na warp %1! Potrzebujesz %2!"
+error_currency_hide: "Nie mozesz ukryc waluty w enderchescie/shulkerboxie!"
+error_currency_world: "Nie mozesz zarzadzac waluta na tym swiecie!"
 
 #event messages
 event_quit: "Pomyslnie opusciles event!"

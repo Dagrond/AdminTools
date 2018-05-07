@@ -65,17 +65,25 @@ public class Warp {
       player.teleport(location);
     } else {
       Economy e = plugin.getEconomy();
-      if (price < 0 || (e != null && e.getBalance(player) >= price)) {
-        e.withdrawPlayer(player, price);
+      if (price <= 0 || (e != null && e.getBalance(player) >= price)) {
         CountdownTimer timer = new CountdownTimer(plugin, 5,
             () -> {
               player.sendMessage(Msg.get("warp_delay", false, name, "5"));
               playersInProgress.put(player, player.getLocation());
             },
              () -> {
-               player.sendMessage(Msg.get("warp_teleported", false, name));
-               player.teleport(location);
-               playersInProgress.remove(player);
+               if (price <= 0 || (e != null && e.getBalance(player) >= price)) {
+                 if (price > 0) {
+                   e.withdrawPlayer(player, price);
+                   player.sendMessage(Msg.get("warp_charged", false, Double.toString(price), name));
+                 } else {
+                   player.sendMessage(Msg.get("warp_teleported", false, name));
+                 }
+                 player.teleport(location);
+                 playersInProgress.remove(player);
+               } else {
+                 player.sendMessage(Msg.get("error_warp_not_enough_money", false, name, Double.toString(price)));
+               }
               },
             (t) -> {
               if (player.isOnline()) {
