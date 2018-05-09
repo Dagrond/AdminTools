@@ -14,6 +14,7 @@ error_variable_color_event: "&4&l"
 
 class_choose_inventory: "&5&lWybierz Klase:"
 warp_choose_inventory: "&5&lWarpy:"
+player_menu_inventory: "&5&lPanel gracza"
 
 #messages...
 #DO NOT TOUCH: %1, %2, %3 etc. - this is space for variables :)
