@@ -1,5 +1,7 @@
 package com.gmail.ZiomuuSs.Commands;
 
+import java.util.Arrays;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -13,18 +15,18 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.gmail.ZiomuuSs.Utils.Data;
 import com.gmail.ZiomuuSs.Utils.Msg;
-import com.gmail.ZiomuuSs.Utils.Warp;
 
 public class MenuCommand implements CommandExecutor {
   Data data;
   private static Inventory menuInv = Bukkit.createInventory(null, 9, Msg.get("player_menu_inventory", false));
   
   //items in inventory
-  private static ItemStack HomeUpgrades = new ItemStack(Material.BED, 1);
+  private static ItemStack HomeUpgrades = new ItemStack(Material.BED, 1, (short) 11);
+  private static ItemMeta meta = HomeUpgrades.getItemMeta();
   static {
-    ItemMeta meta = HomeUpgrades.getItemMeta();
     meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-    
+    meta.setDisplayName("");
+    meta.setLore(Arrays.asList("", ""));
   }
   
   public MenuCommand(Data data) {
@@ -41,6 +43,8 @@ public class MenuCommand implements CommandExecutor {
         } else if (player.hasPermission("essentials.sethome.multiple.three")) {
           
         } else if (player.hasPermission("essentials.sethome.two")) {
+          
+        } else {
           
         }
         player.openInventory(menuInv);
