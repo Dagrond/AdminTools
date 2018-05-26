@@ -45,7 +45,7 @@ public class OnInventoryClickEvent implements Listener {
           e.setCancelled(true);
         }
         InventoryType invt = e.getInventory().getType();
-        if (e.getWhoClicked().getWorld().getName().equals("dzialki") && (invt == InventoryType.CHEST || invt == InventoryType.DROPPER || invt == InventoryType.DISPENSER || invt == InventoryType.HOPPER)) {
+        if (!e.getWhoClicked().getWorld().getName().equals("world") && (invt == InventoryType.CHEST || invt == InventoryType.DROPPER || invt == InventoryType.DISPENSER || invt == InventoryType.HOPPER)) {
           e.getWhoClicked().sendMessage(Msg.get("error_currency_world", false));
           e.setCancelled(true);
         }

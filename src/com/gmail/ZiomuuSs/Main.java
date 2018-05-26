@@ -8,16 +8,18 @@ import net.milkbowl.vault.economy.Economy;
 
 import com.gmail.ZiomuuSs.Commands.AdminToolsCommand;
 import com.gmail.ZiomuuSs.Commands.EventPlayerCommand;
+import com.gmail.ZiomuuSs.Commands.JumpCommand;
 import com.gmail.ZiomuuSs.Commands.SetWarpCommand;
-import com.gmail.ZiomuuSs.Commands.SimpleCommands;
 import com.gmail.ZiomuuSs.Commands.WarpCommand;
 import com.gmail.ZiomuuSs.Commands.WarpListCommand;
+import com.gmail.ZiomuuSs.Events.OnBlockBreakEvent;
 import com.gmail.ZiomuuSs.Events.OnBlockPlaceEvent;
 import com.gmail.ZiomuuSs.Events.OnDeathEvent;
 import com.gmail.ZiomuuSs.Events.OnDropEvent;
 import com.gmail.ZiomuuSs.Events.OnFactionCreateEvent;
 import com.gmail.ZiomuuSs.Events.OnInventoryClickEvent;
 import com.gmail.ZiomuuSs.Events.OnInventoryMoveEvent;
+import com.gmail.ZiomuuSs.Events.OnSignEditEvent;
 import com.gmail.ZiomuuSs.Events.RespawnEvent;
 import com.gmail.ZiomuuSs.Commands.ClearChatCommand;
 import com.gmail.ZiomuuSs.Commands.DelWarpCommand;
@@ -53,19 +55,17 @@ public final class Main extends JavaPlugin {
     getServer().getPluginManager().registerEvents(new OnInventoryClickEvent(data), this);
     getServer().getPluginManager().registerEvents(new OnDropEvent(data), this);
     getServer().getPluginManager().registerEvents(new OnBlockPlaceEvent(), this);
+    getServer().getPluginManager().registerEvents(new OnBlockBreakEvent(), this);
     getServer().getPluginManager().registerEvents(new OnInventoryMoveEvent(), this);
+    getServer().getPluginManager().registerEvents(new OnSignEditEvent(), this);
     getCommand("AdminTools").setExecutor(new AdminToolsCommand(this));
     getCommand("ClearChat").setExecutor(new ClearChatCommand(this));
     getCommand("Event").setExecutor(new EventPlayerCommand(data));
     getCommand("SetWarp").setExecutor(new SetWarpCommand(data));
     getCommand("DelWarp").setExecutor(new DelWarpCommand(data));
     getCommand("WarpList").setExecutor(new WarpListCommand(data));
+    getCommand("Jump").setExecutor(new JumpCommand(this));
     getCommand("Warp").setExecutor(new WarpCommand(data));
-    SimpleCommands cmds = new SimpleCommands(this);
-    getCommand("vip").setExecutor(cmds);
-    getCommand("komendy").setExecutor(cmds);
-    getCommand("drop").setExecutor(cmds);
-    getCommand("pomoc").setExecutor(cmds);
     if (sender != null)
       sender.sendMessage(Msg.get("reloaded", true));
   }

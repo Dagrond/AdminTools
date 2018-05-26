@@ -4,10 +4,13 @@ import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.gmail.ZiomuuSs.Main;
 
@@ -19,6 +22,13 @@ public class Warp {
   private static ConfigAccessor warpAccessor;
   private static HashMap<Player, Location> playersInProgress = new HashMap<>(); //players that are currently teleporting
   private static Inventory WarpInv = Bukkit.createInventory(null, 54, Msg.get("warp_choose_inventory", false)); //inventory of warps
+  private static ItemStack emptySlot = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15);
+  static {
+    ItemMeta meta = emptySlot.getItemMeta();
+    meta.setDisplayName(" ");
+    meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+    emptySlot.setItemMeta(meta);
+  }
   
   private Main plugin;
   private Location location;
@@ -27,7 +37,7 @@ public class Warp {
   private double price = 0;
   private int index;
   
-  public Warp (Location loc, String name, ItemStack item, int index,  double price, Main plugin) {
+  public Warp (Location loc, String name, ItemStack item, int index, double price, Main plugin) {
     this.location = loc;
     this.name = name;
     this.index = index;
@@ -55,14 +65,22 @@ public class Warp {
         ++loaded;
       }
     }
+    while(WarpInv.firstEmpty() != -1) {
+      WarpInv.setItem(WarpInv.firstEmpty(), emptySlot);
+    }
     return loaded;
   }
   
   public void teleport(Player player) {
     player.closeInventory();
+    player.updateInventory();
     if (player.isOp()) {
-      player.sendMessage(Msg.get("warp_teleported", false, name));
-      player.teleport(location);
+      if (name.equals("surowcowa"))
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "rtp "+player.getName()+" surowcowa");
+      else {
+        player.teleport(location);
+        player.sendMessage(Msg.get("warp_teleported", false, name));
+      }
     } else {
       Economy e = plugin.getEconomy();
       if (price <= 0 || (e != null && e.getBalance(player) >= price)) {
@@ -73,13 +91,17 @@ public class Warp {
             },
              () -> {
                if (price <= 0 || (e != null && e.getBalance(player) >= price)) {
-                 if (price > 0) {
-                   e.withdrawPlayer(player, price);
-                   player.sendMessage(Msg.get("warp_charged", false, Double.toString(price), name));
-                 } else {
-                   player.sendMessage(Msg.get("warp_teleported", false, name));
+                 if (name.equals("surowcowa"))
+                   Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "rtp "+player.getName()+" surowcowa");
+                 else {
+                   player.teleport(location);
+                   if (price > 0) {
+                     e.withdrawPlayer(player, price);
+                     player.sendMessage(Msg.get("warp_charged", false, Double.toString(price), name));
+                   } else {
+                     player.sendMessage(Msg.get("warp_teleported", false, name));
+                   }
                  }
-                 player.teleport(location);
                  playersInProgress.remove(player);
                } else {
                  player.sendMessage(Msg.get("error_warp_not_enough_money", false, name, Double.toString(price)));

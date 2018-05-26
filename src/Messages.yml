@@ -133,6 +133,7 @@ error_warp_not_exist: "Warp o nazwie %1 nie istnieje! Wpisz %s/warp %naby wyswie
 error_warp_not_enough_money: "Nie masz wystarczajacej ilosci pieniedzy aby teleportowac sie na warp %1! Potrzebujesz %2!"
 error_currency_hide: "Nie mozesz ukryc waluty w enderchescie/shulkerboxie!"
 error_currency_world: "Nie mozesz zarzadzac waluta na tym swiecie!"
+error_ore_world: "Ta mapa nie sluzy do wydobywania surowcow!"
 
 #event messages
 event_quit: "Pomyslnie opusciles event!"

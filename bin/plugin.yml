@@ -15,21 +15,6 @@ commands:
       aliases: [e]
       description: Komenda gracza do eventu.
       usage: /e
-   Vip:
-      description: Wyswietla informacje o randze VIP.
-      usage: /vip
-   Svip:
-      description: Wyswietla informacje o randze SVIP.
-      usage: /svip
-   Drop:
-      description: Wyswietla drop.
-      usage: /drop
-   Komendy:
-      description: Wyswietla komendy dostepne na serwerze.
-      usage: /komendy
-   Pomoc:
-      description: Wyswietla pomoc.
-      usage: /pomoc
    SetWarp:
       description: Ustawia nowy warp.
       usage: /setwarp
@@ -39,6 +24,9 @@ commands:
    WarpList:
       description: Wyswietla liste warpow w formie tekstu.
       usage: /warp
-   DelWArp:
+   DelWarp:
       description: Usuwa dany warp.
       usage: /warp
+   Jump:
+      description: Przesuwa gracza.
+      usage: /jump <gracz>

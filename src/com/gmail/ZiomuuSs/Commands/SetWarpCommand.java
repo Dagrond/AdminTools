@@ -29,11 +29,13 @@ public class SetWarpCommand implements CommandExecutor {
               if (index>0) {
                 if (index>1) {
                   double price = 0;
-                  try {
-                    price = Double.valueOf(args[2]);
-                  } catch (NumberFormatException e) {
-                    sender.sendMessage(Msg.get("error_usage", false, "/serwarp (name) (slot) <price>"));
-                    return true;
+                  if (args.length>2) {
+                    try {
+                      price = Double.valueOf(args[2]);
+                    } catch (NumberFormatException e) {
+                      sender.sendMessage(Msg.get("error_usage", false, "/serwarp (name) (slot) <price>"));
+                      return true;
+                    }
                   }
                   new Warp(player.getLocation(), args[0], player.getInventory().getItemInMainHand(), index-1, price, data.getPlugin());
                   player.sendMessage(Msg.get("warp_created_with_price", true, args[0], String.valueOf(price)));

@@ -27,7 +27,7 @@ public class OnDropEvent implements Listener {
       e.setCancelled(true);
     }
     
-    if (e.getPlayer().getWorld().getName().equals("dzialki")) {
+    if (!e.getPlayer().getWorld().getName().equals("world")) {
       Material m = e.getItemDrop().getItemStack().getType();
       if (m == Material.EMERALD || m == Material.EMERALD_BLOCK || m == Material.EMERALD_ORE) {
         e.getPlayer().sendMessage(Msg.get("error_currency_world", false));
