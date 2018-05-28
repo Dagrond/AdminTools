@@ -13,7 +13,8 @@ public class OnBlockPlaceEvent implements Listener {
   
   @EventHandler
   public void onBlockPlace(BlockPlaceEvent e) {
-    if (!e.getPlayer().getWorld().getName().equals("world")) {
+	String name = e.getPlayer().getWorld().getName();
+    if (!name.equals("world") && !name.equals("b")) {
       Material m = e.getBlock().getType();
       if (m == Material.EMERALD_ORE || m == Material.EMERALD_BLOCK) {
         e.setCancelled(true);

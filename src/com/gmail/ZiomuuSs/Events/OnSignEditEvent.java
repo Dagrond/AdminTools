@@ -13,7 +13,8 @@ public class OnSignEditEvent implements Listener {
   
   @EventHandler
   public void onSignChange(SignChangeEvent e) {
-    if (!e.getBlock().getWorld().getName().equals("world")) {
+    String name = e.getBlock().getWorld().getName();
+    if (!name.equals("world") && !name.equals("b")) {
       if (e.getLine(0).equalsIgnoreCase(ChatColor.BOLD+"[vault]")) {
         e.getPlayer().sendMessage(Msg.get("error_currency_world", false));
         e.setCancelled(true);

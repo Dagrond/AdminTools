@@ -16,7 +16,8 @@ public class OnInventoryMoveEvent implements Listener {
   public void OnInventoryMove(InventoryMoveItemEvent  e) {
     Material m = e.getItem().getType();
     if (m == Material.EMERALD || m == Material.EMERALD_BLOCK || m == Material.EMERALD_ORE) {
-      if (e.getSource().getLocation().getWorld().getName().equals("dzialki") || e.getDestination().getType() == InventoryType.SHULKER_BOX) {
+      String name = e.getSource().getLocation().getWorld().getName();
+      if (!name.equals("world") && !name.equals("b") || e.getDestination().getType() == InventoryType.SHULKER_BOX) {
         e.setItem(new ItemStack(Material.AIR));
       }
     }
