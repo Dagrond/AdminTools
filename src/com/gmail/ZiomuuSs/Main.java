@@ -55,9 +55,9 @@ public final class Main extends JavaPlugin {
     getServer().getPluginManager().registerEvents(new OnInventoryClickEvent(data), this);
     getServer().getPluginManager().registerEvents(new OnDropEvent(data), this);
     getServer().getPluginManager().registerEvents(new OnBlockPlaceEvent(), this);
-    getServer().getPluginManager().registerEvents(new OnBlockBreakEvent(), this);
     getServer().getPluginManager().registerEvents(new OnInventoryMoveEvent(), this);
     getServer().getPluginManager().registerEvents(new OnSignEditEvent(), this);
+    getServer().getPluginManager().registerEvents(new OnBlockBreakEvent(), this);
     getCommand("AdminTools").setExecutor(new AdminToolsCommand(this));
     getCommand("ClearChat").setExecutor(new ClearChatCommand(this));
     getCommand("Event").setExecutor(new EventPlayerCommand(data));

@@ -96,6 +96,7 @@ warp_opened: "Otworzono Menu warpow!"
 warp_list: "Lista warpow(miejsce w ekwipunku): %1"
 warp_deleted: "Warp %1 zostal pomyslnie usuniety!"
 warp_charged: "Zaplaciles %1 za teleport do warpu %2!"
+warp_changed_loc: "Pomyslnie zmieniles lokalizacje warpu %1!"
 
 #error messages
 error_permission: "Nie posiadasz odpowiednich uprawnien aby uzyc tej komendy!"

@@ -34,7 +34,7 @@ public class OnDeathEvent implements Listener {
       }
     } else if (e.getEntity().hasPermission("AdminTools.keepinventory") || e.getEntity().hasPermission("AdminTools.keepexperience")) {
       Entity killer = e.getEntity().getKiller();
-      if (!(killer instanceof Player) && (!(killer instanceof Projectile) || !(((Projectile) killer).getShooter() instanceof Player))) {
+      if (!(killer instanceof Player) && (!(killer instanceof Projectile) || !(((Projectile) killer).getShooter() instanceof Player)) && !e.getEntity().getWorld().getName().equals("b")) {
         if (e.getEntity().hasPermission("AdminTools.keepinventory")) {
           e.setKeepInventory(true);
           e.getEntity().sendMessage(Msg.get("inventory_restored", false));

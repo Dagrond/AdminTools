@@ -50,6 +50,11 @@ public class Warp {
     saveWarps();
   }
   
+  public void setLocation(Location loc) {
+    this.location = loc;
+    saveWarps();
+  }
+  
   public static int loadWarps(Main instance) {
     WarpInv = Bukkit.createInventory(null, 54, Msg.get("warp_choose_inventory", false));
     warpAccessor = new ConfigAccessor(instance, "Warps.yml");
@@ -75,7 +80,9 @@ public class Warp {
     player.closeInventory();
     player.updateInventory();
     if (player.isOp()) {
-      if (name.equals("surowcowa"))
+      if (name.equals("losowy"))
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "rtp "+player.getName()+" world");
+      else if (name.equals("surowcowa"))
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "rtp "+player.getName()+" surowcowa");
       else {
         player.teleport(location);
@@ -91,7 +98,9 @@ public class Warp {
             },
              () -> {
                if (price <= 0 || (e != null && e.getBalance(player) >= price)) {
-                 if (name.equals("surowcowa"))
+                 if (name.equals("losowy"))
+                   Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "rtp "+player.getName()+" world");
+                 else if (name.equals("surowcowa"))
                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "rtp "+player.getName()+" surowcowa");
                  else {
                    player.teleport(location);
