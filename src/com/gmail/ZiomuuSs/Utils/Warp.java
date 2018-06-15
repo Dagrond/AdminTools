@@ -90,7 +90,7 @@ public class Warp {
       }
     } else {
       Economy e = plugin.getEconomy();
-      if (price <= 0 || (e != null && e.getBalance(player) >= price)) {
+      if (price <= 0 || (e != null && e.getBalance(player) >= price) || player.hasPermission("AdminTools.vip")) {
         CountdownTimer timer = new CountdownTimer(plugin, 5,
             () -> {
               player.sendMessage(Msg.get("warp_delay", false, name, "5"));
@@ -104,7 +104,7 @@ public class Warp {
                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "rtp "+player.getName()+" surowcowa");
                  else {
                    player.teleport(location);
-                   if (price > 0) {
+                   if (price > 0 && !player.hasPermission("AdminTools.vip")) {
                      e.withdrawPlayer(player, price);
                      player.sendMessage(Msg.get("warp_charged", false, Double.toString(price), name));
                    } else {
@@ -121,7 +121,6 @@ public class Warp {
                 if (!isSimilarLocation(player.getLocation(), playersInProgress.get(player))) {
                   player.sendMessage(Msg.get("error_warp_cancelled", false));
                   playersInProgress.remove(player);
-                  e.depositPlayer(player, price);
                   t.cancel();
                 }
               } else {

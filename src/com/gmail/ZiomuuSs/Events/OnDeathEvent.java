@@ -1,9 +1,7 @@
 package com.gmail.ZiomuuSs.Events;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -31,26 +29,6 @@ public class OnDeathEvent implements Listener {
         Bukkit.broadcastMessage(Msg.get("event_killer", true, e.getEntity().getName(), e.getEntity().getKiller().getName(), Integer.toString(data.getCurrentEvent().getParticipantCount())));
       } else if (e.getEntity().getLastDamageCause().getCause() == DamageCause.VOID) {
         Bukkit.broadcastMessage(Msg.get("event_spleef_fall", true, e.getEntity().getName(), Integer.toString(team.getPlayerNumber())));
-      }
-    } else if (e.getEntity().hasPermission("AdminTools.keepinventory") || e.getEntity().hasPermission("AdminTools.keepexperience")) {
-      Entity killer = e.getEntity().getKiller();
-      if (!(killer instanceof Player) && (!(killer instanceof Projectile) || !(((Projectile) killer).getShooter() instanceof Player)) && !e.getEntity().getWorld().getName().equals("b")) {
-        if (e.getEntity().hasPermission("AdminTools.keepinventory")) {
-          e.setKeepInventory(true);
-          e.getEntity().sendMessage(Msg.get("inventory_restored", false));
-        }
-        if (e.getEntity().hasPermission("AdminTools.keepexperience")) {
-          e.setKeepLevel(true);
-          e.setDroppedExp(0);
-          e.getEntity().sendMessage(Msg.get("experience_restored", false));
-        }
-      } else {
-        if (e.getEntity().hasPermission("AdminTools.keepinventory")) {
-          e.getEntity().sendMessage(Msg.get("error_inventory_not_restored", false));
-        }
-        if (e.getEntity().hasPermission("AdminTools.keepexperience")) {
-          e.getEntity().sendMessage(Msg.get("error_experience_not_restored", false));
-        }
       }
     }
   }

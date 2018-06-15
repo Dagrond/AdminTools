@@ -18,6 +18,9 @@ commands:
    SetWarp:
       description: Ustawia nowy warp.
       usage: /setwarp
+   SetWarpLoc:
+      description: Zmienia lokacje istniejacego warpu.
+      usage: /setwarploc
    Warp:
       description: Wyswietla liste warpow w formie GUI.
       usage: /warp
@@ -30,3 +33,6 @@ commands:
    Jump:
       description: Przesuwa gracza.
       usage: /jump <gracz>
+   Kowal:
+      description: Menu kowala.
+      usage: /kowal <gracz>

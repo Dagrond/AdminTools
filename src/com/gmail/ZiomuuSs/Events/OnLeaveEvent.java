@@ -6,6 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.gmail.ZiomuuSs.Utils.Data;
+import com.gmail.ZiomuuSs.Utils.Kowal;
 import com.gmail.ZiomuuSs.Utils.Msg;
 
 public class OnLeaveEvent implements Listener {
@@ -17,9 +18,12 @@ public class OnLeaveEvent implements Listener {
   
   @EventHandler
   public void onLeave(PlayerQuitEvent e) {
-    if (data.getCurrentEvent().isSaved(e.getPlayer().getUniqueId())) {
+    if (data.getCurrentEvent() != null && data.getCurrentEvent().isSaved(e.getPlayer().getUniqueId())) {
       data.getCurrentEvent().removePlayer(e.getPlayer());
       Bukkit.broadcastMessage(Msg.get("event_leaved", true, e.getPlayer().getDisplayName(), Integer.toString(data.getCurrentEvent().getParticipantCount())));
+    }
+    if (Kowal.currentPlayers.containsKey(e.getPlayer().getUniqueId())) {
+      Kowal.currentPlayers.remove(e.getPlayer().getUniqueId());
     }
   }
   

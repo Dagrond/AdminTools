@@ -20,8 +20,6 @@ import com.gmail.ZiomuuSs.Main;
 import com.gmail.ZiomuuSs.EventGroup.StopCondition;
 import com.gmail.ZiomuuSs.Events.OnCommandEvent;
 import com.gmail.ZiomuuSs.Events.OnDamageEvent;
-import com.gmail.ZiomuuSs.Events.OnInventoryCloseEvent;
-import com.gmail.ZiomuuSs.Events.OnLeaveEvent;
 
 import net.milkbowl.vault.economy.Economy;
 
@@ -37,11 +35,9 @@ public class Data {
   private HashMap<String, EventGroup> savedGroups = new HashMap<>(); //all saved groups
   private HashMap<UUID, SavedPlayer> toRestore = new HashMap<>(); //players that are out of event, but waiting for respawn.
   private ItemStack[] guildItems; //items needed to create guild
-  private OnLeaveEvent leaveListener = new OnLeaveEvent(this);
   private OnCommandEvent commandListener = new OnCommandEvent(this);
   private Economy econ;
   private OnDamageEvent damageListener = new OnDamageEvent(this);
-  private OnInventoryCloseEvent inventoryCloseListener = new OnInventoryCloseEvent(this);
   
   public Data(Main plugin, Economy econ) {
     this.plugin = plugin;
@@ -54,10 +50,8 @@ public class Data {
     current = group;
     current.start();
     //registering events
-    plugin.getServer().getPluginManager().registerEvents(leaveListener, plugin);
     plugin.getServer().getPluginManager().registerEvents(commandListener, plugin);
     plugin.getServer().getPluginManager().registerEvents(damageListener, plugin);
-    plugin.getServer().getPluginManager().registerEvents(inventoryCloseListener, plugin);
   }
   
   //stop code for event
@@ -66,10 +60,8 @@ public class Data {
     current.stop();
     current = null;
     //unregistering events
-    HandlerList.unregisterAll(leaveListener);
     HandlerList.unregisterAll(commandListener);
     HandlerList.unregisterAll(damageListener);
-    HandlerList.unregisterAll(inventoryCloseListener);
   }
   
   

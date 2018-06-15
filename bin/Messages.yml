@@ -97,6 +97,7 @@ warp_list: "Lista warpow(miejsce w ekwipunku): %1"
 warp_deleted: "Warp %1 zostal pomyslnie usuniety!"
 warp_charged: "Zaplaciles %1 za teleport do warpu %2!"
 warp_changed_loc: "Pomyslnie zmieniles lokalizacje warpu %1!"
+blacksmith_repaired: "Pomyslnie naprawiono przedmiot za %1 %sszmaragdow%n!"
 
 #error messages
 error_permission: "Nie posiadasz odpowiednich uprawnien aby uzyc tej komendy!"
@@ -135,6 +136,7 @@ error_warp_not_enough_money: "Nie masz wystarczajacej ilosci pieniedzy aby telep
 error_currency_hide: "Nie mozesz ukryc waluty w enderchescie/shulkerboxie!"
 error_currency_world: "Nie mozesz zarzadzac waluta na tym swiecie!"
 error_ore_world: "Ta mapa nie sluzy do wydobywania surowcow!"
+error_blacksmith_not_enough: "Nie masz wystarczajacej ilosci pieniedzy aby to naprawic! (Potrzebujesz %1 %sszmaragdow^n, posiadasz tylko %2 %sszmaragdow%n)"
 
 #event messages
 event_quit: "Pomyslnie opusciles event!"

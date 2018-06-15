@@ -18,7 +18,7 @@ public class SetWarpLocCommand implements CommandExecutor {
   
   @Override
   public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-    if (cmd.getName().equalsIgnoreCase("SetWarp")) { // /setwarploc (name)
+    if (cmd.getName().equalsIgnoreCase("SetWarpLoc")) { // /setwarploc (name)
       if (sender instanceof Player) {
         Player player = (Player) sender;
         if (sender.hasPermission("AdminTools.setwarplocation") || sender.hasPermission("AdminTools.*")) {
