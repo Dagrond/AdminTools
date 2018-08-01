@@ -28,7 +28,7 @@ public class Kowal {
   
   private static final double vipmultiplier = 0.7; //final price is multipled by this if player is vip
   private static final double MImultiplier = 0.8; //if item has MyItems durability system, price is: (MyItems lore durability points to repair)*(this multiplier)
-  private static final double normalmultiplier = 0.08; //if item has standard minecraft durability system, price is: (durability points to repair)*(this multiplier)
+  private static final double normalmultiplier = 0.06; //if item has standard minecraft durability system, price is: (durability points to repair)*(this multiplier)
   
   /*
    * if item has standard minecraft durability system, this can be used to increase repair price depending on enchantments.
@@ -111,7 +111,7 @@ public class Kowal {
     if (durAPI.hasLoreStats(item, LoreStatsEnum.DURABILITY))
       price = (durAPI.getLoreValue(item, LoreStatsEnum.DURABILITY, OptionStatsEnum.MAX)-durAPI.getLoreValue(item, LoreStatsEnum.DURABILITY, OptionStatsEnum.CURRENT))*MImultiplier;
     else {
-      price = (item.getType().getMaxDurability()-item.getDurability())*normalmultiplier;
+      price = item.getDurability()*normalmultiplier;
       for (int e : item.getEnchantments().values())
         price += e*enchantbonus;
     }
