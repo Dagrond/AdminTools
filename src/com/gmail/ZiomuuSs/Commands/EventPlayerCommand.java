@@ -6,6 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.gmail.ZiomuuSs.EventGroup.EventStatus;
 import com.gmail.ZiomuuSs.Utils.Data;
 import com.gmail.ZiomuuSs.Utils.Msg;
 
@@ -38,7 +39,7 @@ public class EventPlayerCommand implements CommandExecutor {
           }
         } else if (args[0].equalsIgnoreCase("dolacz")) {
           if (sender instanceof Player) {
-            if (data.getCurrentEvent() != null) {
+            if (data.getCurrentEvent() != null && data.getCurrentEvent().getEventStatus() == EventStatus.COUNTDOWN) {
               Player player = (Player) sender;
               if (!data.getCurrentEvent().isSaved(player.getUniqueId())) {
                 if (!data.getCurrentEvent().isQueued(player.getUniqueId())) {

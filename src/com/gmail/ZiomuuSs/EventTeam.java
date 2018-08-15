@@ -25,7 +25,7 @@ import com.gmail.ZiomuuSs.Utils.SavedPlayer;
 
 public class EventTeam {
   public static enum TeamStatus {
-    LOBBY, DISABLED, IN_PROGRESS; //lobby - players are in lobby and waiting to teleport to startpoints, disabled - no one is in team, in_progress - players were teleported to ther startpoints
+    LOBBY, DISABLED, IN_PROGRESS; //lobby - players are in lobby and waiting to teleport to startpoints, disabled - no one is in team, in_progress - players were teleported to their startpoints
   }
   private Data data;
   private String name;

@@ -27,8 +27,8 @@ import api.praya.myitems.manager.game.LoreStatsManagerAPI;
 public class Kowal {
   
   private static final double vipmultiplier = 0.7; //final price is multipled by this if player is vip
-  private static final double MImultiplier = 0.8; //if item has MyItems durability system, price is: (MyItems lore durability points to repair)*(this multiplier)
-  private static final double normalmultiplier = 0.06; //if item has standard minecraft durability system, price is: (durability points to repair)*(this multiplier)
+  private static final double MImultiplier = 1; //if item has MyItems durability system, price is: (MyItems lore durability points to repair)*(this multiplier)
+  private static final double normalmultiplier = 0.25; //if item has standard minecraft durability system, price is: (durability points to repair)*(this multiplier)
   
   /*
    * if item has standard minecraft durability system, this can be used to increase repair price depending on enchantments.
